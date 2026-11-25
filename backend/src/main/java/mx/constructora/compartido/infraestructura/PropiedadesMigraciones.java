@@ -23,7 +23,7 @@ public record PropiedadesMigraciones(Modo modo, String url, String usuario, Stri
     NINGUNO
   }
 
-  PropiedadesMigraciones {
+  public PropiedadesMigraciones {
     if (modo == null) {
       modo = Modo.VALIDAR;
     }
