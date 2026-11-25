@@ -1,0 +1,11 @@
+.git
+**/node_modules
+frontend/dist
+frontend/test-results
+frontend/playwright-report
+backend/target
+infra/terraform/.terraform
+infra/compose/.env
+infra/compose/secrets
+**/*.xlsx
+docs

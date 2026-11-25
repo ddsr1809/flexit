@@ -1,0 +1,23 @@
+name: Tarea
+description: Un issue de 1 a 3 días que cabe en una conversación con la IA
+labels: ["tipo:feature"]
+body:
+  - type: textarea
+    id: objetivo
+    attributes: { label: Objetivo, description: Qué tiene que poder hacer alguien cuando esto esté listo }
+    validations: { required: true }
+  - type: textarea
+    id: aceptacion
+    attributes: { label: Criterios de aceptación, description: "Comprobables: '- [ ] El sistema rechaza…'" }
+    validations: { required: true }
+  - type: textarea
+    id: archivos
+    attributes: { label: Archivos probables }
+  - type: input
+    id: depende
+    attributes: { label: Depende de, placeholder: "#12, #13" }
+  - type: dropdown
+    id: hito
+    attributes:
+      label: Hito
+      options: [H1 Plataforma, H2 Catálogos, H3 Migración de catálogos, H4 Inventario, H5 Histórico, H6 Abastecimiento y reportes, H7 Producción, H8 Corte, H9 Estabilización]

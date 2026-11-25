@@ -1,0 +1,30 @@
+# Construcción
+backend/target/
+frontend/node_modules/
+frontend/dist/
+frontend/test-results/
+frontend/playwright-report/
+frontend/node_modules/.tmp/
+
+# Secretos y estado: nunca en Git
+.env
+*.env
+!*.env.ejemplo
+infra/compose/secrets/
+infra/terraform/**/.terraform/
+infra/terraform/**/*.tfstate*
+infra/terraform/**/*.tfvars
+infra/terraform/*.tfbackend
+infra/terraform/**/plan
+
+# Datos reales de la constructora (nombres, IMSS, pagos). Solo muestras anonimizadas.
+*.xlsx
+*.xls
+*.csv
+!tools/validacion-datos/muestras/**
+
+# Editores
+.idea/
+.vscode/
+*.iml
+.DS_Store

@@ -1,0 +1,32 @@
+# Parches semanales; las versiones mayores se revisan a mano (Spring Boot, React, PostgreSQL).
+version: 2
+updates:
+  - package-ecosystem: maven
+    directory: /backend
+    schedule: { interval: weekly, day: monday, time: "07:00", timezone: America/Mexico_City }
+    open-pull-requests-limit: 5
+    groups:
+      spring: { patterns: ["org.springframework*"] }
+      pruebas: { patterns: ["org.testcontainers*", "org.junit*", "org.assertj*"] }
+    labels: [dependencias, "modulo:backend"]
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule: { interval: weekly, day: monday, time: "07:00", timezone: America/Mexico_City }
+    open-pull-requests-limit: 5
+    groups:
+      produccion: { dependency-type: production, update-types: [minor, patch] }
+      desarrollo: { dependency-type: development, update-types: [minor, patch] }
+    labels: [dependencias, "modulo:frontend"]
+  # Las acciones están fijadas a un commit; Dependabot propone el commit nuevo con su versión.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: weekly, day: monday, time: "07:00", timezone: America/Mexico_City }
+    labels: [dependencias, "modulo:infra"]
+  - package-ecosystem: docker
+    directory: /
+    schedule: { interval: weekly, day: monday, time: "07:00", timezone: America/Mexico_City }
+    labels: [dependencias, "modulo:infra"]
+  - package-ecosystem: terraform
+    directories: [/infra/terraform/preproduccion, /infra/terraform/modulos/servidor]
+    schedule: { interval: weekly, day: monday, time: "07:00", timezone: America/Mexico_City }
+    labels: [dependencias, "modulo:infra"]

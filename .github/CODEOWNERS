@@ -1,0 +1,7 @@
+# Migraciones, infraestructura, seguridad y CI requieren revisión del responsable técnico.
+# Responsable técnico: @ddsr1809.
+/backend/src/main/resources/db/migration/   @ddsr1809
+/backend/src/main/java/mx/constructora/compartido/   @ddsr1809
+/infra/                                      @ddsr1809
+/.github/                                    @ddsr1809
+/Dockerfile                                  @ddsr1809
