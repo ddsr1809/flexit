@@ -1,9 +1,11 @@
 name: ci
-# Cada PR y cada push a main. Ningún PR se fusiona con algo en rojo (protección de main).
+# Cada push y cada PR hacia las tres ramas del flujo: development → testing → main.
+# Ningún PR se fusiona con algo en rojo (protección de ramas).
 on:
   pull_request:
+    branches: [development, testing, main]
   push:
-    branches: [main]
+    branches: [development, testing, main]
 
 concurrency:
   group: ci-${{ github.ref }}
