@@ -1,4 +1,15 @@
-import { Boxes, ClipboardList, House, ShoppingCart, Users } from 'lucide-react'
+import {
+  Boxes,
+  ClipboardList,
+  FileText,
+  House,
+  Layers,
+  Library,
+  Package,
+  ShoppingCart,
+  Truck,
+  Users,
+} from 'lucide-react'
 import type { ComponentType } from 'react'
 import { PERMISOS, puede, type Permiso, type Sesion } from '@/sesion/sesion'
 
@@ -13,6 +24,8 @@ interface Entrada {
 
 export const MENU: Entrada[] = [
   { ruta: '/', texto: 'Inicio', icono: House },
+  { ruta: '/contratos', texto: 'Contratos', icono: FileText },
+  { ruta: '/materiales', texto: 'Materiales', icono: Package },
   {
     ruta: '/existencias',
     texto: 'Existencias',
@@ -34,6 +47,9 @@ export const MENU: Entrada[] = [
     permiso: PERMISOS.pedidoCrear,
     hito: 'H6',
   },
+  { ruta: '/paquetes', texto: 'Paquetes', icono: Layers, permiso: PERMISOS.estructuraVerTodo },
+  { ruta: '/catalogos', texto: 'Catálogos', icono: Library, permiso: PERMISOS.estructuraVerTodo },
+  { ruta: '/proveedores', texto: 'Proveedores', icono: Truck, permiso: PERMISOS.catalogoEditar },
   { ruta: '/usuarios', texto: 'Usuarios', icono: Users, permiso: PERMISOS.usuariosAdministrar },
 ]
 

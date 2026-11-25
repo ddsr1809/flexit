@@ -182,6 +182,1668 @@
           }
         }
       }
+    },
+    "/api/v1/clientes": {
+      "get": {
+        "tags": [
+          "Estructura"
+        ],
+        "summary": "Clientes",
+        "operationId": "listarClientes",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Cliente"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Estructura"
+        ],
+        "summary": "Dar de alta",
+        "operationId": "crearCliente",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosCliente"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cliente"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/clientes/{id}": {
+      "patch": {
+        "tags": [
+          "Estructura"
+        ],
+        "summary": "Cambiar",
+        "operationId": "cambiarCliente",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosCliente"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cliente"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/frentes": {
+      "get": {
+        "tags": [
+          "Estructura"
+        ],
+        "summary": "Frentes",
+        "operationId": "listarFrentes",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Frente"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Estructura"
+        ],
+        "summary": "Dar de alta",
+        "operationId": "crearFrente",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosFrente"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Frente"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/frentes/{id}": {
+      "patch": {
+        "tags": [
+          "Estructura"
+        ],
+        "summary": "Cambiar",
+        "operationId": "cambiarFrente",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosFrente"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Frente"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/prototipos": {
+      "get": {
+        "tags": [
+          "Estructura"
+        ],
+        "summary": "Prototipos",
+        "operationId": "listarPrototipos",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Prototipo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Estructura"
+        ],
+        "summary": "Dar de alta",
+        "operationId": "crearPrototipo",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosPrototipo"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Prototipo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/prototipos/{id}": {
+      "patch": {
+        "tags": [
+          "Estructura"
+        ],
+        "summary": "Cambiar",
+        "operationId": "cambiarPrototipo",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosPrototipo"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Prototipo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tipos-unidad": {
+      "get": {
+        "tags": [
+          "Estructura"
+        ],
+        "summary": "Tipos de unidad de obra",
+        "operationId": "listarTiposUnidad",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TipoUnidad"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/contratos": {
+      "get": {
+        "tags": [
+          "Contratos"
+        ],
+        "summary": "Contratos al alcance del usuario",
+        "operationId": "listarContratos",
+        "parameters": [
+          {
+            "name": "estado",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "frenteId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Contrato"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Contratos"
+        ],
+        "summary": "Dar de alta un contrato",
+        "operationId": "crearContrato",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosContrato"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Contrato"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/contratos/{id}": {
+      "get": {
+        "tags": [
+          "Contratos"
+        ],
+        "summary": "Un contrato (ETag con su versión)",
+        "operationId": "obtenerContrato",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Contrato"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Contratos"
+        ],
+        "summary": "Cambiar un contrato",
+        "operationId": "cambiarContrato",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosContrato"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Contrato"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/contratos/{id}/unidades": {
+      "get": {
+        "tags": [
+          "Contratos"
+        ],
+        "summary": "Unidades de obra del contrato",
+        "operationId": "listarUnidades",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UnidadObra"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Contratos"
+        ],
+        "summary": "Dar de alta lotes (manzana y lista de lotes) u otra unidad (clave)",
+        "operationId": "crearUnidades",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NuevasUnidades"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UnidadObra"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/unidades/{id}": {
+      "patch": {
+        "tags": [
+          "Contratos"
+        ],
+        "summary": "Cambiar prototipo, presupuesto o estado",
+        "operationId": "cambiarUnidad",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosUnidad"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnidadObra"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/contratos/{id}/residentes": {
+      "get": {
+        "tags": [
+          "Contratos"
+        ],
+        "summary": "Usuarios asignados al contrato",
+        "operationId": "listarResidentes",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UsuarioResumen"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Contratos"
+        ],
+        "summary": "Reemplazar los usuarios asignados",
+        "operationId": "asignarResidentes",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Residentes"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UsuarioResumen"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/residentes": {
+      "get": {
+        "tags": [
+          "Contratos"
+        ],
+        "summary": "Usuarios con rol residente",
+        "operationId": "candidatosResidente",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UsuarioResumen"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/contratos/{id}/precios": {
+      "get": {
+        "tags": [
+          "Contratos"
+        ],
+        "summary": "Precio de cobro y destajo por paquete",
+        "operationId": "listarPrecios",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PrecioPaquete"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Contratos"
+        ],
+        "summary": "Fijar el precio de un paquete",
+        "operationId": "fijarPrecio",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosPrecio"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrecioPaquete"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/paquetes": {
+      "get": {
+        "tags": [
+          "Paquetes"
+        ],
+        "summary": "Paquetes en orden de árbol; filtra por cliente o solo los propios",
+        "operationId": "listarPaquetes",
+        "parameters": [
+          {
+            "name": "clienteId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "propios",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Paquete"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Paquetes"
+        ],
+        "summary": "Dar de alta un paquete",
+        "operationId": "crearPaquete",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosPaquete"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Paquete"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/paquetes/{id}": {
+      "patch": {
+        "tags": [
+          "Paquetes"
+        ],
+        "summary": "Cambiar un paquete",
+        "operationId": "cambiarPaquete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosPaquete"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Paquete"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/paquetes/equivalencias": {
+      "get": {
+        "tags": [
+          "Paquetes"
+        ],
+        "summary": "Equivalencias cliente ↔ propio",
+        "operationId": "listarEquivalencias",
+        "parameters": [
+          {
+            "name": "clienteId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Equivalencia"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/paquetes/{id}/equivalencias": {
+      "put": {
+        "tags": [
+          "Paquetes"
+        ],
+        "summary": "Reemplazar los paquetes propios equivalentes a un paquete del cliente",
+        "operationId": "fijarEquivalencias",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Equivalencias"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Equivalencia"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/unidades-medida": {
+      "get": {
+        "tags": [
+          "Catálogo"
+        ],
+        "summary": "UnidadesMedida",
+        "operationId": "listarUnidadesMedida",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UnidadMedida"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Catálogo"
+        ],
+        "summary": "Dar de alta",
+        "operationId": "crearUnidadMedida",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosUnidadMedida"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnidadMedida"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/unidades-medida/{id}": {
+      "patch": {
+        "tags": [
+          "Catálogo"
+        ],
+        "summary": "Cambiar",
+        "operationId": "cambiarUnidadMedida",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosUnidadMedida"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnidadMedida"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/conversiones": {
+      "get": {
+        "tags": [
+          "Catálogo"
+        ],
+        "summary": "Conversiones generales y, con materialId, las de ese material",
+        "operationId": "listarConversiones",
+        "parameters": [
+          {
+            "name": "materialId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Conversion"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Catálogo"
+        ],
+        "summary": "Dar de alta una conversión",
+        "operationId": "crearConversion",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosConversion"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Conversion"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/conversiones/{id}": {
+      "patch": {
+        "tags": [
+          "Catálogo"
+        ],
+        "summary": "Cambiar el factor de una conversión",
+        "operationId": "cambiarConversion",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosFactor"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Conversion"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/categorias": {
+      "get": {
+        "tags": [
+          "Catálogo"
+        ],
+        "summary": "Categorias",
+        "operationId": "listarCategorias",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Categoria"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Catálogo"
+        ],
+        "summary": "Dar de alta",
+        "operationId": "crearCategoria",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosCategoria"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Categoria"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/categorias/{id}": {
+      "patch": {
+        "tags": [
+          "Catálogo"
+        ],
+        "summary": "Cambiar",
+        "operationId": "cambiarCategoria",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosCategoria"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Categoria"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/clasificaciones-costo": {
+      "get": {
+        "tags": [
+          "Catálogo"
+        ],
+        "summary": "Razones de salida",
+        "operationId": "listarClasificaciones",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClasificacionCosto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/materiales": {
+      "get": {
+        "tags": [
+          "Catálogo"
+        ],
+        "summary": "Materiales paginados con filtros",
+        "operationId": "listarMateriales",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "categoriaId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "soloActivos",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "pagina",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "tamano",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginaMateriales"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Catálogo"
+        ],
+        "summary": "Dar de alta un material",
+        "operationId": "crearMaterial",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosMaterial"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Material"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/materiales/buscar": {
+      "get": {
+        "tags": [
+          "Catálogo"
+        ],
+        "summary": "Búsqueda rápida por clave o nombre parcial (20 activos)",
+        "operationId": "buscarMateriales",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Material"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/materiales/{id}": {
+      "get": {
+        "tags": [
+          "Catálogo"
+        ],
+        "summary": "Un material (ETag con su versión)",
+        "operationId": "obtenerMaterial",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Material"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Catálogo"
+        ],
+        "summary": "Cambiar un material",
+        "operationId": "cambiarMaterial",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosMaterial"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Material"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/proveedores": {
+      "get": {
+        "tags": [
+          "Catálogo"
+        ],
+        "summary": "Proveedores, con búsqueda opcional",
+        "operationId": "listarProveedores",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Proveedor"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Catálogo"
+        ],
+        "summary": "Dar de alta un proveedor",
+        "operationId": "crearProveedor",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosProveedor"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Proveedor"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/proveedores/{id}": {
+      "patch": {
+        "tags": [
+          "Catálogo"
+        ],
+        "summary": "Cambiar un proveedor",
+        "operationId": "cambiarProveedor",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosProveedor"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Proveedor"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -387,6 +2049,1067 @@
         "required": [
           "entorno",
           "version"
+        ]
+      },
+      "Cliente": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "rfc": {
+            "type": "string"
+          },
+          "activo": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "activo",
+          "id",
+          "nombre",
+          "version"
+        ]
+      },
+      "DatosCliente": {
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 0
+          },
+          "rfc": {
+            "type": "string"
+          },
+          "activo": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "nombre"
+        ]
+      },
+      "Frente": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "clienteId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "cliente": {
+            "type": "string"
+          },
+          "clave": {
+            "type": "string"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "activo": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "activo",
+          "clave",
+          "cliente",
+          "clienteId",
+          "id",
+          "nombre",
+          "version"
+        ]
+      },
+      "DatosFrente": {
+        "type": "object",
+        "properties": {
+          "clienteId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "clave": {
+            "type": "string"
+          },
+          "nombre": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 0
+          },
+          "activo": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "clave",
+          "clienteId",
+          "nombre"
+        ]
+      },
+      "Prototipo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "clave": {
+            "type": "string"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "descripcion": {
+            "type": "string"
+          },
+          "activo": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "activo",
+          "clave",
+          "id",
+          "nombre",
+          "version"
+        ]
+      },
+      "DatosPrototipo": {
+        "type": "object",
+        "properties": {
+          "clave": {
+            "type": "string"
+          },
+          "nombre": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 0
+          },
+          "descripcion": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 0
+          },
+          "activo": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "clave",
+          "nombre"
+        ]
+      },
+      "TipoUnidad": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "clave": {
+            "type": "string"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "usaManzanaLote": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "clave",
+          "id",
+          "nombre",
+          "usaManzanaLote"
+        ]
+      },
+      "Contrato": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "clienteId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "cliente": {
+            "type": "string"
+          },
+          "frenteId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "frente": {
+            "type": "string"
+          },
+          "codigo": {
+            "type": "string"
+          },
+          "numeroObra": {
+            "type": "string"
+          },
+          "descripcion": {
+            "type": "string"
+          },
+          "inicio": {
+            "type": "string",
+            "format": "date"
+          },
+          "fin": {
+            "type": "string",
+            "format": "date"
+          },
+          "monto": {
+            "type": "number",
+            "description": "Solo para quien ve costos"
+          },
+          "estado": {
+            "type": "string",
+            "enum": [
+              "activo",
+              "terminado",
+              "cancelado"
+            ]
+          },
+          "unidades": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "cliente",
+          "clienteId",
+          "codigo",
+          "estado",
+          "id",
+          "unidades",
+          "version"
+        ]
+      },
+      "DatosContrato": {
+        "type": "object",
+        "properties": {
+          "clienteId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "frenteId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "codigo": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 0
+          },
+          "numeroObra": {
+            "type": "string"
+          },
+          "descripcion": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 0
+          },
+          "inicio": {
+            "type": "string",
+            "format": "date"
+          },
+          "fin": {
+            "type": "string",
+            "format": "date"
+          },
+          "monto": {
+            "type": "number",
+            "minimum": 0
+          },
+          "estado": {
+            "type": "string",
+            "pattern": "activo|terminado|cancelado"
+          }
+        },
+        "required": [
+          "clienteId",
+          "codigo"
+        ]
+      },
+      "Residentes": {
+        "type": "object",
+        "properties": {
+          "usuarioIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "maxItems": 50,
+            "minItems": 0
+          }
+        },
+        "required": [
+          "usuarioIds"
+        ]
+      },
+      "PrecioPaquete": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "paqueteId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "paqueteClave": {
+            "type": "string"
+          },
+          "paquete": {
+            "type": "string"
+          },
+          "deCliente": {
+            "type": "boolean"
+          },
+          "prototipoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "prototipo": {
+            "type": "string"
+          },
+          "precioCobro": {
+            "type": "number"
+          },
+          "precioDestajo": {
+            "type": "number"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "deCliente",
+          "id",
+          "paquete",
+          "paqueteClave",
+          "paqueteId",
+          "version"
+        ]
+      },
+      "DatosPrecio": {
+        "type": "object",
+        "properties": {
+          "paqueteId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "prototipoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "precioCobro": {
+            "type": "number",
+            "minimum": 0
+          },
+          "precioDestajo": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "paqueteId"
+        ]
+      },
+      "UnidadObra": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "contratoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "tipo": {
+            "type": "string"
+          },
+          "clave": {
+            "type": "string"
+          },
+          "manzana": {
+            "type": "string"
+          },
+          "lote": {
+            "type": "string"
+          },
+          "prototipoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "prototipo": {
+            "type": "string"
+          },
+          "presupuestoMaterial": {
+            "type": "number"
+          },
+          "activa": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "activa",
+          "clave",
+          "contratoId",
+          "id",
+          "tipo",
+          "version"
+        ]
+      },
+      "NuevasUnidades": {
+        "type": "object",
+        "properties": {
+          "tipo": {
+            "type": "string",
+            "example": "LOTE"
+          },
+          "manzana": {
+            "type": "string",
+            "maxLength": 10,
+            "minLength": 0
+          },
+          "lotes": {
+            "type": "string",
+            "example": "29-31, 35",
+            "maxLength": 500,
+            "minLength": 0
+          },
+          "clave": {
+            "type": "string",
+            "maxLength": 60,
+            "minLength": 0
+          },
+          "prototipoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "presupuestoMaterial": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "tipo"
+        ]
+      },
+      "DatosUnidad": {
+        "type": "object",
+        "properties": {
+          "prototipoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "presupuestoMaterial": {
+            "type": "number",
+            "minimum": 0
+          },
+          "activa": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "activa"
+        ]
+      },
+      "UsuarioResumen": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "usuario": {
+            "type": "string"
+          },
+          "nombre": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "nombre",
+          "usuario"
+        ]
+      },
+      "Paquete": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "clienteId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "cliente": {
+            "type": "string"
+          },
+          "padreId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "clave": {
+            "type": "string"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "unidad": {
+            "type": "string"
+          },
+          "orden": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "activo": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "activo",
+          "clave",
+          "id",
+          "nombre",
+          "orden",
+          "version"
+        ]
+      },
+      "DatosPaquete": {
+        "type": "object",
+        "properties": {
+          "clienteId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "padreId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "clave": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 0
+          },
+          "nombre": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 0
+          },
+          "unidad": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 0
+          },
+          "orden": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "activo": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "clave",
+          "nombre"
+        ]
+      },
+      "Equivalencia": {
+        "type": "object",
+        "properties": {
+          "paqueteClienteId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "paquetePropioId": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "paqueteClienteId",
+          "paquetePropioId"
+        ]
+      },
+      "Equivalencias": {
+        "type": "object",
+        "properties": {
+          "paquetePropioIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "maxItems": 200,
+            "minItems": 0
+          }
+        },
+        "required": [
+          "paquetePropioIds"
+        ]
+      },
+      "UnidadMedida": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "clave": {
+            "type": "string"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "magnitud": {
+            "type": "string",
+            "enum": [
+              "conteo",
+              "masa",
+              "volumen",
+              "longitud",
+              "superficie"
+            ]
+          },
+          "fraccionable": {
+            "type": "boolean"
+          },
+          "delSistema": {
+            "type": "boolean"
+          },
+          "activa": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "activa",
+          "clave",
+          "delSistema",
+          "fraccionable",
+          "id",
+          "magnitud",
+          "nombre",
+          "version"
+        ]
+      },
+      "DatosUnidadMedida": {
+        "type": "object",
+        "properties": {
+          "clave": {
+            "type": "string"
+          },
+          "nombre": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 0
+          },
+          "magnitud": {
+            "type": "string",
+            "pattern": "conteo|masa|volumen|longitud|superficie"
+          },
+          "fraccionable": {
+            "type": "boolean"
+          },
+          "activa": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "clave",
+          "magnitud",
+          "nombre"
+        ]
+      },
+      "Conversion": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "materialId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "origenId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "origen": {
+            "type": "string"
+          },
+          "destinoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "destino": {
+            "type": "string"
+          },
+          "factor": {
+            "type": "number"
+          },
+          "delSistema": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "delSistema",
+          "destino",
+          "destinoId",
+          "factor",
+          "id",
+          "origen",
+          "origenId",
+          "version"
+        ]
+      },
+      "DatosConversion": {
+        "type": "object",
+        "properties": {
+          "materialId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "origenId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "destinoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "factor": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "destinoId",
+          "factor",
+          "origenId"
+        ]
+      },
+      "DatosFactor": {
+        "type": "object",
+        "properties": {
+          "factor": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "factor"
+        ]
+      },
+      "Categoria": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "activa": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "activa",
+          "id",
+          "nombre",
+          "version"
+        ]
+      },
+      "DatosCategoria": {
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 0
+          },
+          "activa": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "nombre"
+        ]
+      },
+      "ClasificacionCosto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "clave": {
+            "type": "string"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "consumePrograma": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "clave",
+          "consumePrograma",
+          "id",
+          "nombre"
+        ]
+      },
+      "Material": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "clave": {
+            "type": "string"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "categoriaId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "categoria": {
+            "type": "string"
+          },
+          "unidadControlId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "unidadControl": {
+            "type": "string"
+          },
+          "precioReferencia": {
+            "type": "number",
+            "description": "Sin IVA. Solo para quien ve precios o costos"
+          },
+          "activo": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "activo",
+          "clave",
+          "id",
+          "nombre",
+          "unidadControl",
+          "unidadControlId",
+          "version"
+        ]
+      },
+      "PaginaMateriales": {
+        "type": "object",
+        "properties": {
+          "elementos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Material"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "pagina": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tamano": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "elementos",
+          "pagina",
+          "tamano",
+          "total"
+        ]
+      },
+      "DatosMaterial": {
+        "type": "object",
+        "properties": {
+          "clave": {
+            "type": "string"
+          },
+          "nombre": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 0
+          },
+          "categoriaId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "unidadControlId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "precioReferencia": {
+            "type": "number",
+            "minimum": 0
+          },
+          "activo": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "nombre",
+          "unidadControlId"
+        ]
+      },
+      "Proveedor": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "rfc": {
+            "type": "string"
+          },
+          "contacto": {
+            "type": "string"
+          },
+          "telefono": {
+            "type": "string"
+          },
+          "correo": {
+            "type": "string"
+          },
+          "tasaIva": {
+            "type": "number",
+            "description": "Tasa de IVA por defecto: 0.16, 0.08 o 0"
+          },
+          "diasCredito": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "activo": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "activo",
+          "id",
+          "nombre",
+          "version"
+        ]
+      },
+      "DatosProveedor": {
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 0
+          },
+          "rfc": {
+            "type": "string"
+          },
+          "contacto": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 0
+          },
+          "telefono": {
+            "type": "string"
+          },
+          "correo": {
+            "type": "string",
+            "format": "email"
+          },
+          "tasaIva": {
+            "type": "number",
+            "maximum": 0.16,
+            "minimum": 0
+          },
+          "diasCredito": {
+            "type": "integer",
+            "format": "int32",
+            "maximum": 365,
+            "minimum": 0
+          },
+          "activo": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "nombre"
         ]
       }
     }

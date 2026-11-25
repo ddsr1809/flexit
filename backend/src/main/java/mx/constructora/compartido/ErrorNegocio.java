@@ -25,6 +25,11 @@ public class ErrorNegocio extends RuntimeException {
     return new ErrorNegocio(HttpStatus.CONFLICT, codigo, mensaje);
   }
 
+  /** 404: no existe o no está al alcance del usuario (no se distingue a propósito). */
+  public static ErrorNegocio noEncontrado(String codigo, String mensaje) {
+    return new ErrorNegocio(HttpStatus.NOT_FOUND, codigo, mensaje);
+  }
+
   public HttpStatus estado() {
     return estado;
   }

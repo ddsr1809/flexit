@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Crea una base desechable, crea los roles, aplica las migraciones como migrador y corre
-# seguridad.sql. Sirve sin Docker, contra cualquier PostgreSQL 16 o superior.
+# seguridad.sql y estructura-catalogo.sql. Sirve sin Docker, contra cualquier PostgreSQL 16 o superior.
 #
 #   PGHOST=localhost PGPORT=5432 PGUSER=postgres tools/pruebas-sql/correr.sh
 set -euo pipefail
@@ -26,5 +26,9 @@ fi
 for f in backend/src/main/resources/db/migration/V*.sql; do
   psql -q -v ON_ERROR_STOP=1 -d "$BASE" -1 -c "SET ROLE migrador" -f "$f"
 done
-psql -q -v ON_ERROR_STOP=1 -d "$BASE" -f tools/pruebas-sql/seguridad.sql 2>&1 | sed 's/^psql:[^ ]* NOTICE:  /  /'
+# El orden importa: estructura-catalogo.sql usa las empresas que crea seguridad.sql.
+for prueba in seguridad estructura-catalogo; do
+  psql -q -v ON_ERROR_STOP=1 -d "$BASE" -f "tools/pruebas-sql/$prueba.sql" 2>&1 \
+    | sed 's/^psql:[^ ]* NOTICE:  /  /'
+done
 echo "Pruebas SQL en verde."

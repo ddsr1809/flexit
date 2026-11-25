@@ -1,8 +1,10 @@
 package mx.constructora.organizacion;
 
+import static mx.constructora.compartido.Permisos.CATALOGO_EDITAR;
 import static mx.constructora.compartido.Permisos.COSTO_VER_PROPIO;
 import static mx.constructora.compartido.Permisos.COSTO_VER_TODO;
 import static mx.constructora.compartido.Permisos.DOCUMENTO_AUTORIZAR;
+import static mx.constructora.compartido.Permisos.ESTRUCTURA_VER_TODO;
 import static mx.constructora.compartido.Permisos.MOVIMIENTO_CAPTURAR;
 import static mx.constructora.compartido.Permisos.PEDIDO_CREAR;
 import static mx.constructora.compartido.Permisos.REQUISICION_CREAR;
@@ -63,6 +65,24 @@ class RolTest {
       assertThat(rol.permisos().contains(USUARIOS_ADMINISTRAR))
           .as(rol.clave())
           .isEqualTo(rol == Rol.ADMIN);
+    }
+  }
+
+  @Test
+  void soloElResidenteVeUnicamenteSusContratos() {
+    for (Rol rol : Rol.values()) {
+      assertThat(rol.permisos().contains(ESTRUCTURA_VER_TODO))
+          .as(rol.clave())
+          .isEqualTo(rol != Rol.RESIDENTE);
+    }
+  }
+
+  @Test
+  void elCatalogoLoEditanComprasYAdministracion() {
+    for (Rol rol : Rol.values()) {
+      assertThat(rol.permisos().contains(CATALOGO_EDITAR))
+          .as(rol.clave())
+          .isEqualTo(rol == Rol.COMPRAS || rol == Rol.ADMIN);
     }
   }
 

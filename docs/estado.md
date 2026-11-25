@@ -1,6 +1,6 @@
 # Estado del proyecto
 
-Última actualización: 25 nov 2026 · Hito en curso: **H1 · Plataforma lista** (semanas 1 y 2)
+Última actualización: 25 nov 2026 · Hito en curso: **H2 · Catálogos y estructura** (semanas 3 y 4)
 
 ## H1 · issues 1 a 11
 
@@ -41,8 +41,49 @@
   OpenTelemetry entra con la observabilidad del mes 2.
 - Almacenamiento de objetos (S3) y respaldos con restic: en H4 (fotos de merma) y H7.
 
-## Siguiente: H2 · Catálogos y estructura (issues 12 a 16)
+## H2 · issues 12 a 16
 
-Módulos `estructura` y `catalogo`: cliente, frente, contrato, unidad de obra, prototipo, paquete y
-equivalencia Ruba ↔ RM, unidades de medida con conversión, materiales y proveedores, con API y
-pantallas; `usuario_contrato` para el alcance del residente.
+Hito en curso: **H2 · Catálogos y estructura** (semanas 3 y 4).
+
+| # | Issue | Estado | Dónde se comprueba |
+| --- | --- | --- | --- |
+| 12 | estructura: cliente, frente, contrato (API + pantallas) | Hecho | `CriterioH2Test`, pantalla Contratos y Catálogos |
+| 13 | estructura: unidad de obra, tipo de unidad, prototipo; alcance por contrato | Hecho | `CriterioH2Test.elResidenteSoloVeLosLotesDeSuContrato`, `ClaveUnidadTest` |
+| 14 | estructura: paquetes, contrato_paquete y equivalencia Ruba ↔ RM | Hecho | `CriterioH2Test`, pantalla Paquetes |
+| 15 | catalogo: unidades de medida, conversiones, categorías | Hecho | `ConversionesTest`, `tools/pruebas-sql` |
+| 16 | catalogo: materiales con búsqueda y proveedores | Hecho | `CriterioH2Test`, e2e `estructura.spec.ts` |
+
+### Qué ya se verificó y qué no
+
+- **Verificado:** migraciones V003 a V005 y 19 pruebas SQL nuevas contra PostgreSQL 16 (FK
+  compuestas que impiden ligar datos de otra empresa, un lote por frente, equivalencia solo cliente
+  ↔ propio, unidades del sistema de solo lectura, búsqueda con pg_trgm, bitácora); cada consulta
+  de los repositorios corrida a mano contra una base con datos; el código nuevo compilado contra
+  firmas de las APIs; la lógica de claves de lote y conversiones; frontend (tipos, lint, 19 pruebas,
+  build) y el e2e del demo en Chrome contra una API simulada, en escritorio y teléfono.
+- **Se verifica por primera vez en CI:** compilación y pruebas del backend con Spring
+  (`CriterioH2Test`, `ModularidadTest`, `ContratoApiTest`), formato con spotless y el e2e contra
+  la app real. `frontend/openapi.json` se escribió a mano con la forma que publica springdoc: correr
+  `make api` con el backend arriba y revisar que el diff sea vacío.
+- **Criterio de aceptación de H2 pendiente de demostrar en preproducción:** capturar a mano un
+  contrato con 3 lotes y 5 materiales; el residente solo ve los lotes de su contrato. Demo: alta
+  del contrato 60-KZ7-MF6-C002-2026 con dos lotes y búsqueda de un material por nombre parcial.
+
+### Decisiones de esta etapa
+
+- `usuario_contrato` quedó como `estructura.contrato_usuario` (ADR-006).
+- JdbcClient también para catálogos; versión e `If-Match` en todo cambio (ADR-007).
+- Permisos nuevos: `catalogo:editar` (compras y administración) y `estructura:ver-todo` (todos
+  menos residente). La estructura la escribe `sistema:administrar`.
+- Unidades de medida y conversiones generales son del sistema (`empresa_id` NULL), visibles para
+  todas las empresas y de solo lectura para la app; cada empresa agrega las suyas.
+- Clasificaciones de costo: las 8 razones del almacén, como catálogo fijo del sistema.
+- Nombres de materiales, clientes, proveedores y paquetes se comparan normalizados
+  (`compartido.normalizar`: sin acentos, mayúsculas, espacios simples): "CEMENTO  GRÍS" es el mismo
+  material que "Cemento gris".
+
+## Siguiente: H3 · Centro de migración y datos maestros (issues 17 a 20 y 42 a 45)
+
+Motor de carga desde Excel (subir, normalizar, validar, cuarentena, confirmar, revertir) e
+importadores de contratos, lotes, prototipos, paquetes, materiales, proveedores y personas. Usa
+`ClaveUnidad`, `CodigoContrato` y `compartido.normalizar` de H2.

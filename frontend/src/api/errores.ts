@@ -19,6 +19,11 @@ const MENSAJES: Record<string, string> = {
   ROL_DESCONOCIDO: 'Uno de los roles elegidos no existe.',
   CONTRASENA_CORTA: 'La contraseña debe tener al menos 10 caracteres.',
   VALIDACION: 'Revisa los campos marcados.',
+  VERSION_DESACTUALIZADA:
+    'Alguien más guardó un cambio en este registro. Se recargó: revisa y vuelve a guardar.',
+  FALTA_VERSION: 'No se pudo confirmar qué versión estabas editando. Recarga la pantalla.',
+  DUPLICADO: 'Ya existe un registro con esos datos.',
+  DATOS_INCONSISTENTES: 'Los datos no son consistentes con otros registros.',
   CUERPO_INVALIDO: 'La información enviada no tiene el formato esperado.',
   ERROR_INTERNO: 'Ocurrió un error inesperado. Si se repite, avisa a sistemas.',
 }

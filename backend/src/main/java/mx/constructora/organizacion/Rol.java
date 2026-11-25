@@ -1,9 +1,11 @@
 package mx.constructora.organizacion;
 
 import static mx.constructora.compartido.Permisos.ADMINISTRAR;
+import static mx.constructora.compartido.Permisos.CATALOGO_EDITAR;
 import static mx.constructora.compartido.Permisos.COSTO_VER_PROPIO;
 import static mx.constructora.compartido.Permisos.COSTO_VER_TODO;
 import static mx.constructora.compartido.Permisos.DOCUMENTO_AUTORIZAR;
+import static mx.constructora.compartido.Permisos.ESTRUCTURA_VER_TODO;
 import static mx.constructora.compartido.Permisos.EXISTENCIAS_VER;
 import static mx.constructora.compartido.Permisos.MOVIMIENTO_CAPTURAR;
 import static mx.constructora.compartido.Permisos.PEDIDO_CREAR;
@@ -20,18 +22,39 @@ import java.util.Set;
  * con {@code organizacion.rol}; {@code RolTest} lo verifica.
  */
 public enum Rol {
-  ALMACENISTA("almacenista", "Almacenista", Set.of(MOVIMIENTO_CAPTURAR, EXISTENCIAS_VER)),
+  ALMACENISTA(
+      "almacenista",
+      "Almacenista",
+      Set.of(MOVIMIENTO_CAPTURAR, EXISTENCIAS_VER, ESTRUCTURA_VER_TODO)),
+  /** Ve solo los contratos que tiene asignados (sin {@code ESTRUCTURA_VER_TODO}). */
   RESIDENTE("residente", "Residente", Set.of(REQUISICION_CREAR, EXISTENCIAS_VER, COSTO_VER_PROPIO)),
   COORDINACION(
       "coordinacion",
       "Coordinación",
-      Set.of(REQUISICION_CREAR, DOCUMENTO_AUTORIZAR, EXISTENCIAS_VER, COSTO_VER_TODO)),
-  COMPRAS("compras", "Compras", Set.of(PEDIDO_CREAR, EXISTENCIAS_VER, PRECIO_VER)),
-  DIRECCION("direccion", "Dirección", Set.of(DOCUMENTO_AUTORIZAR, EXISTENCIAS_VER, COSTO_VER_TODO)),
+      Set.of(
+          REQUISICION_CREAR,
+          DOCUMENTO_AUTORIZAR,
+          EXISTENCIAS_VER,
+          COSTO_VER_TODO,
+          ESTRUCTURA_VER_TODO)),
+  COMPRAS(
+      "compras",
+      "Compras",
+      Set.of(PEDIDO_CREAR, EXISTENCIAS_VER, PRECIO_VER, CATALOGO_EDITAR, ESTRUCTURA_VER_TODO)),
+  DIRECCION(
+      "direccion",
+      "Dirección",
+      Set.of(DOCUMENTO_AUTORIZAR, EXISTENCIAS_VER, COSTO_VER_TODO, ESTRUCTURA_VER_TODO)),
   ADMIN(
       "admin",
       "Administración",
-      Set.of(ADMINISTRAR, USUARIOS_ADMINISTRAR, EXISTENCIAS_VER, COSTO_VER_TODO));
+      Set.of(
+          ADMINISTRAR,
+          USUARIOS_ADMINISTRAR,
+          EXISTENCIAS_VER,
+          COSTO_VER_TODO,
+          CATALOGO_EDITAR,
+          ESTRUCTURA_VER_TODO));
 
   private final String clave;
   private final String nombre;

@@ -51,6 +51,26 @@ public final class ClienteHttp {
         true);
   }
 
+  public Respuesta put(String ruta, String json) {
+    return enviar(
+        peticion(ruta)
+            .header("Content-Type", "application/json")
+            .PUT(HttpRequest.BodyPublishers.ofString(json)),
+        true);
+  }
+
+  /** PATCH con la versión leída en {@code If-Match}; {@code null} lo manda sin encabezado. */
+  public Respuesta patch(String ruta, String json, Integer version) {
+    HttpRequest.Builder constructor =
+        peticion(ruta)
+            .header("Content-Type", "application/json")
+            .method("PATCH", HttpRequest.BodyPublishers.ofString(json));
+    if (version != null) {
+      constructor.header("If-Match", "\"" + version + "\"");
+    }
+    return enviar(constructor, true);
+  }
+
   /** Pide el token CSRF e inicia sesión. */
   public Respuesta iniciarSesion(String usuario, String contrasena) {
     get("/api/v1/auth/csrf");

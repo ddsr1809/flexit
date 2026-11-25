@@ -107,6 +107,531 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/clientes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Clientes */
+        get: operations["listarClientes"];
+        put?: never;
+        /** Dar de alta */
+        post: operations["crearCliente"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clientes/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Cambiar */
+        patch: operations["cambiarCliente"];
+        trace?: never;
+    };
+    "/api/v1/frentes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Frentes */
+        get: operations["listarFrentes"];
+        put?: never;
+        /** Dar de alta */
+        post: operations["crearFrente"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/frentes/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Cambiar */
+        patch: operations["cambiarFrente"];
+        trace?: never;
+    };
+    "/api/v1/prototipos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Prototipos */
+        get: operations["listarPrototipos"];
+        put?: never;
+        /** Dar de alta */
+        post: operations["crearPrototipo"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/prototipos/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Cambiar */
+        patch: operations["cambiarPrototipo"];
+        trace?: never;
+    };
+    "/api/v1/tipos-unidad": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Tipos de unidad de obra */
+        get: operations["listarTiposUnidad"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/contratos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Contratos al alcance del usuario */
+        get: operations["listarContratos"];
+        put?: never;
+        /** Dar de alta un contrato */
+        post: operations["crearContrato"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/contratos/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Un contrato (ETag con su versión) */
+        get: operations["obtenerContrato"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Cambiar un contrato */
+        patch: operations["cambiarContrato"];
+        trace?: never;
+    };
+    "/api/v1/contratos/{id}/unidades": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Unidades de obra del contrato */
+        get: operations["listarUnidades"];
+        put?: never;
+        /** Dar de alta lotes (manzana y lista de lotes) u otra unidad (clave) */
+        post: operations["crearUnidades"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/unidades/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Cambiar prototipo, presupuesto o estado */
+        patch: operations["cambiarUnidad"];
+        trace?: never;
+    };
+    "/api/v1/contratos/{id}/residentes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Usuarios asignados al contrato */
+        get: operations["listarResidentes"];
+        /** Reemplazar los usuarios asignados */
+        put: operations["asignarResidentes"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/residentes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Usuarios con rol residente */
+        get: operations["candidatosResidente"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/contratos/{id}/precios": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Precio de cobro y destajo por paquete */
+        get: operations["listarPrecios"];
+        /** Fijar el precio de un paquete */
+        put: operations["fijarPrecio"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/paquetes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Paquetes en orden de árbol; filtra por cliente o solo los propios */
+        get: operations["listarPaquetes"];
+        put?: never;
+        /** Dar de alta un paquete */
+        post: operations["crearPaquete"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/paquetes/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Cambiar un paquete */
+        patch: operations["cambiarPaquete"];
+        trace?: never;
+    };
+    "/api/v1/paquetes/equivalencias": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Equivalencias cliente ↔ propio */
+        get: operations["listarEquivalencias"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/paquetes/{id}/equivalencias": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Reemplazar los paquetes propios equivalentes a un paquete del cliente */
+        put: operations["fijarEquivalencias"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/unidades-medida": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** UnidadesMedida */
+        get: operations["listarUnidadesMedida"];
+        put?: never;
+        /** Dar de alta */
+        post: operations["crearUnidadMedida"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/unidades-medida/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Cambiar */
+        patch: operations["cambiarUnidadMedida"];
+        trace?: never;
+    };
+    "/api/v1/conversiones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Conversiones generales y, con materialId, las de ese material */
+        get: operations["listarConversiones"];
+        put?: never;
+        /** Dar de alta una conversión */
+        post: operations["crearConversion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/conversiones/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Cambiar el factor de una conversión */
+        patch: operations["cambiarConversion"];
+        trace?: never;
+    };
+    "/api/v1/categorias": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Categorias */
+        get: operations["listarCategorias"];
+        put?: never;
+        /** Dar de alta */
+        post: operations["crearCategoria"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/categorias/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Cambiar */
+        patch: operations["cambiarCategoria"];
+        trace?: never;
+    };
+    "/api/v1/clasificaciones-costo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Razones de salida */
+        get: operations["listarClasificaciones"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/materiales": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Materiales paginados con filtros */
+        get: operations["listarMateriales"];
+        put?: never;
+        /** Dar de alta un material */
+        post: operations["crearMaterial"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/materiales/buscar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Búsqueda rápida por clave o nombre parcial (20 activos) */
+        get: operations["buscarMateriales"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/materiales/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Un material (ETag con su versión) */
+        get: operations["obtenerMaterial"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Cambiar un material */
+        patch: operations["cambiarMaterial"];
+        trace?: never;
+    };
+    "/api/v1/proveedores": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Proveedores, con búsqueda opcional */
+        get: operations["listarProveedores"];
+        put?: never;
+        /** Dar de alta un proveedor */
+        post: operations["crearProveedor"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/proveedores/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Cambiar un proveedor */
+        patch: operations["cambiarProveedor"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -159,6 +684,338 @@ export interface components {
         VersionDto: {
             version: string;
             entorno: string;
+        };
+        Cliente: {
+            /** Format: int64 */
+            id: number;
+            nombre: string;
+            rfc?: string;
+            activo: boolean;
+            /** Format: int32 */
+            version: number;
+        };
+        DatosCliente: {
+            nombre: string;
+            rfc?: string;
+            activo?: boolean;
+        };
+        Frente: {
+            /** Format: int64 */
+            id: number;
+            /** Format: int64 */
+            clienteId: number;
+            cliente: string;
+            clave: string;
+            nombre: string;
+            activo: boolean;
+            /** Format: int32 */
+            version: number;
+        };
+        DatosFrente: {
+            /** Format: int64 */
+            clienteId: number;
+            clave: string;
+            nombre: string;
+            activo?: boolean;
+        };
+        Prototipo: {
+            /** Format: int64 */
+            id: number;
+            clave: string;
+            nombre: string;
+            descripcion?: string;
+            activo: boolean;
+            /** Format: int32 */
+            version: number;
+        };
+        DatosPrototipo: {
+            clave: string;
+            nombre: string;
+            descripcion?: string;
+            activo?: boolean;
+        };
+        TipoUnidad: {
+            /** Format: int32 */
+            id: number;
+            clave: string;
+            nombre: string;
+            usaManzanaLote: boolean;
+        };
+        Contrato: {
+            /** Format: int64 */
+            id: number;
+            /** Format: int64 */
+            clienteId: number;
+            cliente: string;
+            /** Format: int64 */
+            frenteId?: number;
+            frente?: string;
+            codigo: string;
+            numeroObra?: string;
+            descripcion?: string;
+            /** Format: date */
+            inicio?: string;
+            /** Format: date */
+            fin?: string;
+            /** @description Solo para quien ve costos */
+            monto?: number;
+            /** @enum {string} */
+            estado: "activo" | "terminado" | "cancelado";
+            /** Format: int32 */
+            unidades: number;
+            /** Format: int32 */
+            version: number;
+        };
+        DatosContrato: {
+            /** Format: int64 */
+            clienteId: number;
+            /** Format: int64 */
+            frenteId?: number;
+            codigo: string;
+            numeroObra?: string;
+            descripcion?: string;
+            /** Format: date */
+            inicio?: string;
+            /** Format: date */
+            fin?: string;
+            monto?: number;
+            estado?: string;
+        };
+        Residentes: {
+            usuarioIds: number[];
+        };
+        PrecioPaquete: {
+            /** Format: int64 */
+            id: number;
+            /** Format: int64 */
+            paqueteId: number;
+            paqueteClave: string;
+            paquete: string;
+            deCliente: boolean;
+            /** Format: int64 */
+            prototipoId?: number;
+            prototipo?: string;
+            precioCobro?: number;
+            precioDestajo?: number;
+            /** Format: int32 */
+            version: number;
+        };
+        DatosPrecio: {
+            /** Format: int64 */
+            paqueteId: number;
+            /** Format: int64 */
+            prototipoId?: number;
+            precioCobro?: number;
+            precioDestajo?: number;
+        };
+        UnidadObra: {
+            /** Format: int64 */
+            id: number;
+            /** Format: int64 */
+            contratoId: number;
+            tipo: string;
+            clave: string;
+            manzana?: string;
+            lote?: string;
+            /** Format: int64 */
+            prototipoId?: number;
+            prototipo?: string;
+            presupuestoMaterial?: number;
+            activa: boolean;
+            /** Format: int32 */
+            version: number;
+        };
+        NuevasUnidades: {
+            /** @example LOTE */
+            tipo: string;
+            manzana?: string;
+            /** @example 29-31, 35 */
+            lotes?: string;
+            clave?: string;
+            /** Format: int64 */
+            prototipoId?: number;
+            presupuestoMaterial?: number;
+        };
+        DatosUnidad: {
+            /** Format: int64 */
+            prototipoId?: number;
+            presupuestoMaterial?: number;
+            activa: boolean;
+        };
+        UsuarioResumen: {
+            /** Format: int64 */
+            id: number;
+            usuario: string;
+            nombre: string;
+        };
+        Paquete: {
+            /** Format: int64 */
+            id: number;
+            /** Format: int64 */
+            clienteId?: number;
+            cliente?: string;
+            /** Format: int64 */
+            padreId?: number;
+            clave: string;
+            nombre: string;
+            unidad?: string;
+            /** Format: int32 */
+            orden: number;
+            activo: boolean;
+            /** Format: int32 */
+            version: number;
+        };
+        DatosPaquete: {
+            /** Format: int64 */
+            clienteId?: number;
+            /** Format: int64 */
+            padreId?: number;
+            clave: string;
+            nombre: string;
+            unidad?: string;
+            /** Format: int32 */
+            orden?: number;
+            activo?: boolean;
+        };
+        Equivalencia: {
+            /** Format: int64 */
+            paqueteClienteId: number;
+            /** Format: int64 */
+            paquetePropioId: number;
+        };
+        Equivalencias: {
+            paquetePropioIds: number[];
+        };
+        UnidadMedida: {
+            /** Format: int64 */
+            id: number;
+            clave: string;
+            nombre: string;
+            /** @enum {string} */
+            magnitud: "conteo" | "masa" | "volumen" | "longitud" | "superficie";
+            fraccionable: boolean;
+            delSistema: boolean;
+            activa: boolean;
+            /** Format: int32 */
+            version: number;
+        };
+        DatosUnidadMedida: {
+            clave: string;
+            nombre: string;
+            magnitud: string;
+            fraccionable?: boolean;
+            activa?: boolean;
+        };
+        Conversion: {
+            /** Format: int64 */
+            id: number;
+            /** Format: int64 */
+            materialId?: number;
+            /** Format: int64 */
+            origenId: number;
+            origen: string;
+            /** Format: int64 */
+            destinoId: number;
+            destino: string;
+            factor: number;
+            delSistema: boolean;
+            /** Format: int32 */
+            version: number;
+        };
+        DatosConversion: {
+            /** Format: int64 */
+            materialId?: number;
+            /** Format: int64 */
+            origenId: number;
+            /** Format: int64 */
+            destinoId: number;
+            factor: number;
+        };
+        DatosFactor: {
+            factor: number;
+        };
+        Categoria: {
+            /** Format: int64 */
+            id: number;
+            nombre: string;
+            activa: boolean;
+            /** Format: int32 */
+            version: number;
+        };
+        DatosCategoria: {
+            nombre: string;
+            activa?: boolean;
+        };
+        ClasificacionCosto: {
+            /** Format: int32 */
+            id: number;
+            clave: string;
+            nombre: string;
+            consumePrograma: boolean;
+        };
+        Material: {
+            /** Format: int64 */
+            id: number;
+            clave: string;
+            nombre: string;
+            /** Format: int64 */
+            categoriaId?: number;
+            categoria?: string;
+            /** Format: int64 */
+            unidadControlId: number;
+            unidadControl: string;
+            /** @description Sin IVA. Solo para quien ve precios o costos */
+            precioReferencia?: number;
+            activo: boolean;
+            /** Format: int32 */
+            version: number;
+        };
+        PaginaMateriales: {
+            elementos: components["schemas"]["Material"][];
+            /** Format: int64 */
+            total: number;
+            /** Format: int32 */
+            pagina: number;
+            /** Format: int32 */
+            tamano: number;
+        };
+        DatosMaterial: {
+            clave?: string;
+            nombre: string;
+            /** Format: int64 */
+            categoriaId?: number;
+            /** Format: int64 */
+            unidadControlId: number;
+            precioReferencia?: number;
+            activo?: boolean;
+        };
+        Proveedor: {
+            /** Format: int64 */
+            id: number;
+            nombre: string;
+            rfc?: string;
+            contacto?: string;
+            telefono?: string;
+            correo?: string;
+            /** @description Tasa de IVA por defecto: 0.16, 0.08 o 0 */
+            tasaIva?: number;
+            /** Format: int32 */
+            diasCredito?: number;
+            activo: boolean;
+            /** Format: int32 */
+            version: number;
+        };
+        DatosProveedor: {
+            nombre: string;
+            rfc?: string;
+            contacto?: string;
+            telefono?: string;
+            /** Format: email */
+            correo?: string;
+            tasaIva?: number;
+            /** Format: int32 */
+            diasCredito?: number;
+            activo?: boolean;
         };
     };
     responses: never;
@@ -313,6 +1170,1088 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["VersionDto"];
+                };
+            };
+        };
+    };
+    listarClientes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Cliente"][];
+                };
+            };
+        };
+    };
+    crearCliente: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosCliente"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Cliente"];
+                };
+            };
+        };
+    };
+    cambiarCliente: {
+        parameters: {
+            query?: never;
+            header?: {
+                "If-Match"?: string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosCliente"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Cliente"];
+                };
+            };
+        };
+    };
+    listarFrentes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Frente"][];
+                };
+            };
+        };
+    };
+    crearFrente: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosFrente"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Frente"];
+                };
+            };
+        };
+    };
+    cambiarFrente: {
+        parameters: {
+            query?: never;
+            header?: {
+                "If-Match"?: string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosFrente"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Frente"];
+                };
+            };
+        };
+    };
+    listarPrototipos: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Prototipo"][];
+                };
+            };
+        };
+    };
+    crearPrototipo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosPrototipo"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Prototipo"];
+                };
+            };
+        };
+    };
+    cambiarPrototipo: {
+        parameters: {
+            query?: never;
+            header?: {
+                "If-Match"?: string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosPrototipo"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Prototipo"];
+                };
+            };
+        };
+    };
+    listarTiposUnidad: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TipoUnidad"][];
+                };
+            };
+        };
+    };
+    listarContratos: {
+        parameters: {
+            query?: {
+                estado?: string;
+                frenteId?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Contrato"][];
+                };
+            };
+        };
+    };
+    crearContrato: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosContrato"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Contrato"];
+                };
+            };
+        };
+    };
+    obtenerContrato: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Contrato"];
+                };
+            };
+        };
+    };
+    cambiarContrato: {
+        parameters: {
+            query?: never;
+            header?: {
+                "If-Match"?: string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosContrato"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Contrato"];
+                };
+            };
+        };
+    };
+    listarUnidades: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnidadObra"][];
+                };
+            };
+        };
+    };
+    crearUnidades: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NuevasUnidades"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnidadObra"][];
+                };
+            };
+        };
+    };
+    cambiarUnidad: {
+        parameters: {
+            query?: never;
+            header?: {
+                "If-Match"?: string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosUnidad"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnidadObra"];
+                };
+            };
+        };
+    };
+    listarResidentes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UsuarioResumen"][];
+                };
+            };
+        };
+    };
+    asignarResidentes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Residentes"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UsuarioResumen"][];
+                };
+            };
+        };
+    };
+    candidatosResidente: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UsuarioResumen"][];
+                };
+            };
+        };
+    };
+    listarPrecios: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PrecioPaquete"][];
+                };
+            };
+        };
+    };
+    fijarPrecio: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosPrecio"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PrecioPaquete"];
+                };
+            };
+        };
+    };
+    listarPaquetes: {
+        parameters: {
+            query?: {
+                clienteId?: number;
+                propios?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Paquete"][];
+                };
+            };
+        };
+    };
+    crearPaquete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosPaquete"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Paquete"];
+                };
+            };
+        };
+    };
+    cambiarPaquete: {
+        parameters: {
+            query?: never;
+            header?: {
+                "If-Match"?: string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosPaquete"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Paquete"];
+                };
+            };
+        };
+    };
+    listarEquivalencias: {
+        parameters: {
+            query?: {
+                clienteId?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Equivalencia"][];
+                };
+            };
+        };
+    };
+    fijarEquivalencias: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Equivalencias"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Equivalencia"][];
+                };
+            };
+        };
+    };
+    listarUnidadesMedida: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnidadMedida"][];
+                };
+            };
+        };
+    };
+    crearUnidadMedida: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosUnidadMedida"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnidadMedida"];
+                };
+            };
+        };
+    };
+    cambiarUnidadMedida: {
+        parameters: {
+            query?: never;
+            header?: {
+                "If-Match"?: string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosUnidadMedida"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnidadMedida"];
+                };
+            };
+        };
+    };
+    listarConversiones: {
+        parameters: {
+            query?: {
+                materialId?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Conversion"][];
+                };
+            };
+        };
+    };
+    crearConversion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosConversion"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Conversion"];
+                };
+            };
+        };
+    };
+    cambiarConversion: {
+        parameters: {
+            query?: never;
+            header?: {
+                "If-Match"?: string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosFactor"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Conversion"];
+                };
+            };
+        };
+    };
+    listarCategorias: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Categoria"][];
+                };
+            };
+        };
+    };
+    crearCategoria: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosCategoria"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Categoria"];
+                };
+            };
+        };
+    };
+    cambiarCategoria: {
+        parameters: {
+            query?: never;
+            header?: {
+                "If-Match"?: string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosCategoria"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Categoria"];
+                };
+            };
+        };
+    };
+    listarClasificaciones: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClasificacionCosto"][];
+                };
+            };
+        };
+    };
+    listarMateriales: {
+        parameters: {
+            query?: {
+                q?: string;
+                categoriaId?: number;
+                soloActivos?: boolean;
+                pagina?: number;
+                tamano?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginaMateriales"];
+                };
+            };
+        };
+    };
+    crearMaterial: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosMaterial"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Material"];
+                };
+            };
+        };
+    };
+    buscarMateriales: {
+        parameters: {
+            query: {
+                q: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Material"][];
+                };
+            };
+        };
+    };
+    obtenerMaterial: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Material"];
+                };
+            };
+        };
+    };
+    cambiarMaterial: {
+        parameters: {
+            query?: never;
+            header?: {
+                "If-Match"?: string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosMaterial"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Material"];
+                };
+            };
+        };
+    };
+    listarProveedores: {
+        parameters: {
+            query?: {
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Proveedor"][];
+                };
+            };
+        };
+    };
+    crearProveedor: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosProveedor"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Proveedor"];
+                };
+            };
+        };
+    };
+    cambiarProveedor: {
+        parameters: {
+            query?: never;
+            header?: {
+                "If-Match"?: string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosProveedor"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Proveedor"];
                 };
             };
         };

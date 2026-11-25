@@ -34,6 +34,10 @@ Docker Compose, Caddy, Terraform (Vultr + Cloudflare), GitHub Actions + GHCR.
 10. Toda tabla con `empresa_id` lleva RLS (`ENABLE` + `FORCE` + política `por_empresa`), permisos
     explícitos para el rol `app` y, si es de negocio, el trigger de bitácora.
 11. Las acciones de GitHub se fijan a un commit (SHA), nunca a una etiqueta.
+12. Las FK entre tablas con `empresa_id` son compuestas (`empresa_id, id`): PostgreSQL revisa las
+    FK sin RLS. Todo registro editable lleva `version` y su `PATCH` exige `If-Match` (ADR-007).
+13. El residente solo ve sus contratos (`estructura.contrato_usuario`); cualquier consulta nueva
+    de contratos, lotes o costos aplica el mismo alcance (ADR-006).
 
 ## Cómo funciona la seguridad por empresa
 `ContextoEmpresa` (sesión web o `ContextoEmpresa.como(...)`) → `DataSourceConEmpresa` fija

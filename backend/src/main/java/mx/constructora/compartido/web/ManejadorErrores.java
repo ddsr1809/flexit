@@ -5,6 +5,8 @@ import java.util.Map;
 import mx.constructora.compartido.ErrorNegocio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -45,6 +47,21 @@ class ManejadorErrores {
   ProblemDetail cuerpoInvalido(HttpMessageNotReadableException error) {
     return problema(
         HttpStatus.BAD_REQUEST, "CUERPO_INVALIDO", "La petición no tiene el formato esperado");
+  }
+
+  /**
+   * Una restricción de la base que el servicio no tradujo a un error propio (por ejemplo dos
+   * personas dando de alta la misma clave al mismo tiempo). No es un error interno: es un dato
+   * que choca con otro, y el usuario puede corregirlo.
+   */
+  @ExceptionHandler(DataIntegrityViolationException.class)
+  ProblemDetail integridad(DataIntegrityViolationException error) {
+    LOG.warn("Restricción de la base: {}", error.getMessage());
+    if (error instanceof DuplicateKeyException) {
+      return problema(HttpStatus.CONFLICT, "DUPLICADO", "Ya existe un registro con esos datos");
+    }
+    return problema(
+        HttpStatus.CONFLICT, "DATOS_INCONSISTENTES", "Los datos no son consistentes con otros");
   }
 
   @ExceptionHandler(AccessDeniedException.class)

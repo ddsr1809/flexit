@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import mx.constructora.organizacion.Rol;
@@ -23,6 +24,9 @@ public class RepositorioUsuarios {
   /** Renglón de la lista de usuarios. */
   public record FilaUsuario(
       long id, String usuario, String nombre, String correo, boolean activo, List<Rol> roles) {}
+
+  /** Usuario sin roles ni datos de acceso, para mostrar su nombre. */
+  public record FilaResumen(long id, String usuario, String nombre) {}
 
   private final JdbcClient jdbc;
 
@@ -97,6 +101,40 @@ public class RepositorioUsuarios {
         .update();
   }
 
+  /** Nombre y usuario de los ids pedidos, de la empresa en curso. */
+  public List<FilaResumen> resumen(long empresaId, Collection<Long> ids) {
+    if (ids.isEmpty()) {
+      return List.of();
+    }
+    return jdbc.sql(
+            """
+            SELECT u.id, u.usuario, u.nombre
+              FROM organizacion.usuario u
+             WHERE u.empresa_id = :empresa AND u.id IN (:ids)
+             ORDER BY u.nombre
+            """)
+        .param("empresa", empresaId)
+        .param("ids", ids)
+        .query(RepositorioUsuarios::aResumen)
+        .list();
+  }
+
+  /** Usuarios activos que tienen el rol. */
+  public List<FilaResumen> activosConRol(long empresaId, Rol rol) {
+    return jdbc.sql(
+            """
+            SELECT u.id, u.usuario, u.nombre
+              FROM organizacion.usuario u
+              JOIN organizacion.usuario_rol r ON r.usuario_id = u.id AND r.rol = :rol
+             WHERE u.empresa_id = :empresa AND u.activo
+             ORDER BY u.nombre
+            """)
+        .param("empresa", empresaId)
+        .param("rol", rol.clave())
+        .query(RepositorioUsuarios::aResumen)
+        .list();
+  }
+
   /** Primera instalación: crea empresa y administrador solo si la base no tiene usuarios. */
   public boolean inicializar(
       String empresa, String rfc, String usuario, String nombre, String hashContrasena) {
@@ -122,6 +160,10 @@ public class RepositorioUsuarios {
         rs.getBoolean("activo"),
         bloqueado == null ? null : bloqueado.toInstant(),
         roles(rs.getArray("roles")));
+  }
+
+  private static FilaResumen aResumen(ResultSet rs, int fila) throws SQLException {
+    return new FilaResumen(rs.getLong("id"), rs.getString("usuario"), rs.getString("nombre"));
   }
 
   private static List<Rol> roles(Array arreglo) throws SQLException {

@@ -12,9 +12,13 @@ export const PERMISOS = {
   documentoAutorizar: 'documento:autorizar',
   pedidoCrear: 'pedido:crear',
   existenciasVer: 'existencias:ver',
+  precioVer: 'precio:ver',
+  costoVerPropio: 'costo:ver-propio',
   costoVerTodo: 'costo:ver-todo',
   administrar: 'sistema:administrar',
   usuariosAdministrar: 'usuarios:administrar',
+  catalogoEditar: 'catalogo:editar',
+  estructuraVerTodo: 'estructura:ver-todo',
 } as const
 
 export type Permiso = (typeof PERMISOS)[keyof typeof PERMISOS]
@@ -29,12 +33,17 @@ export const DESCRIPCION_PERMISO: Record<string, string> = {
   'precio:ver': 'Ver precios de compra',
   'costo:ver-propio': 'Ver el costo de sus contratos',
   'costo:ver-todo': 'Ver el costo de todos los contratos',
-  'sistema:administrar': 'Cerrar mes y administrar catálogos',
+  'sistema:administrar': 'Administrar contratos, lotes y paquetes',
   'usuarios:administrar': 'Dar de alta usuarios y roles',
+  'catalogo:editar': 'Dar de alta materiales y proveedores',
+  'estructura:ver-todo': 'Ver todos los contratos',
 }
 
 export const puede = (sesion: Sesion | null, permiso: Permiso) =>
   sesion?.permisos.includes(permiso) ?? false
+
+export const puedeAlguno = (sesion: Sesion | null, ...permisos: Permiso[]) =>
+  permisos.some((permiso) => puede(sesion, permiso))
 
 /** La sesión actual, o `null` si no hay. Se usa como guardia de las rutas privadas. */
 export const consultaSesion = queryOptions({

@@ -31,8 +31,17 @@ public final class Permisos {
   /** Ver el costo de todos los contratos. */
   public static final String COSTO_VER_TODO = "costo:ver-todo";
 
-  /** Cerrar mes y administrar catálogos. */
+  /** Cerrar mes y administrar la estructura: clientes, frentes, contratos, lotes y paquetes. */
   public static final String ADMINISTRAR = "sistema:administrar";
+
+  /** Dar de alta y cambiar materiales, proveedores, unidades de medida y categorías. */
+  public static final String CATALOGO_EDITAR = "catalogo:editar";
+
+  /**
+   * Ver todos los contratos y sus lotes. Sin este permiso (residente) solo se ven los contratos
+   * asignados al usuario.
+   */
+  public static final String ESTRUCTURA_VER_TODO = "estructura:ver-todo";
 
   /** Dar de alta usuarios y asignar roles. */
   public static final String USUARIOS_ADMINISTRAR = "usuarios:administrar";

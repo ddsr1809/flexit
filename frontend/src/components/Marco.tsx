@@ -36,7 +36,7 @@ export function Marco() {
               <Link
                 key={ruta}
                 to={ruta}
-                activeOptions={{ exact: true }}
+                activeOptions={{ exact: ruta === '/' }}
                 className="flex min-h-11 items-center gap-2 rounded-md px-3 text-sm hover:bg-white/10 data-[status=active]:bg-white/15 data-[status=active]:font-medium"
               >
                 <Icono className="size-4" /> {texto}

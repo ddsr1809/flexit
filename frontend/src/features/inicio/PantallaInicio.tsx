@@ -21,7 +21,8 @@ export function PantallaInicio() {
           ))}
         </ul>
         <p className="mt-4 text-sm text-tenue">
-          Catálogos y contratos llegan en el hito H2; existencias y vales, en H4.
+          Contratos, lotes, paquetes y materiales ya están aquí; existencias y vales llegan en el
+          hito H4.
         </p>
       </Tarjeta>
       <PieVersion />

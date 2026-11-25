@@ -18,6 +18,18 @@ describe('menú por permisos', () => {
     expect(textos).not.toContain('Usuarios')
   })
 
+  it('el residente ve Contratos y Materiales, pero no Paquetes ni Catálogos', () => {
+    const textos = menuPara(sesion(['requisicion:crear', 'costo:ver-propio'])).map((e) => e.texto)
+    expect(textos).toEqual(expect.arrayContaining(['Contratos', 'Materiales']))
+    expect(textos).not.toContain('Paquetes')
+    expect(textos).not.toContain('Catálogos')
+  })
+
+  it('compras ve Proveedores', () => {
+    const textos = menuPara(sesion(['catalogo:editar', 'estructura:ver-todo'])).map((e) => e.texto)
+    expect(textos).toEqual(expect.arrayContaining(['Proveedores', 'Catálogos', 'Paquetes']))
+  })
+
   it('administración ve Usuarios', () => {
     const textos = menuPara(sesion(['usuarios:administrar'])).map((e) => e.texto)
     expect(textos).toContain('Usuarios')
