@@ -1,0 +1,86 @@
+# Configuración común. Sin un solo secreto: todo lo sensible llega por variables de entorno.
+spring:
+  application:
+    name: constructora
+  threads:
+    virtual:
+      enabled: true
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/constructora}
+    username: ${DB_USUARIO:app}
+    password: ${DB_CONTRASENA:}
+    hikari:
+      maximum-pool-size: ${DB_POOL:20}
+      auto-commit: true
+      connection-timeout: 5000
+  # Flyway lo corre Migraciones.java con la API de Flyway, no la autoconfiguración de Boot.
+  flyway:
+    enabled: false
+  session:
+    timeout: 8h
+    jdbc:
+      table-name: organizacion.sesion
+      initialize-schema: never
+      cleanup-cron: "0 */10 * * * *"
+  mvc:
+    problemdetails:
+      enabled: true
+  web:
+    resources:
+      # ConfiguracionSpa sirve los archivos del frontend y la ruta comodín de la SPA.
+      add-mappings: false
+  jackson:
+    time-zone: UTC
+
+server:
+  port: 8080
+  shutdown: graceful
+  forward-headers-strategy: native
+  servlet:
+    session:
+      timeout: 8h
+      cookie:
+        http-only: true
+        secure: ${COOKIE_SEGURA:true}
+        same-site: lax
+        name: SESION
+
+app:
+  version: ${APP_VERSION:local}
+  entorno: ${APP_ENTORNO:local}
+  migraciones:
+    modo: ${APP_MIGRACIONES:validar}
+    url: ${DB_MIGRADOR_URL:}
+    usuario: ${DB_MIGRADOR_USUARIO:}
+    contrasena: ${DB_MIGRADOR_CONTRASENA:}
+  inicial:
+    empresa: ${APP_INICIAL_EMPRESA:}
+    rfc: ${APP_INICIAL_RFC:}
+    usuario: ${APP_INICIAL_USUARIO:}
+    nombre: ${APP_INICIAL_NOMBRE:}
+    contrasena: ${APP_INICIAL_CONTRASENA:}
+
+springdoc:
+  api-docs:
+    enabled: ${APP_OPENAPI:false}
+  default-produces-media-type: application/json
+  writer-with-order-by-keys: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+  info:
+    env:
+      enabled: false
+
+logging:
+  level:
+    root: INFO
+    mx.constructora: INFO

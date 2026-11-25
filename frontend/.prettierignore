@@ -1,0 +1,6 @@
+dist
+node_modules
+src/api/esquema.d.ts
+openapi.json
+playwright-report
+test-results

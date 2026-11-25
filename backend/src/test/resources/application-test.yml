@@ -1,0 +1,11 @@
+# Pruebas. La base la levanta PruebaIntegracion con Testcontainers.
+server:
+  servlet:
+    session:
+      cookie:
+        secure: false
+springdoc:
+  api-docs:
+    enabled: true
+app:
+  entorno: pruebas

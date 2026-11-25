@@ -1,0 +1,95 @@
+#cloud-config
+# Primer arranque del servidor. Deja: usuario deploy con llave, SSH solo por Tailscale,
+# firewall, parches automáticos, Docker y /mnt/datos para PostgreSQL.
+# Es una plantilla de Terraform: $${…} lo interpreta Terraform. En bash se usa $VAR, sin llaves.
+
+hostname: ${nombre}
+timezone: ${zona_horaria}
+package_update: true
+package_upgrade: true
+packages:
+  - ca-certificates
+  - curl
+  - gnupg
+  - ufw
+  - fail2ban
+  - unattended-upgrades
+  - jq
+
+users:
+  - name: deploy
+    groups: [sudo]
+    shell: /bin/bash
+    lock_passwd: true
+    sudo: "ALL=(ALL) NOPASSWD:ALL"
+    ssh_authorized_keys:
+      - ${llave_ssh}
+
+ssh_pwauth: false
+disable_root: true
+
+write_files:
+  - path: /etc/ssh/sshd_config.d/10-endurecido.conf
+    content: |
+      PermitRootLogin no
+      PasswordAuthentication no
+      KbdInteractiveAuthentication no
+      AllowUsers deploy
+      MaxAuthTries 3
+  - path: /etc/apt/apt.conf.d/20auto-upgrades
+    content: |
+      APT::Periodic::Update-Package-Lists "1";
+      APT::Periodic::Unattended-Upgrade "1";
+  - path: /etc/docker/daemon.json
+    content: |
+      { "live-restore": true, "log-driver": "json-file", "log-opts": { "max-size": "20m", "max-file": "5" } }
+  - path: /usr/local/sbin/preparar-disco-datos.sh
+    permissions: "0755"
+    content: |
+      #!/usr/bin/env bash
+      # Monta el disco de bloque en /mnt/datos. Lo formatea solo si está vacío: nunca borra datos.
+      set -euo pipefail
+      mkdir -p /mnt/datos
+%{ if con_disco_datos ~}
+      DISCO=/dev/vdb
+      for _ in $(seq 1 60); do [[ -b $DISCO ]] && break; sleep 5; done
+      [[ -b $DISCO ]] || { echo "No apareció $DISCO" >&2; exit 1; }
+      if ! blkid "$DISCO" >/dev/null 2>&1; then mkfs.ext4 -L datos "$DISCO"; fi
+      grep -q 'LABEL=datos' /etc/fstab || echo 'LABEL=datos /mnt/datos ext4 defaults,nofail,noatime 0 2' >> /etc/fstab
+      mount -a
+%{ endif ~}
+      mkdir -p /mnt/datos/postgres
+      # El contenedor de PostgreSQL corre con el usuario 999.
+      chown 999:999 /mnt/datos/postgres
+      chmod 700 /mnt/datos/postgres
+
+runcmd:
+  # Docker desde el repositorio oficial
+  - install -m 0755 -d /etc/apt/keyrings
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+  - chmod a+r /etc/apt/keyrings/docker.asc
+  - echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" > /etc/apt/sources.list.d/docker.list
+  - apt-get update
+  - apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+  - usermod -aG docker deploy
+  - systemctl enable --now docker
+
+  # Tailscale: la única puerta para SSH (GitHub Actions entra con la etiqueta tag:ci)
+  - curl -fsSL https://tailscale.com/install.sh | sh
+  - tailscale up --authkey='${tailscale_clave}' --hostname='${nombre}' --advertise-tags=tag:servidor
+
+  # Firewall local además del del proveedor
+  - ufw default deny incoming
+  - ufw default allow outgoing
+  - ufw allow 80/tcp
+  - ufw allow 443/tcp
+  - ufw allow 443/udp
+  - ufw allow in on tailscale0
+  - ufw --force enable
+
+  - systemctl enable --now fail2ban
+  - systemctl restart ssh
+  - /usr/local/sbin/preparar-disco-datos.sh
+
+  # Carpeta de la app; desplegar.sh y compose.yml llegan con cada despliegue
+  - install -d -o deploy -g deploy -m 0750 /opt/constructora /opt/constructora/secrets /opt/constructora/db-init

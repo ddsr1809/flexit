@@ -1,0 +1,5 @@
+# Copiar a terraform.tfvars (ignorado por Git) y llenar.
+llave_ssh_publica  = "ssh-ed25519 AAAA... deploy@constructora"
+cloudflare_zona_id = "0123456789abcdef0123456789abcdef"
+dominio            = "preprod.constructora.mx"
+# tailscale_clave se pasa por TF_VAR_tailscale_clave para que no quede en disco.

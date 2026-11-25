@@ -1,0 +1,52 @@
+# CI: la app completa (imagen construida desde el Dockerfile) contra PostgreSQL 18, para Playwright.
+name: constructora-e2e
+
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: constructora
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres-e2e
+      PG_MIGRADOR_PASSWORD_FILE: /run/secrets/pg_migrador_password
+      PG_APP_PASSWORD_FILE: /run/secrets/pg_app_password
+    volumes:
+      - ../db/init:/docker-entrypoint-initdb.d:ro
+    secrets: [pg_migrador_password, pg_app_password]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d constructora"]
+      interval: 3s
+      retries: 20
+
+  migrar:
+    build: { context: ../.., args: { APP_VERSION: e2e } }
+    image: constructora:e2e
+    environment: &entorno
+      SPRING_PROFILES_ACTIVE: prod,migrar
+      DB_URL: jdbc:postgresql://db:5432/constructora
+      DB_USUARIO: app
+      DB_CONTRASENA: app-e2e
+      DB_MIGRADOR_URL: jdbc:postgresql://db:5432/constructora
+      DB_MIGRADOR_USUARIO: migrador
+      DB_MIGRADOR_CONTRASENA: migrador-e2e
+    depends_on:
+      db: { condition: service_healthy }
+
+  app:
+    image: constructora:e2e
+    environment:
+      <<: *entorno
+      SPRING_PROFILES_ACTIVE: prod
+      APP_ENTORNO: e2e
+      COOKIE_SEGURA: "false"
+      APP_INICIAL_EMPRESA: Constructora de prueba
+      APP_INICIAL_USUARIO: admin
+      APP_INICIAL_CONTRASENA: admin-e2e-2026
+    ports: ["8080:8080"]
+    # CI corre primero `run --rm migrar` y después levanta la app (ver ci.yml).
+    depends_on:
+      db: { condition: service_healthy }
+
+secrets:
+  pg_migrador_password: { environment: MIGRADOR_E2E }
+  pg_app_password: { environment: APP_E2E }

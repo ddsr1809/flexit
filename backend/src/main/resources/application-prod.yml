@@ -1,0 +1,5 @@
+# Producción y preproducción (la diferencia entre ambas está en el .env de cada servidor).
+logging:
+  structured:
+    format:
+      console: ecs

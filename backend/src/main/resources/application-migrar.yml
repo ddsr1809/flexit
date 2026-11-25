@@ -1,0 +1,8 @@
+# Paso previo al despliegue: aplica migraciones con el rol migrador y termina.
+#   docker compose run --rm -e SPRING_PROFILES_ACTIVE=prod,migrar app
+spring:
+  main:
+    web-application-type: none
+app:
+  migraciones:
+    modo: migrar

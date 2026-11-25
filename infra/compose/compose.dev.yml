@@ -1,0 +1,30 @@
+# Entorno local: solo la base. La app corre con `make dev` (perfil dev) y el frontend con Vite.
+#   make db     → levanta PostgreSQL 18 en localhost:5432
+name: constructora-dev
+
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: constructora
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres-local
+      PG_MIGRADOR_PASSWORD_FILE: /run/secrets/pg_migrador_password
+      PG_APP_PASSWORD_FILE: /run/secrets/pg_app_password
+    ports: ["127.0.0.1:5432:5432"]
+    volumes:
+      - pgdatos:/var/lib/postgresql
+      - ../db/init:/docker-entrypoint-initdb.d:ro
+    secrets: [pg_migrador_password, pg_app_password]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d constructora"]
+      interval: 5s
+      retries: 10
+
+volumes:
+  pgdatos: {}
+
+# Contraseñas solo de desarrollo, iguales a application-dev.yml.
+secrets:
+  pg_migrador_password: { environment: MIGRADOR_LOCAL }
+  pg_app_password: { environment: APP_LOCAL }

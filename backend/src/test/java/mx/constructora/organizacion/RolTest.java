@@ -1,0 +1,92 @@
+package mx.constructora.organizacion;
+
+import static mx.constructora.compartido.Permisos.COSTO_VER_PROPIO;
+import static mx.constructora.compartido.Permisos.COSTO_VER_TODO;
+import static mx.constructora.compartido.Permisos.DOCUMENTO_AUTORIZAR;
+import static mx.constructora.compartido.Permisos.MOVIMIENTO_CAPTURAR;
+import static mx.constructora.compartido.Permisos.PEDIDO_CREAR;
+import static mx.constructora.compartido.Permisos.REQUISICION_CREAR;
+import static mx.constructora.compartido.Permisos.USUARIOS_ADMINISTRAR;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.Instant;
+import java.util.List;
+import mx.constructora.organizacion.aplicacion.UsuarioSesion;
+import org.junit.jupiter.api.Test;
+
+/** La matriz "Roles y permisos" del plan técnico, fila por fila. */
+class RolTest {
+
+  @Test
+  void soloElAlmacenistaCapturaMovimientos() {
+    for (Rol rol : Rol.values()) {
+      assertThat(rol.permisos().contains(MOVIMIENTO_CAPTURAR))
+          .as(rol.clave())
+          .isEqualTo(rol == Rol.ALMACENISTA);
+    }
+  }
+
+  @Test
+  void requisicionesLasCreanResidenteYCoordinacion() {
+    assertThat(Rol.RESIDENTE.permisos()).contains(REQUISICION_CREAR);
+    assertThat(Rol.COORDINACION.permisos()).contains(REQUISICION_CREAR);
+    assertThat(Rol.ALMACENISTA.permisos()).doesNotContain(REQUISICION_CREAR);
+  }
+
+  @Test
+  void autorizanCoordinacionYDireccion() {
+    for (Rol rol : Rol.values()) {
+      assertThat(rol.permisos().contains(DOCUMENTO_AUTORIZAR))
+          .as(rol.clave())
+          .isEqualTo(rol == Rol.COORDINACION || rol == Rol.DIRECCION);
+    }
+  }
+
+  @Test
+  void soloComprasCreaPedidos() {
+    for (Rol rol : Rol.values()) {
+      assertThat(rol.permisos().contains(PEDIDO_CREAR))
+          .as(rol.clave())
+          .isEqualTo(rol == Rol.COMPRAS);
+    }
+  }
+
+  @Test
+  void elResidenteSoloVeElCostoDeSusLotes() {
+    assertThat(Rol.RESIDENTE.permisos()).contains(COSTO_VER_PROPIO).doesNotContain(COSTO_VER_TODO);
+    assertThat(Rol.ALMACENISTA.permisos()).doesNotContain(COSTO_VER_PROPIO, COSTO_VER_TODO);
+  }
+
+  @Test
+  void soloAdministracionAdministraUsuarios() {
+    for (Rol rol : Rol.values()) {
+      assertThat(rol.permisos().contains(USUARIOS_ADMINISTRAR))
+          .as(rol.clave())
+          .isEqualTo(rol == Rol.ADMIN);
+    }
+  }
+
+  @Test
+  void laSesionExponeRolesYPermisosComoAutoridades() {
+    var sesion =
+        new UsuarioSesion(
+            1, 2, "Empresa", "ana", "Ana", "{argon2}x", true, null, List.of(Rol.ALMACENISTA));
+    assertThat(sesion.getAuthorities())
+        .extracting(Object::toString)
+        .contains("ROLE_ALMACENISTA", MOVIMIENTO_CAPTURAR);
+    sesion.eraseCredentials();
+    assertThat(sesion.getPassword()).isNull();
+  }
+
+  @Test
+  void unaCuentaBloqueadaSeDesbloqueaSola() {
+    var bloqueada =
+        new UsuarioSesion(
+            1, 2, "E", "ana", "Ana", "x", true, Instant.now().plusSeconds(60), List.of());
+    var vencida =
+        new UsuarioSesion(
+            1, 2, "E", "ana", "Ana", "x", true, Instant.now().minusSeconds(1), List.of());
+    assertThat(bloqueada.isAccountNonLocked()).isFalse();
+    assertThat(vencida.isAccountNonLocked()).isTrue();
+  }
+}

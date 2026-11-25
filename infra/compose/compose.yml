@@ -1,0 +1,79 @@
+# Preproducción y producción: la misma definición, distinto .env y distintos secretos.
+# Vive en /opt/constructora en el servidor; desplegar.sh fija VERSION.
+name: constructora
+
+services:
+  app:
+    image: ${IMAGEN:-ghcr.io/OWNER/constructora}:${VERSION:?Falta VERSION}
+    restart: unless-stopped
+    env_file: .env                      # permisos 600, nunca en el repositorio
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/constructora
+      DB_USUARIO: app
+      DB_MIGRADOR_URL: jdbc:postgresql://db:5432/constructora
+      DB_MIGRADOR_USUARIO: migrador
+      APP_VERSION: ${VERSION}
+    depends_on:
+      db: { condition: service_healthy }
+    ports:
+      - "127.0.0.1:8080:8080"           # solo para la revisión de salud de desplegar.sh
+    deploy:
+      resources:
+        limits: { memory: "${APP_MEMORIA:-2g}" }
+    logging:
+      driver: json-file
+      options: { max-size: "20m", max-file: "5" }
+
+  db:
+    image: postgres:18
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: constructora
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_postgres_password
+      PG_MIGRADOR_PASSWORD_FILE: /run/secrets/pg_migrador_password
+      PG_APP_PASSWORD_FILE: /run/secrets/pg_app_password
+    command: >
+      postgres
+        -c shared_buffers=${PG_SHARED_BUFFERS:-1GB}
+        -c effective_cache_size=${PG_EFFECTIVE_CACHE:-2GB}
+        -c work_mem=16MB
+        -c maintenance_work_mem=256MB
+        -c max_connections=60
+        -c default_transaction_isolation='read committed'
+        -c lock_timeout=10s
+        -c statement_timeout=30s
+        -c idle_in_transaction_session_timeout=60s
+        -c log_min_duration_statement=500
+        -c timezone=UTC
+    volumes:
+      - /mnt/datos/postgres:/var/lib/postgresql   # disco de bloque aparte: el servidor se puede recrear
+      - ./db-init:/docker-entrypoint-initdb.d:ro
+    secrets: [pg_postgres_password, pg_migrador_password, pg_app_password]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d constructora"]
+      interval: 10s
+      retries: 6
+    shm_size: 256mb
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports: ["80:80", "443:443", "443:443/udp"]
+    environment:
+      DOMINIO: ${DOMINIO:?Falta DOMINIO}
+      CORREO_ACME: ${CORREO_ACME:-}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_datos:/data
+      - caddy_config:/config
+    depends_on: [app]
+
+volumes:
+  caddy_datos: {}
+  caddy_config: {}
+
+secrets:
+  pg_postgres_password: { file: ./secrets/pg_postgres_password }
+  pg_migrador_password: { file: ./secrets/pg_migrador_password }
+  pg_app_password: { file: ./secrets/pg_app_password }

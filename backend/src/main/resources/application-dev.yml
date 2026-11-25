@@ -1,0 +1,26 @@
+# Entorno local (make dev). Base de infra/compose/compose.dev.yml en localhost:5432.
+# Contraseñas solo de desarrollo: nunca se usan fuera de la laptop.
+spring:
+  datasource:
+    password: ${DB_CONTRASENA:app-local}
+server:
+  servlet:
+    session:
+      cookie:
+        secure: false
+app:
+  migraciones:
+    modo: migrar
+    usuario: ${DB_MIGRADOR_USUARIO:migrador}
+    contrasena: ${DB_MIGRADOR_CONTRASENA:migrador-local}
+  inicial:
+    empresa: RM Alemán (desarrollo)
+    usuario: admin
+    nombre: Administración
+    contrasena: admin-local-2026
+springdoc:
+  api-docs:
+    enabled: true
+logging:
+  level:
+    mx.constructora: DEBUG
