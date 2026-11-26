@@ -187,8 +187,7 @@ public class ServicioMateriales {
 
   private void validar(DatosMaterial datos) {
     if (catalogo.unidad(empresa(), datos.unidadControlId()).isEmpty()) {
-      throw ErrorNegocio.invalido(
-          "UNIDAD_MEDIDA_NO_ENCONTRADA", "No existe la unidad de medida");
+      throw ErrorNegocio.invalido("UNIDAD_MEDIDA_NO_ENCONTRADA", "No existe la unidad de medida");
     }
     if (datos.categoriaId() != null
         && catalogo.categoria(empresa(), datos.categoriaId()).isEmpty()) {

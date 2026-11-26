@@ -57,8 +57,8 @@ class ManejadorErrores {
 
   /**
    * Una restricción de la base que el servicio no tradujo a un error propio (por ejemplo dos
-   * personas dando de alta la misma clave al mismo tiempo). No es un error interno: es un dato
-   * que choca con otro, y el usuario puede corregirlo.
+   * personas dando de alta la misma clave al mismo tiempo). No es un error interno: es un dato que
+   * choca con otro, y el usuario puede corregirlo.
    */
   @ExceptionHandler(DataIntegrityViolationException.class)
   ProblemDetail integridad(DataIntegrityViolationException error) {

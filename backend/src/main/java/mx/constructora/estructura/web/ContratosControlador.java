@@ -90,8 +90,7 @@ class ContratosControlador {
   @Operation(
       operationId = "crearUnidades",
       summary = "Dar de alta lotes (manzana y lista de lotes) u otra unidad (clave)")
-  List<UnidadObra> crearUnidades(
-      @PathVariable long id, @Valid @RequestBody NuevasUnidades datos) {
+  List<UnidadObra> crearUnidades(@PathVariable long id, @Valid @RequestBody NuevasUnidades datos) {
     return unidades.crearUnidades(id, datos);
   }
 

@@ -50,8 +50,8 @@ public class ServicioUnidades {
       @Schema(requiredMode = REQUIRED) int version) {}
 
   /**
-   * Alta de unidades. Para lotes: {@code manzana} y {@code lotes} ({@code "29-31, 35"}); para
-   * otros tipos: {@code clave}.
+   * Alta de unidades. Para lotes: {@code manzana} y {@code lotes} ({@code "29-31, 35"}); para otros
+   * tipos: {@code clave}.
    */
   public record NuevasUnidades(
       @NotBlank @Schema(example = "LOTE") String tipo,

@@ -28,7 +28,6 @@ public class EstructuraApi {
   public Optional<UnidadInfo> unidad(long id) {
     return unidades
         .unidad(ContextoEmpresa.requerida().empresaId(), id)
-        .map(
-            u -> new UnidadInfo(u.id(), u.contratoId(), u.clave(), u.prototipoId(), u.activa()));
+        .map(u -> new UnidadInfo(u.id(), u.contratoId(), u.clave(), u.prototipoId(), u.activa()));
   }
 }

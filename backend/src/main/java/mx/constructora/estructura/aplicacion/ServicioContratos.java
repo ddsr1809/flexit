@@ -56,7 +56,9 @@ public class ServicioContratos {
       LocalDate inicio,
       LocalDate fin,
       @Schema(description = "Solo para quien ve costos") BigDecimal monto,
-      @Schema(requiredMode = REQUIRED, allowableValues = {"activo", "terminado", "cancelado"})
+      @Schema(
+              requiredMode = REQUIRED,
+              allowableValues = {"activo", "terminado", "cancelado"})
           String estado,
       @Schema(requiredMode = REQUIRED) int unidades,
       @Schema(requiredMode = REQUIRED) int version) {

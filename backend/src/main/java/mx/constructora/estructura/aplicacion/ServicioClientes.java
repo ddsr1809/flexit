@@ -176,8 +176,7 @@ public class ServicioClientes {
     if (actual.clienteId() != datos.clienteId()
         && repositorio.contratosDelFrente(empresa(), id) > 0) {
       throw ErrorNegocio.conflicto(
-          "FRENTE_CON_CONTRATOS",
-          "El frente ya tiene contratos: no se puede pasar a otro cliente");
+          "FRENTE_CON_CONTRATOS", "El frente ya tiene contratos: no se puede pasar a otro cliente");
     }
     int filas =
         unico(
@@ -227,8 +226,7 @@ public class ServicioClientes {
             .prototipo(empresa(), id)
             .orElseThrow(
                 () ->
-                    ErrorNegocio.noEncontrado(
-                        "PROTOTIPO_NO_ENCONTRADO", "No existe el prototipo"));
+                    ErrorNegocio.noEncontrado("PROTOTIPO_NO_ENCONTRADO", "No existe el prototipo"));
     int filas =
         unico(
             () ->

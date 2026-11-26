@@ -190,13 +190,11 @@ public class ServicioPaquetes {
             .orElseThrow(
                 () -> ErrorNegocio.invalido("PAQUETE_NO_ENCONTRADO", "No existe el paquete padre"));
     if (!Objects.equals(padre.clienteId(), clienteId)) {
-      throw ErrorNegocio.invalido(
-          "PADRE_DE_OTRO_CATALOGO", "El paquete padre es de otro catálogo");
+      throw ErrorNegocio.invalido("PADRE_DE_OTRO_CATALOGO", "El paquete padre es de otro catálogo");
     }
     if (id != null
         && (padreId.equals(id) || repositorio.descendientes(empresa(), id).contains(padreId))) {
-      throw ErrorNegocio.invalido(
-          "PADRE_CICLICO", "Un paquete no puede quedar dentro de sí mismo");
+      throw ErrorNegocio.invalido("PADRE_CICLICO", "Un paquete no puede quedar dentro de sí mismo");
     }
   }
 
