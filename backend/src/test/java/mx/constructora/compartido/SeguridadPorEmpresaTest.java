@@ -15,6 +15,9 @@ import org.springframework.transaction.support.TransactionTemplate;
 /**
  * La empresa se filtra en PostgreSQL además de en la aplicación: aunque una consulta olvide el
  * {@code WHERE empresa_id}, la política de RLS no deja ver ni escribir filas de otra empresa.
+ *
+ * <p>El motivo se revisa en la causa raíz (el mensaje de PostgreSQL): desde Spring 7 la excepción
+ * traducida ya no lo copia en su propio mensaje.
  */
 class SeguridadPorEmpresaTest extends PruebaIntegracion {
 
@@ -73,6 +76,7 @@ class SeguridadPorEmpresaTest extends PruebaIntegracion {
                             .param("usuario", unico("intruso"))
                             .update()))
         .isInstanceOf(DataAccessException.class)
+        .rootCause()
         .hasMessageContaining("row-level security");
   }
 
@@ -115,10 +119,12 @@ class SeguridadPorEmpresaTest extends PruebaIntegracion {
         () -> {
           assertThatThrownBy(() -> jdbc.sql("DELETE FROM compartido.bitacora").update())
               .isInstanceOf(DataAccessException.class)
+              .rootCause()
               .hasMessageContaining("permission denied");
           assertThatThrownBy(
                   () -> jdbc.sql("UPDATE compartido.bitacora SET operacion = 'INSERT'").update())
               .isInstanceOf(DataAccessException.class)
+              .rootCause()
               .hasMessageContaining("permission denied");
         });
   }
@@ -127,6 +133,7 @@ class SeguridadPorEmpresaTest extends PruebaIntegracion {
   void laAppNoPuedeCrearTablas() {
     assertThatThrownBy(() -> jdbc.sql("CREATE TABLE organizacion.atajo (x int)").update())
         .isInstanceOf(DataAccessException.class)
+        .rootCause()
         .hasMessageContaining("permission denied");
   }
 

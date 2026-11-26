@@ -78,6 +78,11 @@ tomar las 20 conexiones (`CannotGetJdbcConnectionException`, y de ahí 27 prueba
 `ContextoEmpresaTest`. `make sql` usa el cliente de la imagen de PostgreSQL si la máquina no
 tiene `psql`.
 
+Después, dos ajustes más para Spring Boot 4 / Spring 7: `ManejadorErrores` va antes que el
+manejador de Problem Details de Boot (si no, los errores de validación salían sin `codigo` ni
+`campos`), y las pruebas de RLS y permisos revisan el mensaje de PostgreSQL en la causa raíz,
+porque Spring 7 ya no lo copia en la excepción traducida.
+
 ### Decisiones de esta etapa
 
 - `usuario_contrato` quedó como `estructura.contrato_usuario` (ADR-006).

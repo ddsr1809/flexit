@@ -5,6 +5,8 @@ import java.util.Map;
 import mx.constructora.compartido.ErrorNegocio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -20,8 +22,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 /**
  * Todos los errores de la API salen como Problem Details (RFC 9457) con un {@code codigo} estable.
  * El frontend traduce el código a un mensaje en un solo archivo.
+ *
+ * <p>Va antes que el manejador de Problem Details de Spring Boot ({@code @Order(0)}): si no, los
+ * errores de validación y de cuerpo ilegible salían sin {@code codigo} ni {@code campos}.
  */
 @RestControllerAdvice
+@Order(Ordered.HIGHEST_PRECEDENCE)
 class ManejadorErrores {
 
   private static final Logger LOG = LoggerFactory.getLogger(ManejadorErrores.class);
