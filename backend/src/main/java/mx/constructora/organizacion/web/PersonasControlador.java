@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import mx.constructora.compartido.Versiones;
+import mx.constructora.organizacion.Personas.PersonaNombre;
 import mx.constructora.organizacion.aplicacion.ServicioPersonas;
 import mx.constructora.organizacion.aplicacion.ServicioPersonas.DatosPersona;
 import mx.constructora.organizacion.aplicacion.ServicioPersonas.Persona;
@@ -19,7 +20,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Personas (datos personales): requiere {@code personas:administrar}. */
+/**
+ * Personas (datos personales): requiere {@code personas:administrar}, salvo la búsqueda de nombres
+ * para capturar en el almacén.
+ */
 @RestController
 @RequestMapping("/api/v1/personas")
 @Tag(name = "Personas")
@@ -39,6 +43,14 @@ class PersonasControlador {
       @RequestParam(required = false) String q,
       @RequestParam(defaultValue = "false") boolean soloRevisar) {
     return servicio.buscar(q, soloRevisar);
+  }
+
+  @GetMapping("/nombres")
+  @Operation(
+      operationId = "buscarNombresPersonas",
+      summary = "Nombres de personas activas para elegir solicitante o responsable (20)")
+  List<PersonaNombre> nombres(@RequestParam String q) {
+    return servicio.nombres(q);
   }
 
   @GetMapping("/{id}")

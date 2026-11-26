@@ -1,8 +1,10 @@
 package mx.constructora.estructura.infraestructura;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import mx.constructora.estructura.EstructuraApi.UnidadInfo;
 import mx.constructora.estructura.aplicacion.ServicioUnidades.UnidadObra;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
@@ -43,6 +45,20 @@ public class RepositorioUnidades {
         .param("empresa", empresa)
         .param("contrato", contrato)
         .query(UnidadObra.class)
+        .list();
+  }
+
+  /** Datos mínimos de varias unidades para otros módulos ({@code ids} no vacío). */
+  public List<UnidadInfo> infos(long empresa, Collection<Long> ids) {
+    return jdbc.sql(
+            """
+            SELECT u.id, u.contrato_id, u.frente_id, u.clave, u.prototipo_id, u.activa
+              FROM estructura.unidad_obra u
+             WHERE u.empresa_id = :empresa AND u.id IN (:ids)
+            """)
+        .param("empresa", empresa)
+        .param("ids", List.copyOf(ids))
+        .query(UnidadInfo.class)
         .list();
   }
 

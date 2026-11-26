@@ -43,6 +43,8 @@ Docker Compose, Caddy, Terraform (Vultr + Cloudflare), GitHub Actions + GHCR.
     `ImportacionEstructura`, `ImportacionCatalogo` y `Personas`, con `origen_carga` para poder
     revertir. Nunca lee una celda que sea fórmula. Cada regla nueva lleva su prueba con una muestra
     anonimizada y, si cambia resultados, sube `Comun.VERSION_REGLAS`.
+15. El costo de obra se lee de `inventario.cargo`, nunca de las líneas de vale: devolver,
+    reasignar o corregir una factura agrega cargos, no cambia los anteriores (ADR-010).
 
 ## Cómo funciona la seguridad por empresa
 `ContextoEmpresa` (sesión web o `ContextoEmpresa.como(...)`) → `DataSourceConEmpresa` fija

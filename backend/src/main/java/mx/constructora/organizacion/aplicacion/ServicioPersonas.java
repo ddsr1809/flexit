@@ -12,6 +12,7 @@ import mx.constructora.compartido.ErrorNegocio;
 import mx.constructora.compartido.Permisos;
 import mx.constructora.compartido.Textos;
 import mx.constructora.compartido.Versiones;
+import mx.constructora.organizacion.Personas.PersonaNombre;
 import mx.constructora.organizacion.infraestructura.RepositorioPersonas;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,8 +29,22 @@ public class ServicioPersonas {
 
   static final String ADMINISTRAR = "hasAuthority('" + Permisos.PERSONAS_ADMINISTRAR + "')";
 
+  static final String ELEGIR =
+      "hasAnyAuthority('"
+          + Permisos.PERSONAS_ADMINISTRAR
+          + "', '"
+          + Permisos.MOVIMIENTO_CAPTURAR
+          + "', '"
+          + Permisos.VALE_AUTORIZAR
+          + "', '"
+          + Permisos.DOCUMENTO_AUTORIZAR
+          + "')";
+
   /** Resultados por búsqueda. */
   public static final int LIMITE = 200;
+
+  /** Resultados de la búsqueda rápida de nombres. */
+  public static final int SUGERENCIAS = 20;
 
   /** Persona con sus datos. */
   public record Persona(
@@ -68,6 +83,20 @@ public class ServicioPersonas {
   @Transactional(readOnly = true)
   public List<Persona> buscar(String texto, boolean soloRevisar) {
     return repositorio.buscar(empresa(), Textos.limpio(texto), soloRevisar, LIMITE);
+  }
+
+  /**
+   * Para elegir al solicitante de un vale o al responsable de un préstamo: solo nombres de personas
+   * activas, sin NSS, CURP ni notas. Lo usa quien captura o autoriza en el almacén.
+   */
+  @PreAuthorize(ELEGIR)
+  @Transactional(readOnly = true)
+  public List<PersonaNombre> nombres(String texto) {
+    String busqueda = Textos.limpio(texto);
+    if (busqueda == null) {
+      return List.of();
+    }
+    return repositorio.buscarNombres(empresa(), busqueda, SUGERENCIAS);
   }
 
   @PreAuthorize(ADMINISTRAR)

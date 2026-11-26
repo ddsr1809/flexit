@@ -8,12 +8,12 @@ import mx.constructora.compartido.Permisos;
  * Qué contratos ve el usuario en curso. Con {@code estructura:ver-todo} ve todos los de su empresa;
  * sin él (residente), solo los asignados en {@code estructura.contrato_usuario}.
  */
-final class Alcance {
+public final class Alcance {
 
   private Alcance() {}
 
   /** {@code null} si ve todos los contratos; si no, el id del usuario al que se restringe. */
-  static Long restringidoA() {
+  public static Long restringidoA() {
     if (Autorizacion.tiene(Permisos.ESTRUCTURA_VER_TODO)) {
       return null;
     }

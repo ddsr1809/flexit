@@ -13,8 +13,16 @@ public final class Permisos {
   /** Crear requisiciones de material. */
   public static final String REQUISICION_CREAR = "requisicion:crear";
 
-  /** Autorizar requisiciones, traspasos y reasignaciones de otra persona. */
+  /**
+   * Autorizar requisiciones, traspasos, reasignaciones, mermas y ajustes de costo de otra persona.
+   */
   public static final String DOCUMENTO_AUTORIZAR = "documento:autorizar";
+
+  /**
+   * Autorizar vales de salida capturados por otra persona. El residente solo los de sus contratos;
+   * coordinación y dirección, todos.
+   */
+  public static final String VALE_AUTORIZAR = "vale:autorizar";
 
   /** Crear pedidos a proveedor. */
   public static final String PEDIDO_CREAR = "pedido:crear";
@@ -31,7 +39,10 @@ public final class Permisos {
   /** Ver el costo de todos los contratos. */
   public static final String COSTO_VER_TODO = "costo:ver-todo";
 
-  /** Cerrar mes y administrar la estructura: clientes, frentes, contratos, lotes y paquetes. */
+  /**
+   * Cerrar mes, cerrar conteos físicos, dar de alta almacenes y administrar la estructura:
+   * clientes, frentes, contratos, lotes y paquetes.
+   */
   public static final String ADMINISTRAR = "sistema:administrar";
 
   /** Dar de alta y cambiar materiales, proveedores, unidades de medida y categorías. */

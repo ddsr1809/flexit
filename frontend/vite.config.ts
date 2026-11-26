@@ -19,9 +19,9 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
-    // React, el enrutador, las consultas y zod suman ~160 kB comprimidos; las pantallas de cada
-    // hito se cargarán bajo demanda cuando crezcan.
-    chunkSizeWarningLimit: 700,
+    // React, el enrutador y las consultas suman ~140 kB comprimidos; cada pantalla se descarga
+    // aparte la primera vez que se abre (lazyRouteComponent en rutas.tsx).
+    chunkSizeWarningLimit: 500,
   },
   test: {
     environment: 'jsdom',

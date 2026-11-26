@@ -1,7 +1,9 @@
 package mx.constructora.estructura.infraestructura;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import mx.constructora.estructura.EstructuraApi.PaqueteInfo;
 import mx.constructora.estructura.aplicacion.ServicioPaquetes.Equivalencia;
 import mx.constructora.estructura.aplicacion.ServicioPaquetes.Paquete;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -55,6 +57,20 @@ public class RepositorioPaquetes {
         .param("cliente", cliente)
         .param("soloPropios", soloPropios)
         .query(Paquete.class)
+        .list();
+  }
+
+  /** Datos mínimos de varios paquetes para otros módulos ({@code ids} no vacío). */
+  public List<PaqueteInfo> infos(long empresa, Collection<Long> ids) {
+    return jdbc.sql(
+            """
+            SELECT p.id, p.cliente_id, p.clave, p.nombre, p.activo
+              FROM estructura.paquete p
+             WHERE p.empresa_id = :empresa AND p.id IN (:ids)
+            """)
+        .param("empresa", empresa)
+        .param("ids", List.copyOf(ids))
+        .query(PaqueteInfo.class)
         .list();
   }
 

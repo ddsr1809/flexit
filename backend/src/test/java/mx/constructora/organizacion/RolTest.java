@@ -10,6 +10,7 @@ import static mx.constructora.compartido.Permisos.PEDIDO_CREAR;
 import static mx.constructora.compartido.Permisos.PERSONAS_ADMINISTRAR;
 import static mx.constructora.compartido.Permisos.REQUISICION_CREAR;
 import static mx.constructora.compartido.Permisos.USUARIOS_ADMINISTRAR;
+import static mx.constructora.compartido.Permisos.VALE_AUTORIZAR;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Instant;
@@ -42,6 +43,15 @@ class RolTest {
       assertThat(rol.permisos().contains(DOCUMENTO_AUTORIZAR))
           .as(rol.clave())
           .isEqualTo(rol == Rol.COORDINACION || rol == Rol.DIRECCION);
+    }
+  }
+
+  @Test
+  void losValesLosAutorizanResidenteCoordinacionYDireccion() {
+    for (Rol rol : Rol.values()) {
+      assertThat(rol.permisos().contains(VALE_AUTORIZAR))
+          .as(rol.clave())
+          .isEqualTo(rol == Rol.RESIDENTE || rol == Rol.COORDINACION || rol == Rol.DIRECCION);
     }
   }
 

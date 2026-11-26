@@ -1,8 +1,10 @@
 package mx.constructora.catalogo.infraestructura;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import mx.constructora.catalogo.CatalogoApi.MaterialInfo;
 import mx.constructora.catalogo.aplicacion.ServicioMateriales.Material;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
@@ -81,6 +83,22 @@ public class RepositorioMateriales {
         .param("id", id)
         .query(Material.class)
         .optional();
+  }
+
+  /** Datos mínimos de varios materiales para otros módulos ({@code ids} no vacío). */
+  public List<MaterialInfo> infos(long empresa, Collection<Long> ids) {
+    return jdbc.sql(
+            """
+            SELECT m.id, m.clave, m.nombre, m.unidad_control_id, u.clave AS unidad_control,
+                   m.precio_referencia, m.activo
+              FROM catalogo.material m
+              JOIN catalogo.unidad_medida u ON u.id = m.unidad_control_id
+             WHERE m.empresa_id = :empresa AND m.id IN (:ids)
+            """)
+        .param("empresa", empresa)
+        .param("ids", List.copyOf(ids))
+        .query(MaterialInfo.class)
+        .list();
   }
 
   /** Siguiente clave numérica con tres cifras: 001, 002… (300 → 301). */

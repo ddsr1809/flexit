@@ -33,6 +33,19 @@ const MENSAJES: Record<string, string> = {
   FALTA_DESTINO: 'Elige el registro.',
   CARGA_CERRADA: 'La carga ya se confirmó o se revirtió: ya no se puede cambiar.',
   PERSONA_DUPLICADA: 'Otra persona ya tiene ese NSS o CURP.',
+  // Inventario (H4). Los códigos que no están aquí muestran el detalle del servidor, que ya
+  // nombra el material, el renglón o el folio.
+  AUTORIZA_QUIEN_CAPTURO:
+    'Quien captura un documento no lo autoriza. Pide que lo autorice otra persona.',
+  PERIODO_CERRADO: 'Ese mes ya está cerrado: usa una fecha del mes en curso.',
+  ALMACEN_EN_CONTEO:
+    'El almacén tiene un conteo físico abierto. Ciérralo o cancélalo para aplicar.',
+  MOVIMIENTO_NO_ENCONTRADO: 'No existe el documento o no lo puedes ver.',
+  FECHA_FUTURA: 'La fecha no puede ser posterior a hoy.',
+  CIERRA_QUIEN_ABRIO:
+    'Quien abrió el conteo no lo cierra. Pide que lo cierre otra persona de administración.',
+  ARCHIVO_TIPO: 'Solo se aceptan fotos (JPEG, PNG, WebP) y PDF.',
+  ARCHIVO_GRANDE_10: 'La foto pasa de 10 MB.',
   ERROR_INTERNO: 'Ocurrió un error inesperado. Si se repite, avisa a sistemas.',
 }
 

@@ -10,6 +10,7 @@ export const PERMISOS = {
   movimientoCapturar: 'movimiento:capturar',
   requisicionCrear: 'requisicion:crear',
   documentoAutorizar: 'documento:autorizar',
+  valeAutorizar: 'vale:autorizar',
   pedidoCrear: 'pedido:crear',
   existenciasVer: 'existencias:ver',
   precioVer: 'precio:ver',
@@ -26,15 +27,16 @@ export type Permiso = (typeof PERMISOS)[keyof typeof PERMISOS]
 
 /** Cómo se le describe cada permiso a la persona. */
 export const DESCRIPCION_PERMISO: Record<string, string> = {
-  'movimiento:capturar': 'Capturar entradas, vales y devoluciones',
+  'movimiento:capturar': 'Capturar recepciones, vales, devoluciones y préstamos',
   'requisicion:crear': 'Crear requisiciones',
-  'documento:autorizar': 'Autorizar requisiciones y traspasos',
+  'documento:autorizar': 'Autorizar traspasos, mermas, reasignaciones y ajustes de costo',
+  'vale:autorizar': 'Autorizar vales de salida',
   'pedido:crear': 'Crear pedidos a proveedor',
   'existencias:ver': 'Consultar existencias',
   'precio:ver': 'Ver precios de compra',
   'costo:ver-propio': 'Ver el costo de sus contratos',
   'costo:ver-todo': 'Ver el costo de todos los contratos',
-  'sistema:administrar': 'Administrar contratos, lotes y paquetes',
+  'sistema:administrar': 'Administrar contratos, almacenes, conteos y cierre de mes',
   'usuarios:administrar': 'Dar de alta usuarios y roles',
   'personas:administrar': 'Ver y corregir personas (datos personales)',
   'catalogo:editar': 'Dar de alta materiales y proveedores',

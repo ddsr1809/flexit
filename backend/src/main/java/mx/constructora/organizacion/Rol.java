@@ -13,6 +13,7 @@ import static mx.constructora.compartido.Permisos.PERSONAS_ADMINISTRAR;
 import static mx.constructora.compartido.Permisos.PRECIO_VER;
 import static mx.constructora.compartido.Permisos.REQUISICION_CREAR;
 import static mx.constructora.compartido.Permisos.USUARIOS_ADMINISTRAR;
+import static mx.constructora.compartido.Permisos.VALE_AUTORIZAR;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -27,14 +28,21 @@ public enum Rol {
       "almacenista",
       "Almacenista",
       Set.of(MOVIMIENTO_CAPTURAR, EXISTENCIAS_VER, ESTRUCTURA_VER_TODO)),
-  /** Ve solo los contratos que tiene asignados (sin {@code ESTRUCTURA_VER_TODO}). */
-  RESIDENTE("residente", "Residente", Set.of(REQUISICION_CREAR, EXISTENCIAS_VER, COSTO_VER_PROPIO)),
+  /**
+   * Ve solo los contratos que tiene asignados (sin {@code ESTRUCTURA_VER_TODO}) y autoriza los
+   * vales de esos contratos.
+   */
+  RESIDENTE(
+      "residente",
+      "Residente",
+      Set.of(REQUISICION_CREAR, VALE_AUTORIZAR, EXISTENCIAS_VER, COSTO_VER_PROPIO)),
   COORDINACION(
       "coordinacion",
       "Coordinación",
       Set.of(
           REQUISICION_CREAR,
           DOCUMENTO_AUTORIZAR,
+          VALE_AUTORIZAR,
           EXISTENCIAS_VER,
           COSTO_VER_TODO,
           ESTRUCTURA_VER_TODO)),
@@ -45,7 +53,12 @@ public enum Rol {
   DIRECCION(
       "direccion",
       "Dirección",
-      Set.of(DOCUMENTO_AUTORIZAR, EXISTENCIAS_VER, COSTO_VER_TODO, ESTRUCTURA_VER_TODO)),
+      Set.of(
+          DOCUMENTO_AUTORIZAR,
+          VALE_AUTORIZAR,
+          EXISTENCIAS_VER,
+          COSTO_VER_TODO,
+          ESTRUCTURA_VER_TODO)),
   ADMIN(
       "admin",
       "Administración",

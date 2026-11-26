@@ -2541,6 +2541,1344 @@
           }
         }
       }
+    },
+    "/api/v1/almacenes": {
+      "get": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Almacenes (uno por frente)",
+        "operationId": "listarAlmacenes",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Almacen"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Dar de alta el almacén de un frente",
+        "operationId": "crearAlmacen",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosAlmacen"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Almacen"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/almacenes/{id}": {
+      "get": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Un almacén (ETag con su versión)",
+        "operationId": "obtenerAlmacen",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Almacen"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Cambiar clave, nombre o si está activo",
+        "operationId": "cambiarAlmacen",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosAlmacen"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Almacen"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/almacenes/{id}/existencias": {
+      "get": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Existencia, apartado y disponible por material (costo solo con permiso)",
+        "operationId": "existenciasDeAlmacen",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "soloConExistencia",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Existencia"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/materiales/{id}/kardex": {
+      "get": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Kardex del material, del más reciente al más antiguo (1000 renglones)",
+        "operationId": "kardexDeMaterial",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "almacenId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "desde",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "hasta",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RenglonKardex"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/movimientos": {
+      "get": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Documentos filtrados, más recientes primero",
+        "operationId": "listarMovimientos",
+        "parameters": [
+          {
+            "name": "tipo",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "estados",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Separados por coma: borrador,pendiente…"
+            }
+          },
+          {
+            "name": "almacenId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "desde",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "hasta",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "folio",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pagina",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "tamano",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ResumenMovimiento"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Capturar un documento en borrador (Idempotency-Key evita duplicarlo al reintentar)",
+        "operationId": "crearMovimiento",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosMovimiento"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Movimiento"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/movimientos/por-autorizar": {
+      "get": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Bandeja: lo pendiente que el usuario puede autorizar",
+        "operationId": "movimientosPorAutorizar",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ResumenMovimiento"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/movimientos/{id}": {
+      "get": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Un documento con sus líneas (ETag)",
+        "operationId": "obtenerMovimiento",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Movimiento"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Corregir un borrador (If-Match)",
+        "operationId": "reemplazarMovimiento",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosMovimiento"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Movimiento"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/movimientos/{id}/restantes": {
+      "get": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Lo que queda en obra de cada línea (para devolver o reasignar)",
+        "operationId": "restantesDeMovimiento",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LineaRestante"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/movimientos/{id}/enviar": {
+      "post": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Enviar a autorizar",
+        "operationId": "enviarMovimiento",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Movimiento"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/movimientos/{id}/autorizar": {
+      "post": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Autorizar (nunca lo propio)",
+        "operationId": "autorizarMovimiento",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Movimiento"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/movimientos/{id}/rechazar": {
+      "post": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Regresar a borrador con una nota",
+        "operationId": "rechazarMovimiento",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Nota"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Movimiento"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/movimientos/{id}/aplicar": {
+      "post": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Aplicar: mueve existencia y costo",
+        "operationId": "aplicarMovimiento",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Movimiento"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/movimientos/{id}/cancelar": {
+      "post": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Cancelar; un vale o recepción aplicados se cancelan con su movimiento inverso",
+        "operationId": "cancelarMovimiento",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Motivo"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Movimiento"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/movimientos/autorizar": {
+      "post": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Autorizar varios; cada uno en su propia transacción",
+        "operationId": "autorizarMovimientos",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Ids"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ResultadoLote"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/movimientos/aplicar": {
+      "post": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Aplicar varios; cada uno en su propia transacción",
+        "operationId": "aplicarMovimientos",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Ids"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ResultadoLote"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/prestamos": {
+      "get": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Préstamos; vencidos=true: abiertos con fecha de regreso pasada",
+        "operationId": "listarPrestamos",
+        "parameters": [
+          {
+            "name": "almacenId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "estado",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "vencidos",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Prestamo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Prestar: aparta la existencia",
+        "operationId": "crearPrestamo",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosPrestamo"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Prestamo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/prestamos/{id}": {
+      "get": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Un préstamo",
+        "operationId": "obtenerPrestamo",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Prestamo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/prestamos/{id}/devolver": {
+      "post": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Regresó: libera lo apartado",
+        "operationId": "devolverPrestamo",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Devolucion"
+              }
+            }
+          },
+          "required": false
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Prestamo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/prestamos/{id}/perdido": {
+      "post": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Se perdió: crea la merma por autorizar",
+        "operationId": "prestamoPerdido",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Perdida"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrestamoPerdido"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/conteos": {
+      "get": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Conteos físicos, abiertos primero",
+        "operationId": "listarConteos",
+        "parameters": [
+          {
+            "name": "almacenId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Conteo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Abrir un conteo (el almacén deja de aplicar movimientos)",
+        "operationId": "abrirConteo",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosConteo"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetalleConteo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/conteos/{id}": {
+      "get": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Un conteo con sus líneas",
+        "operationId": "obtenerConteo",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetalleConteo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/conteos/{id}/lineas": {
+      "put": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Capturar lo contado (agrega materiales si faltan)",
+        "operationId": "capturarConteo",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CapturaConteo"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetalleConteo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/conteos/{id}/cerrar": {
+      "post": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Cerrar y aplicar los ajustes (administración)",
+        "operationId": "cerrarConteo",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetalleConteo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/conteos/{id}/cancelar": {
+      "post": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Cancelar sin ajustes",
+        "operationId": "cancelarConteo",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetalleConteo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/periodos": {
+      "get": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Meses cerrados y el siguiente por cerrar",
+        "operationId": "listarPeriodos",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Periodos"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/periodos/{anio}/{mes}/cerrar": {
+      "post": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Cerrar el mes (administración)",
+        "operationId": "cerrarPeriodo",
+        "parameters": [
+          {
+            "name": "anio",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "mes",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Periodos"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/archivos": {
+      "post": {
+        "tags": [
+          "Archivos"
+        ],
+        "summary": "Subir una foto (JPEG, PNG, WebP) o PDF de hasta 10 MB",
+        "operationId": "subirArchivo",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "archivo": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "archivo"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Archivo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/archivos/{id}": {
+      "get": {
+        "tags": [
+          "Archivos"
+        ],
+        "summary": "Contenido de un archivo",
+        "operationId": "verArchivo",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string",
+                  "format": "byte"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/personas/nombres": {
+      "get": {
+        "tags": [
+          "Personas"
+        ],
+        "summary": "Nombres de personas activas para elegir solicitante o responsable (20)",
+        "operationId": "buscarNombresPersonas",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PersonaNombre"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -4419,6 +5757,1278 @@
           }
         },
         "required": [
+          "nombre"
+        ]
+      },
+      "Almacen": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "frenteId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "frente": {
+            "type": "string"
+          },
+          "clave": {
+            "type": "string"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "activo": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "activo",
+          "clave",
+          "frente",
+          "frenteId",
+          "id",
+          "nombre",
+          "version"
+        ]
+      },
+      "DatosAlmacen": {
+        "type": "object",
+        "properties": {
+          "frenteId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "clave": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^\\s*[A-Za-z0-9]{2,12}\\s*$"
+          },
+          "nombre": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 120
+          },
+          "activo": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "clave",
+          "frenteId",
+          "nombre"
+        ]
+      },
+      "Existencia": {
+        "type": "object",
+        "properties": {
+          "materialId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "clave": {
+            "type": "string"
+          },
+          "material": {
+            "type": "string"
+          },
+          "unidad": {
+            "type": "string"
+          },
+          "existencia": {
+            "type": "number"
+          },
+          "reservado": {
+            "type": "number"
+          },
+          "prestado": {
+            "type": "number"
+          },
+          "disponible": {
+            "type": "number"
+          },
+          "costoPromedio": {
+            "type": "number",
+            "description": "Sin IVA; solo para quien ve costos"
+          },
+          "valor": {
+            "type": "number",
+            "description": "Solo para quien ve costos"
+          },
+          "actualizado": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "actualizado",
+          "clave",
+          "disponible",
+          "existencia",
+          "material",
+          "materialId",
+          "prestado",
+          "reservado",
+          "unidad"
+        ]
+      },
+      "RenglonKardex": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "almacenId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "almacen": {
+            "type": "string"
+          },
+          "movimientoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "folio": {
+            "type": "string"
+          },
+          "tipo": {
+            "type": "string"
+          },
+          "fecha": {
+            "type": "string",
+            "format": "date"
+          },
+          "cantidad": {
+            "type": "number",
+            "description": "Con signo: + entra, − sale"
+          },
+          "costoUnitario": {
+            "type": "number"
+          },
+          "importe": {
+            "type": "number"
+          },
+          "existencia": {
+            "type": "number"
+          },
+          "valor": {
+            "type": "number"
+          },
+          "costoPromedio": {
+            "type": "number"
+          },
+          "registrado": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "almacen",
+          "almacenId",
+          "cantidad",
+          "existencia",
+          "fecha",
+          "folio",
+          "id",
+          "movimientoId",
+          "registrado",
+          "tipo"
+        ]
+      },
+      "LineaCaptura": {
+        "type": "object",
+        "properties": {
+          "materialId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "En devolución, reasignación y ajuste se toma de la línea de origen"
+          },
+          "cantidad": {
+            "type": "number",
+            "description": "En la unidad capturada; el ajuste de costo no la usa",
+            "exclusiveMinimum": 0
+          },
+          "unidadId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unidad capturada; vacía: la unidad de control del material"
+          },
+          "precio": {
+            "type": "number",
+            "description": "Recepción: precio sin IVA por unidad capturada",
+            "minimum": 0
+          },
+          "descuento": {
+            "type": "number",
+            "description": "Recepción: descuento del renglón, en pesos",
+            "minimum": 0
+          },
+          "tasaIva": {
+            "type": "number",
+            "description": "Recepción: tasa de IVA; vacía, la del proveedor",
+            "minimum": 0,
+            "maximum": 0.16
+          },
+          "costoNuevo": {
+            "type": "number",
+            "description": "Ajuste de costo: costo correcto por unidad de control, sin IVA",
+            "minimum": 0
+          },
+          "contratoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "unidadObraIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "Vale: uno o varios lotes; con varios, la cantidad se reparte exacta",
+            "maxItems": 200,
+            "minItems": 0
+          },
+          "paqueteId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "clasificacionId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "lineaOrigenId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Devolución, reasignación, devolución a proveedor y ajuste"
+          }
+        }
+      },
+      "DatosMovimiento": {
+        "type": "object",
+        "properties": {
+          "tipo": {
+            "type": "string",
+            "minLength": 1,
+            "enum": [
+              "entrada",
+              "salida",
+              "devolucion",
+              "devolucion_proveedor",
+              "traspaso",
+              "reasignacion",
+              "merma",
+              "ajuste_costo"
+            ]
+          },
+          "fecha": {
+            "type": "string",
+            "format": "date"
+          },
+          "almacenId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "almacenDestinoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "proveedorId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "folioFactura": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 0
+          },
+          "flete": {
+            "type": "number",
+            "minimum": 0
+          },
+          "solicitanteId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "movimientoOrigenId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "archivoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "motivo": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 0
+          },
+          "observaciones": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 0
+          },
+          "lineas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LineaCaptura"
+            },
+            "minItems": 1,
+            "maxItems": 500
+          },
+          "enviar": {
+            "type": "boolean",
+            "description": "Crear y enviar a autorizar en un paso"
+          }
+        },
+        "required": [
+          "almacenId",
+          "fecha",
+          "lineas",
+          "tipo"
+        ]
+      },
+      "LineaMovimiento": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "renglon": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "materialId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "materialClave": {
+            "type": "string"
+          },
+          "material": {
+            "type": "string"
+          },
+          "unidadControl": {
+            "type": "string"
+          },
+          "cantidad": {
+            "type": "number"
+          },
+          "cantidadCaptura": {
+            "type": "number"
+          },
+          "unidadCapturaId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "unidadCaptura": {
+            "type": "string"
+          },
+          "precio": {
+            "type": "number"
+          },
+          "descuento": {
+            "type": "number"
+          },
+          "tasaIva": {
+            "type": "number"
+          },
+          "costoNuevo": {
+            "type": "number"
+          },
+          "costoUnitario": {
+            "type": "number"
+          },
+          "importe": {
+            "type": "number"
+          },
+          "contratoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "contrato": {
+            "type": "string"
+          },
+          "unidadObraId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "unidadObra": {
+            "type": "string"
+          },
+          "paqueteId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "paquete": {
+            "type": "string"
+          },
+          "clasificacionId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "clasificacion": {
+            "type": "string"
+          },
+          "lineaOrigenId": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "cantidad",
+          "cantidadCaptura",
+          "id",
+          "material",
+          "materialClave",
+          "materialId",
+          "renglon",
+          "unidadCaptura",
+          "unidadCapturaId",
+          "unidadControl"
+        ]
+      },
+      "Acciones": {
+        "type": "object",
+        "properties": {
+          "editar": {
+            "type": "boolean"
+          },
+          "enviar": {
+            "type": "boolean"
+          },
+          "autorizar": {
+            "type": "boolean"
+          },
+          "aplicar": {
+            "type": "boolean"
+          },
+          "cancelar": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "aplicar",
+          "autorizar",
+          "cancelar",
+          "editar",
+          "enviar"
+        ]
+      },
+      "Movimiento": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "folio": {
+            "type": "string"
+          },
+          "tipo": {
+            "type": "string"
+          },
+          "estado": {
+            "type": "string",
+            "enum": [
+              "borrador",
+              "pendiente",
+              "autorizado",
+              "aplicado",
+              "cancelado"
+            ]
+          },
+          "fecha": {
+            "type": "string",
+            "format": "date"
+          },
+          "almacenId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "almacen": {
+            "type": "string"
+          },
+          "almacenDestinoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "almacenDestino": {
+            "type": "string"
+          },
+          "proveedorId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "proveedor": {
+            "type": "string"
+          },
+          "folioFactura": {
+            "type": "string"
+          },
+          "flete": {
+            "type": "number"
+          },
+          "solicitanteId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "solicitante": {
+            "type": "string"
+          },
+          "movimientoOrigenId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "conteoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "prestamoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "archivoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "motivo": {
+            "type": "string"
+          },
+          "notaRechazo": {
+            "type": "string"
+          },
+          "motivoCancelacion": {
+            "type": "string"
+          },
+          "observaciones": {
+            "type": "string"
+          },
+          "capturo": {
+            "type": "string"
+          },
+          "autorizo": {
+            "type": "string"
+          },
+          "aplico": {
+            "type": "string"
+          },
+          "autorizadoEn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "aplicadoEn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "canceladoEn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "creado": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "importe": {
+            "type": "number",
+            "description": "Suma de importes; solo para quien ve costos"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "lineas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LineaMovimiento"
+            }
+          },
+          "acciones": {
+            "$ref": "#/components/schemas/Acciones"
+          }
+        },
+        "required": [
+          "acciones",
+          "almacen",
+          "almacenId",
+          "capturo",
+          "creado",
+          "estado",
+          "fecha",
+          "folio",
+          "id",
+          "lineas",
+          "tipo",
+          "version"
+        ]
+      },
+      "ResumenMovimiento": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "folio": {
+            "type": "string"
+          },
+          "tipo": {
+            "type": "string"
+          },
+          "estado": {
+            "type": "string"
+          },
+          "fecha": {
+            "type": "string",
+            "format": "date"
+          },
+          "almacen": {
+            "type": "string"
+          },
+          "almacenDestino": {
+            "type": "string"
+          },
+          "capturo": {
+            "type": "string"
+          },
+          "autorizo": {
+            "type": "string"
+          },
+          "solicitante": {
+            "type": "string"
+          },
+          "lineas": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "contratos": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "importe": {
+            "type": "number"
+          },
+          "creado": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "almacen",
+          "capturo",
+          "contratos",
+          "creado",
+          "estado",
+          "fecha",
+          "folio",
+          "id",
+          "lineas",
+          "tipo"
+        ]
+      },
+      "LineaRestante": {
+        "type": "object",
+        "properties": {
+          "lineaId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "cantidad": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "cantidad",
+          "lineaId"
+        ]
+      },
+      "Nota": {
+        "type": "object",
+        "properties": {
+          "nota": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "nota"
+        ]
+      },
+      "Motivo": {
+        "type": "object",
+        "properties": {
+          "motivo": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "motivo"
+        ]
+      },
+      "Ids": {
+        "type": "object",
+        "properties": {
+          "ids": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "minItems": 1,
+            "maxItems": 200
+          }
+        },
+        "required": [
+          "ids"
+        ]
+      },
+      "ResultadoLote": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "folio": {
+            "type": "string"
+          },
+          "codigo": {
+            "type": "string"
+          },
+          "mensaje": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "ok"
+        ]
+      },
+      "Prestamo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "folio": {
+            "type": "string"
+          },
+          "almacenId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "almacen": {
+            "type": "string"
+          },
+          "materialId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "materialClave": {
+            "type": "string"
+          },
+          "material": {
+            "type": "string"
+          },
+          "unidad": {
+            "type": "string"
+          },
+          "cantidad": {
+            "type": "number"
+          },
+          "responsableId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "responsable": {
+            "type": "string"
+          },
+          "contratoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "contrato": {
+            "type": "string"
+          },
+          "fecha": {
+            "type": "string",
+            "format": "date"
+          },
+          "compromiso": {
+            "type": "string",
+            "format": "date"
+          },
+          "estado": {
+            "type": "string",
+            "enum": [
+              "abierto",
+              "devuelto",
+              "perdido"
+            ]
+          },
+          "vencido": {
+            "type": "boolean"
+          },
+          "devueltoEn": {
+            "type": "string",
+            "format": "date"
+          },
+          "presto": {
+            "type": "string"
+          },
+          "recibio": {
+            "type": "string"
+          },
+          "observaciones": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "almacen",
+          "almacenId",
+          "cantidad",
+          "estado",
+          "fecha",
+          "folio",
+          "id",
+          "material",
+          "materialClave",
+          "materialId",
+          "presto",
+          "responsable",
+          "responsableId",
+          "unidad",
+          "vencido",
+          "version"
+        ]
+      },
+      "DatosPrestamo": {
+        "type": "object",
+        "properties": {
+          "almacenId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "materialId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "cantidad": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "responsableId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "contratoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "fecha": {
+            "type": "string",
+            "format": "date"
+          },
+          "compromiso": {
+            "type": "string",
+            "format": "date"
+          },
+          "observaciones": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 0
+          }
+        },
+        "required": [
+          "almacenId",
+          "cantidad",
+          "fecha",
+          "materialId",
+          "responsableId"
+        ]
+      },
+      "PrestamoPerdido": {
+        "type": "object",
+        "properties": {
+          "prestamo": {
+            "$ref": "#/components/schemas/Prestamo"
+          },
+          "mermaId": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "mermaId",
+          "prestamo"
+        ]
+      },
+      "Devolucion": {
+        "type": "object",
+        "properties": {
+          "fecha": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "Perdida": {
+        "type": "object",
+        "properties": {
+          "motivo": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 400
+          }
+        },
+        "required": [
+          "motivo"
+        ]
+      },
+      "Conteo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "folio": {
+            "type": "string"
+          },
+          "almacenId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "almacen": {
+            "type": "string"
+          },
+          "fecha": {
+            "type": "string",
+            "format": "date"
+          },
+          "estado": {
+            "type": "string",
+            "enum": [
+              "abierto",
+              "cerrado",
+              "cancelado"
+            ]
+          },
+          "abrio": {
+            "type": "string"
+          },
+          "cerro": {
+            "type": "string"
+          },
+          "cerradoEn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "observaciones": {
+            "type": "string"
+          },
+          "lineas": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "contadas": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "abrio",
+          "almacen",
+          "almacenId",
+          "contadas",
+          "estado",
+          "fecha",
+          "folio",
+          "id",
+          "lineas",
+          "version"
+        ]
+      },
+      "LineaConteo": {
+        "type": "object",
+        "properties": {
+          "materialId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "clave": {
+            "type": "string"
+          },
+          "material": {
+            "type": "string"
+          },
+          "unidad": {
+            "type": "string"
+          },
+          "contado": {
+            "type": "number"
+          },
+          "costoUnitario": {
+            "type": "number"
+          },
+          "existenciaSistema": {
+            "type": "number"
+          },
+          "diferencia": {
+            "type": "number"
+          },
+          "contadoEn": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "clave",
+          "material",
+          "materialId",
+          "unidad"
+        ]
+      },
+      "DetalleConteo": {
+        "type": "object",
+        "properties": {
+          "conteo": {
+            "$ref": "#/components/schemas/Conteo"
+          },
+          "lineas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LineaConteo"
+            }
+          }
+        },
+        "required": [
+          "conteo",
+          "lineas"
+        ]
+      },
+      "DatosConteo": {
+        "type": "object",
+        "properties": {
+          "almacenId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "fecha": {
+            "type": "string",
+            "format": "date"
+          },
+          "materialIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "maxItems": 2000,
+            "minItems": 0
+          },
+          "observaciones": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 0
+          }
+        },
+        "required": [
+          "almacenId",
+          "fecha"
+        ]
+      },
+      "Contado": {
+        "type": "object",
+        "properties": {
+          "materialId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "contado": {
+            "type": "number",
+            "minimum": 0
+          },
+          "costoUnitario": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "contado",
+          "materialId"
+        ]
+      },
+      "CapturaConteo": {
+        "type": "object",
+        "properties": {
+          "lineas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Contado"
+            },
+            "minItems": 1,
+            "maxItems": 2000
+          }
+        },
+        "required": [
+          "lineas"
+        ]
+      },
+      "ValorAlmacen": {
+        "type": "object",
+        "properties": {
+          "almacenId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "almacen": {
+            "type": "string"
+          },
+          "valor": {
+            "type": "number",
+            "description": "Solo para quien ve costos"
+          },
+          "materiales": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "almacen",
+          "almacenId",
+          "materiales"
+        ]
+      },
+      "Periodo": {
+        "type": "object",
+        "properties": {
+          "anio": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "mes": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cerro": {
+            "type": "string"
+          },
+          "cerradoEn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "valor": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ValorAlmacen"
+            }
+          }
+        },
+        "required": [
+          "anio",
+          "cerradoEn",
+          "cerro",
+          "mes",
+          "valor"
+        ]
+      },
+      "Periodos": {
+        "type": "object",
+        "properties": {
+          "cerrados": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Periodo"
+            }
+          },
+          "siguiente": {
+            "type": "string",
+            "description": "Siguiente mes por cerrar (AAAA-MM); vacío si no hay movimientos"
+          },
+          "pendientesSiguiente": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Documentos sin aplicar en el siguiente mes"
+          },
+          "siguienteTerminado": {
+            "type": "boolean",
+            "description": "El siguiente mes ya terminó"
+          }
+        },
+        "required": [
+          "cerrados",
+          "pendientesSiguiente",
+          "siguienteTerminado"
+        ]
+      },
+      "Archivo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "tipo": {
+            "type": "string"
+          },
+          "tamano": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "id",
+          "nombre",
+          "tamano",
+          "tipo"
+        ]
+      },
+      "PersonaNombre": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "activa": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "activa",
+          "id",
           "nombre"
         ]
       }

@@ -1,5 +1,9 @@
 package mx.constructora.organizacion;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.Collection;
 import java.util.List;
 import mx.constructora.compartido.ContextoEmpresa;
 import mx.constructora.organizacion.infraestructura.RepositorioPersonas;
@@ -17,6 +21,12 @@ public class Personas {
   /** Persona para empatar nombres. */
   public record PersonaDato(long id, String nombre, String nombreNormal) {}
 
+  /** Persona para mostrar o elegir: solo id y nombre. */
+  public record PersonaNombre(
+      @Schema(requiredMode = REQUIRED) long id,
+      @Schema(requiredMode = REQUIRED) String nombre,
+      @Schema(requiredMode = REQUIRED) boolean activa) {}
+
   private final RepositorioPersonas repositorio;
 
   Personas(RepositorioPersonas repositorio) {
@@ -27,6 +37,14 @@ public class Personas {
   @Transactional(readOnly = true)
   public List<PersonaDato> activas() {
     return repositorio.activas(ContextoEmpresa.requerida().empresaId());
+  }
+
+  /** Nombres de las personas con esos ids (de la empresa en curso). */
+  @Transactional(readOnly = true)
+  public List<PersonaNombre> nombres(Collection<Long> ids) {
+    return ids.isEmpty()
+        ? List.of()
+        : repositorio.nombres(ContextoEmpresa.requerida().empresaId(), ids);
   }
 
   /**

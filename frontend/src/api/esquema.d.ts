@@ -873,6 +873,505 @@ export interface paths {
         patch: operations["cambiarPersona"];
         trace?: never;
     };
+    "/api/v1/almacenes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Almacenes (uno por frente) */
+        get: operations["listarAlmacenes"];
+        put?: never;
+        /** Dar de alta el almacén de un frente */
+        post: operations["crearAlmacen"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/almacenes/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Un almacén (ETag con su versión) */
+        get: operations["obtenerAlmacen"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Cambiar clave, nombre o si está activo */
+        patch: operations["cambiarAlmacen"];
+        trace?: never;
+    };
+    "/api/v1/almacenes/{id}/existencias": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Existencia, apartado y disponible por material (costo solo con permiso) */
+        get: operations["existenciasDeAlmacen"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/materiales/{id}/kardex": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Kardex del material, del más reciente al más antiguo (1000 renglones) */
+        get: operations["kardexDeMaterial"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/movimientos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Documentos filtrados, más recientes primero */
+        get: operations["listarMovimientos"];
+        put?: never;
+        /** Capturar un documento en borrador (Idempotency-Key evita duplicarlo al reintentar) */
+        post: operations["crearMovimiento"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/movimientos/por-autorizar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Bandeja: lo pendiente que el usuario puede autorizar */
+        get: operations["movimientosPorAutorizar"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/movimientos/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Un documento con sus líneas (ETag) */
+        get: operations["obtenerMovimiento"];
+        /** Corregir un borrador (If-Match) */
+        put: operations["reemplazarMovimiento"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/movimientos/{id}/restantes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lo que queda en obra de cada línea (para devolver o reasignar) */
+        get: operations["restantesDeMovimiento"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/movimientos/{id}/enviar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Enviar a autorizar */
+        post: operations["enviarMovimiento"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/movimientos/{id}/autorizar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Autorizar (nunca lo propio) */
+        post: operations["autorizarMovimiento"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/movimientos/{id}/rechazar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Regresar a borrador con una nota */
+        post: operations["rechazarMovimiento"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/movimientos/{id}/aplicar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Aplicar: mueve existencia y costo */
+        post: operations["aplicarMovimiento"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/movimientos/{id}/cancelar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancelar; un vale o recepción aplicados se cancelan con su movimiento inverso */
+        post: operations["cancelarMovimiento"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/movimientos/autorizar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Autorizar varios; cada uno en su propia transacción */
+        post: operations["autorizarMovimientos"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/movimientos/aplicar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Aplicar varios; cada uno en su propia transacción */
+        post: operations["aplicarMovimientos"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/prestamos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Préstamos; vencidos=true: abiertos con fecha de regreso pasada */
+        get: operations["listarPrestamos"];
+        put?: never;
+        /** Prestar: aparta la existencia */
+        post: operations["crearPrestamo"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/prestamos/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Un préstamo */
+        get: operations["obtenerPrestamo"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/prestamos/{id}/devolver": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Regresó: libera lo apartado */
+        post: operations["devolverPrestamo"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/prestamos/{id}/perdido": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Se perdió: crea la merma por autorizar */
+        post: operations["prestamoPerdido"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/conteos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Conteos físicos, abiertos primero */
+        get: operations["listarConteos"];
+        put?: never;
+        /** Abrir un conteo (el almacén deja de aplicar movimientos) */
+        post: operations["abrirConteo"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/conteos/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Un conteo con sus líneas */
+        get: operations["obtenerConteo"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/conteos/{id}/lineas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Capturar lo contado (agrega materiales si faltan) */
+        put: operations["capturarConteo"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/conteos/{id}/cerrar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cerrar y aplicar los ajustes (administración) */
+        post: operations["cerrarConteo"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/conteos/{id}/cancelar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancelar sin ajustes */
+        post: operations["cancelarConteo"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/periodos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Meses cerrados y el siguiente por cerrar */
+        get: operations["listarPeriodos"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/periodos/{anio}/{mes}/cerrar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cerrar el mes (administración) */
+        post: operations["cerrarPeriodo"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/archivos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Subir una foto (JPEG, PNG, WebP) o PDF de hasta 10 MB */
+        post: operations["subirArchivo"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/archivos/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Contenido de un archivo */
+        get: operations["verArchivo"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personas/nombres": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Nombres de personas activas para elegir solicitante o responsable (20) */
+        get: operations["buscarNombresPersonas"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1461,6 +1960,426 @@ export interface components {
             revisar?: boolean;
             nota?: string;
             activa?: boolean;
+        };
+        Almacen: {
+            /** Format: int64 */
+            id: number;
+            /** Format: int64 */
+            frenteId: number;
+            frente: string;
+            clave: string;
+            nombre: string;
+            activo: boolean;
+            /** Format: int32 */
+            version: number;
+        };
+        DatosAlmacen: {
+            /** Format: int64 */
+            frenteId: number;
+            clave: string;
+            nombre: string;
+            activo?: boolean;
+        };
+        Existencia: {
+            /** Format: int64 */
+            materialId: number;
+            clave: string;
+            material: string;
+            unidad: string;
+            existencia: number;
+            reservado: number;
+            prestado: number;
+            disponible: number;
+            /** @description Sin IVA; solo para quien ve costos */
+            costoPromedio?: number;
+            /** @description Solo para quien ve costos */
+            valor?: number;
+            /** Format: date-time */
+            actualizado: string;
+        };
+        RenglonKardex: {
+            /** Format: int64 */
+            id: number;
+            /** Format: int64 */
+            almacenId: number;
+            almacen: string;
+            /** Format: int64 */
+            movimientoId: number;
+            folio: string;
+            tipo: string;
+            /** Format: date */
+            fecha: string;
+            /** @description Con signo: + entra, − sale */
+            cantidad: number;
+            costoUnitario?: number;
+            importe?: number;
+            existencia: number;
+            valor?: number;
+            costoPromedio?: number;
+            /** Format: date-time */
+            registrado: string;
+        };
+        LineaCaptura: {
+            /**
+             * Format: int64
+             * @description En devolución, reasignación y ajuste se toma de la línea de origen
+             */
+            materialId?: number;
+            /** @description En la unidad capturada; el ajuste de costo no la usa */
+            cantidad?: number;
+            /**
+             * Format: int64
+             * @description Unidad capturada; vacía: la unidad de control del material
+             */
+            unidadId?: number;
+            /** @description Recepción: precio sin IVA por unidad capturada */
+            precio?: number;
+            /** @description Recepción: descuento del renglón, en pesos */
+            descuento?: number;
+            /** @description Recepción: tasa de IVA; vacía, la del proveedor */
+            tasaIva?: number;
+            /** @description Ajuste de costo: costo correcto por unidad de control, sin IVA */
+            costoNuevo?: number;
+            /** Format: int64 */
+            contratoId?: number;
+            /** @description Vale: uno o varios lotes; con varios, la cantidad se reparte exacta */
+            unidadObraIds?: number[];
+            /** Format: int64 */
+            paqueteId?: number;
+            /** Format: int32 */
+            clasificacionId?: number;
+            /**
+             * Format: int64
+             * @description Devolución, reasignación, devolución a proveedor y ajuste
+             */
+            lineaOrigenId?: number;
+        };
+        DatosMovimiento: {
+            /** @enum {string} */
+            tipo: "entrada" | "salida" | "devolucion" | "devolucion_proveedor" | "traspaso" | "reasignacion" | "merma" | "ajuste_costo";
+            /** Format: date */
+            fecha: string;
+            /** Format: int64 */
+            almacenId: number;
+            /** Format: int64 */
+            almacenDestinoId?: number;
+            /** Format: int64 */
+            proveedorId?: number;
+            folioFactura?: string;
+            flete?: number;
+            /** Format: int64 */
+            solicitanteId?: number;
+            /** Format: int64 */
+            movimientoOrigenId?: number;
+            /** Format: int64 */
+            archivoId?: number;
+            motivo?: string;
+            observaciones?: string;
+            lineas: components["schemas"]["LineaCaptura"][];
+            /** @description Crear y enviar a autorizar en un paso */
+            enviar?: boolean;
+        };
+        LineaMovimiento: {
+            /** Format: int64 */
+            id: number;
+            /** Format: int32 */
+            renglon: number;
+            /** Format: int64 */
+            materialId: number;
+            materialClave: string;
+            material: string;
+            unidadControl: string;
+            cantidad: number;
+            cantidadCaptura: number;
+            /** Format: int64 */
+            unidadCapturaId: number;
+            unidadCaptura: string;
+            precio?: number;
+            descuento?: number;
+            tasaIva?: number;
+            costoNuevo?: number;
+            costoUnitario?: number;
+            importe?: number;
+            /** Format: int64 */
+            contratoId?: number;
+            contrato?: string;
+            /** Format: int64 */
+            unidadObraId?: number;
+            unidadObra?: string;
+            /** Format: int64 */
+            paqueteId?: number;
+            paquete?: string;
+            /** Format: int32 */
+            clasificacionId?: number;
+            clasificacion?: string;
+            /** Format: int64 */
+            lineaOrigenId?: number;
+        };
+        Acciones: {
+            editar: boolean;
+            enviar: boolean;
+            autorizar: boolean;
+            aplicar: boolean;
+            cancelar: boolean;
+        };
+        Movimiento: {
+            /** Format: int64 */
+            id: number;
+            folio: string;
+            tipo: string;
+            /** @enum {string} */
+            estado: "borrador" | "pendiente" | "autorizado" | "aplicado" | "cancelado";
+            /** Format: date */
+            fecha: string;
+            /** Format: int64 */
+            almacenId: number;
+            almacen: string;
+            /** Format: int64 */
+            almacenDestinoId?: number;
+            almacenDestino?: string;
+            /** Format: int64 */
+            proveedorId?: number;
+            proveedor?: string;
+            folioFactura?: string;
+            flete?: number;
+            /** Format: int64 */
+            solicitanteId?: number;
+            solicitante?: string;
+            /** Format: int64 */
+            movimientoOrigenId?: number;
+            /** Format: int64 */
+            conteoId?: number;
+            /** Format: int64 */
+            prestamoId?: number;
+            /** Format: int64 */
+            archivoId?: number;
+            motivo?: string;
+            notaRechazo?: string;
+            motivoCancelacion?: string;
+            observaciones?: string;
+            capturo: string;
+            autorizo?: string;
+            aplico?: string;
+            /** Format: date-time */
+            autorizadoEn?: string;
+            /** Format: date-time */
+            aplicadoEn?: string;
+            /** Format: date-time */
+            canceladoEn?: string;
+            /** Format: date-time */
+            creado: string;
+            /** @description Suma de importes; solo para quien ve costos */
+            importe?: number;
+            /** Format: int32 */
+            version: number;
+            lineas: components["schemas"]["LineaMovimiento"][];
+            acciones: components["schemas"]["Acciones"];
+        };
+        ResumenMovimiento: {
+            /** Format: int64 */
+            id: number;
+            folio: string;
+            tipo: string;
+            estado: string;
+            /** Format: date */
+            fecha: string;
+            almacen: string;
+            almacenDestino?: string;
+            capturo: string;
+            autorizo?: string;
+            solicitante?: string;
+            /** Format: int32 */
+            lineas: number;
+            contratos: string[];
+            importe?: number;
+            /** Format: date-time */
+            creado: string;
+        };
+        LineaRestante: {
+            /** Format: int64 */
+            lineaId: number;
+            cantidad: number;
+        };
+        Nota: {
+            nota: string;
+        };
+        Motivo: {
+            motivo: string;
+        };
+        Ids: {
+            ids: number[];
+        };
+        ResultadoLote: {
+            /** Format: int64 */
+            id: number;
+            ok: boolean;
+            folio?: string;
+            codigo?: string;
+            mensaje?: string;
+        };
+        Prestamo: {
+            /** Format: int64 */
+            id: number;
+            folio: string;
+            /** Format: int64 */
+            almacenId: number;
+            almacen: string;
+            /** Format: int64 */
+            materialId: number;
+            materialClave: string;
+            material: string;
+            unidad: string;
+            cantidad: number;
+            /** Format: int64 */
+            responsableId: number;
+            responsable: string;
+            /** Format: int64 */
+            contratoId?: number;
+            contrato?: string;
+            /** Format: date */
+            fecha: string;
+            /** Format: date */
+            compromiso?: string;
+            /** @enum {string} */
+            estado: "abierto" | "devuelto" | "perdido";
+            vencido: boolean;
+            /** Format: date */
+            devueltoEn?: string;
+            presto: string;
+            recibio?: string;
+            observaciones?: string;
+            /** Format: int32 */
+            version: number;
+        };
+        DatosPrestamo: {
+            /** Format: int64 */
+            almacenId: number;
+            /** Format: int64 */
+            materialId: number;
+            cantidad: number;
+            /** Format: int64 */
+            responsableId: number;
+            /** Format: int64 */
+            contratoId?: number;
+            /** Format: date */
+            fecha: string;
+            /** Format: date */
+            compromiso?: string;
+            observaciones?: string;
+        };
+        PrestamoPerdido: {
+            prestamo: components["schemas"]["Prestamo"];
+            /** Format: int64 */
+            mermaId: number;
+        };
+        Devolucion: {
+            /** Format: date */
+            fecha?: string;
+        };
+        Perdida: {
+            motivo: string;
+        };
+        Conteo: {
+            /** Format: int64 */
+            id: number;
+            folio: string;
+            /** Format: int64 */
+            almacenId: number;
+            almacen: string;
+            /** Format: date */
+            fecha: string;
+            /** @enum {string} */
+            estado: "abierto" | "cerrado" | "cancelado";
+            abrio: string;
+            cerro?: string;
+            /** Format: date-time */
+            cerradoEn?: string;
+            observaciones?: string;
+            /** Format: int32 */
+            lineas: number;
+            /** Format: int32 */
+            contadas: number;
+            /** Format: int32 */
+            version: number;
+        };
+        LineaConteo: {
+            /** Format: int64 */
+            materialId: number;
+            clave: string;
+            material: string;
+            unidad: string;
+            contado?: number;
+            costoUnitario?: number;
+            existenciaSistema?: number;
+            diferencia?: number;
+            /** Format: date-time */
+            contadoEn?: string;
+        };
+        DetalleConteo: {
+            conteo: components["schemas"]["Conteo"];
+            lineas: components["schemas"]["LineaConteo"][];
+        };
+        DatosConteo: {
+            /** Format: int64 */
+            almacenId: number;
+            /** Format: date */
+            fecha: string;
+            materialIds?: number[];
+            observaciones?: string;
+        };
+        Contado: {
+            /** Format: int64 */
+            materialId: number;
+            contado: number;
+            costoUnitario?: number;
+        };
+        CapturaConteo: {
+            lineas: components["schemas"]["Contado"][];
+        };
+        ValorAlmacen: {
+            /** Format: int64 */
+            almacenId: number;
+            almacen: string;
+            /** @description Solo para quien ve costos */
+            valor?: number;
+            /** Format: int32 */
+            materiales: number;
+        };
+        Periodo: {
+            /** Format: int32 */
+            anio: number;
+            /** Format: int32 */
+            mes: number;
+            cerro: string;
+            /** Format: date-time */
+            cerradoEn: string;
+            valor: components["schemas"]["ValorAlmacen"][];
+        };
+        Periodos: {
+            cerrados: components["schemas"]["Periodo"][];
+            /** @description Siguiente mes por cerrar (AAAA-MM); vacío si no hay movimientos */
+            siguiente?: string;
+            /**
+             * Format: int32
+             * @description Documentos sin aplicar en el siguiente mes
+             */
+            pendientesSiguiente: number;
+            /** @description El siguiente mes ya terminó */
+            siguienteTerminado: boolean;
+        };
+        Archivo: {
+            /** Format: int64 */
+            id: number;
+            nombre: string;
+            tipo: string;
+            /** Format: int32 */
+            tamano: number;
+        };
+        PersonaNombre: {
+            /** Format: int64 */
+            id: number;
+            nombre: string;
+            activa: boolean;
         };
     };
     responses: never;
@@ -3102,6 +4021,838 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Persona"];
+                };
+            };
+        };
+    };
+    listarAlmacenes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Almacen"][];
+                };
+            };
+        };
+    };
+    crearAlmacen: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosAlmacen"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Almacen"];
+                };
+            };
+        };
+    };
+    obtenerAlmacen: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Almacen"];
+                };
+            };
+        };
+    };
+    cambiarAlmacen: {
+        parameters: {
+            query?: never;
+            header?: {
+                "If-Match"?: string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosAlmacen"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Almacen"];
+                };
+            };
+        };
+    };
+    existenciasDeAlmacen: {
+        parameters: {
+            query?: {
+                q?: string;
+                soloConExistencia?: boolean;
+            };
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Existencia"][];
+                };
+            };
+        };
+    };
+    kardexDeMaterial: {
+        parameters: {
+            query?: {
+                almacenId?: number;
+                desde?: string;
+                hasta?: string;
+            };
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RenglonKardex"][];
+                };
+            };
+        };
+    };
+    listarMovimientos: {
+        parameters: {
+            query?: {
+                tipo?: string;
+                estados?: string;
+                almacenId?: number;
+                desde?: string;
+                hasta?: string;
+                folio?: string;
+                pagina?: number;
+                tamano?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResumenMovimiento"][];
+                };
+            };
+        };
+    };
+    crearMovimiento: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosMovimiento"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Movimiento"];
+                };
+            };
+        };
+    };
+    movimientosPorAutorizar: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResumenMovimiento"][];
+                };
+            };
+        };
+    };
+    obtenerMovimiento: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Movimiento"];
+                };
+            };
+        };
+    };
+    reemplazarMovimiento: {
+        parameters: {
+            query?: never;
+            header?: {
+                "If-Match"?: string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosMovimiento"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Movimiento"];
+                };
+            };
+        };
+    };
+    restantesDeMovimiento: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LineaRestante"][];
+                };
+            };
+        };
+    };
+    enviarMovimiento: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Movimiento"];
+                };
+            };
+        };
+    };
+    autorizarMovimiento: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Movimiento"];
+                };
+            };
+        };
+    };
+    rechazarMovimiento: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Nota"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Movimiento"];
+                };
+            };
+        };
+    };
+    aplicarMovimiento: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Movimiento"];
+                };
+            };
+        };
+    };
+    cancelarMovimiento: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Motivo"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Movimiento"];
+                };
+            };
+        };
+    };
+    autorizarMovimientos: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Ids"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultadoLote"][];
+                };
+            };
+        };
+    };
+    aplicarMovimientos: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Ids"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultadoLote"][];
+                };
+            };
+        };
+    };
+    listarPrestamos: {
+        parameters: {
+            query?: {
+                almacenId?: number;
+                estado?: string;
+                vencidos?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Prestamo"][];
+                };
+            };
+        };
+    };
+    crearPrestamo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosPrestamo"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Prestamo"];
+                };
+            };
+        };
+    };
+    obtenerPrestamo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Prestamo"];
+                };
+            };
+        };
+    };
+    devolverPrestamo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["Devolucion"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Prestamo"];
+                };
+            };
+        };
+    };
+    prestamoPerdido: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Perdida"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PrestamoPerdido"];
+                };
+            };
+        };
+    };
+    listarConteos: {
+        parameters: {
+            query?: {
+                almacenId?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Conteo"][];
+                };
+            };
+        };
+    };
+    abrirConteo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosConteo"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleConteo"];
+                };
+            };
+        };
+    };
+    obtenerConteo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleConteo"];
+                };
+            };
+        };
+    };
+    capturarConteo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CapturaConteo"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleConteo"];
+                };
+            };
+        };
+    };
+    cerrarConteo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleConteo"];
+                };
+            };
+        };
+    };
+    cancelarConteo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleConteo"];
+                };
+            };
+        };
+    };
+    listarPeriodos: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Periodos"];
+                };
+            };
+        };
+    };
+    cerrarPeriodo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                anio: number;
+                mes: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Periodos"];
+                };
+            };
+        };
+    };
+    subirArchivo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    archivo: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Archivo"];
+                };
+            };
+        };
+    };
+    verArchivo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": string;
+                };
+            };
+        };
+    };
+    buscarNombresPersonas: {
+        parameters: {
+            query: {
+                q: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PersonaNombre"][];
                 };
             };
         };

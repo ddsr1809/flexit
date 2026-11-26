@@ -30,6 +30,22 @@ describe('menú por permisos', () => {
     expect(textos).toEqual(expect.arrayContaining(['Proveedores', 'Catálogos', 'Paquetes']))
   })
 
+  it('el almacén ve existencias, documentos, préstamos y conteo; no autorizaciones ni cierre', () => {
+    const textos = menuPara(sesion(['movimiento:capturar', 'existencias:ver'])).map((e) => e.texto)
+    expect(textos).toEqual(
+      expect.arrayContaining(['Existencias', 'Documentos', 'Préstamos', 'Conteo físico']),
+    )
+    expect(textos).not.toContain('Autorizaciones')
+    expect(textos).not.toContain('Cierre de mes')
+  })
+
+  it('el residente y coordinación ven la bandeja de autorizaciones', () => {
+    const residente = menuPara(sesion(['vale:autorizar', 'existencias:ver'])).map((e) => e.texto)
+    expect(residente).toContain('Autorizaciones')
+    const coordinacion = menuPara(sesion(['documento:autorizar'])).map((e) => e.texto)
+    expect(coordinacion).toContain('Autorizaciones')
+  })
+
   it('administración ve Usuarios', () => {
     const textos = menuPara(sesion(['usuarios:administrar'])).map((e) => e.texto)
     expect(textos).toContain('Usuarios')

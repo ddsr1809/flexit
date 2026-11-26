@@ -2,8 +2,10 @@ package mx.constructora.estructura.infraestructura;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import mx.constructora.estructura.EstructuraApi.ContratoInfo;
 import mx.constructora.estructura.aplicacion.ServicioContratos.Contrato;
 import mx.constructora.estructura.aplicacion.ServicioContratos.PrecioPaquete;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -50,6 +52,33 @@ public class RepositorioContratos {
         .param("estado", estado)
         .param("frente", frente)
         .query(Contrato.class)
+        .list();
+  }
+
+  /** Datos mínimos de varios contratos para otros módulos ({@code ids} no vacío), sin alcance. */
+  public List<ContratoInfo> infos(long empresa, Collection<Long> ids) {
+    return jdbc.sql(
+            """
+            SELECT c.id, c.codigo, c.frente_id, c.estado
+              FROM estructura.contrato c
+             WHERE c.empresa_id = :empresa AND c.id IN (:ids)
+            """)
+        .param("empresa", empresa)
+        .param("ids", List.copyOf(ids))
+        .query(ContratoInfo.class)
+        .list();
+  }
+
+  /** Ids de los contratos asignados a {@code usuario} (alcance del residente). */
+  public List<Long> asignados(long empresa, long usuario) {
+    return jdbc.sql(
+            """
+            SELECT contrato_id FROM estructura.contrato_usuario
+             WHERE empresa_id = :empresa AND usuario_id = :usuario
+            """)
+        .param("empresa", empresa)
+        .param("usuario", usuario)
+        .query(Long.class)
         .list();
   }
 

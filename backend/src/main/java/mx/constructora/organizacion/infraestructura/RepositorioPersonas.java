@@ -1,8 +1,10 @@
 package mx.constructora.organizacion.infraestructura;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import mx.constructora.organizacion.Personas.PersonaDato;
+import mx.constructora.organizacion.Personas.PersonaNombre;
 import mx.constructora.organizacion.aplicacion.ServicioPersonas.Persona;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
@@ -32,6 +34,39 @@ public class RepositorioPersonas {
             """)
         .param("empresa", empresa)
         .query(PersonaDato.class)
+        .list();
+  }
+
+  /** Nombres de varias personas ({@code ids} no vacío), activas o no. */
+  public List<PersonaNombre> nombres(long empresa, Collection<Long> ids) {
+    return jdbc.sql(
+            """
+            SELECT id, nombre, activa FROM organizacion.persona
+             WHERE empresa_id = :empresa AND id IN (:ids)
+            """)
+        .param("empresa", empresa)
+        .param("ids", List.copyOf(ids))
+        .query(PersonaNombre.class)
+        .list();
+  }
+
+  /** Personas activas cuyo nombre contiene todas las palabras de {@code texto}. */
+  public List<PersonaNombre> buscarNombres(long empresa, String texto, int limite) {
+    return jdbc.sql(
+            """
+            SELECT id, nombre, activa FROM organizacion.persona
+             WHERE empresa_id = :empresa AND activa
+               AND NOT EXISTS (
+                     SELECT 1
+                       FROM unnest(string_to_array(compartido.normalizar(:texto), ' ')) AS p(palabra)
+                      WHERE strpos(nombre_normal, p.palabra) = 0)
+             ORDER BY similarity(nombre_normal, compartido.normalizar(:texto)) DESC, nombre_normal
+             LIMIT :limite
+            """)
+        .param("empresa", empresa)
+        .param("texto", texto)
+        .param("limite", limite)
+        .query(PersonaNombre.class)
         .list();
   }
 

@@ -1,6 +1,6 @@
 # Estado del proyecto
 
-Última actualización: 26 nov 2026 · Hito en curso: **H3 · Centro de migración y datos maestros** (semanas 4 y 5)
+Última actualización: 26 nov 2026 · Hito en curso: **H4 · Inventario operando en preproducción** (semanas 6 a 9)
 
 ## H1 · issues 1 a 11
 
@@ -139,7 +139,70 @@ porque Spring 7 ya no lo copia en la excepción traducida.
 - Un apodo del destajo o del almacén nunca se da de alta solo; uno del SUA sí, salvo que se parezca
   a otra persona (≥ 0.85).
 
-## Siguiente: H4 · Inventario operando en preproducción (issues 21 a 31)
+## H4 · issues 21 a 31
 
-Almacenes, saldo y kardex, recepción con costo promedio, vale con bloqueo y reparto. Usa los
-materiales, lotes y personas que dejó H3.
+| # | Issue | Estado | Dónde se comprueba |
+| --- | --- | --- | --- |
+| 21 | Almacenes, saldo y kardex (esquema y repositorios) | Hecho | V007, `tools/pruebas-sql/inventario.sql` |
+| 22 | Recepción con costo promedio, conversión de unidad, descuento y flete | Hecho | `CosteoTest`, `CriterioH4Test` |
+| 23 | Vale con bloqueo de fila y costo congelado; autorización del residente o coordinación | Hecho | `CriterioH4Test` |
+| 24 | Prueba de concurrencia de 50 salidas simultáneas | Hecho | `CriterioH4Test.cincuentaSalidasSimultaneasNoDejanNegativo` |
+| 25 | Reparto entre varias unidades | Hecho | `CosteoTest`, `CriterioH4Test.unBoteRepartidoEntre18LotesSumaExacto`, `reparto.test.ts` |
+| 26 | Devolución de obra y devolución a proveedor | Hecho | `CriterioH4Test.devolverYCancelarRegresanExistenciaYCosto` |
+| 27 | Traspaso entre almacenes y reasignación entre lotes, con autorización | Hecho | pantalla Documentos |
+| 28 | Merma con foto y préstamo de herramienta | Hecho | pantalla Préstamos; `compartido.archivo` |
+| 29 | Ajuste de costo por diferencia de factura | Hecho | `CosteoTest.elAjusteDeFacturaSeDivideEntreAlmacenYVales` |
+| 30 | Conteo físico y ajuste; cierre de mes | Hecho | pantallas Conteo físico y Cierre de mes |
+| 31 | Pantallas de almacén | Hecho | e2e `inventario.spec.ts`, `Buscador.test.tsx` |
+
+### Qué ya se verificó y qué no
+
+- **Verificado:**
+  - V007 y 29 pruebas SQL nuevas contra PostgreSQL 16: existencia nunca negativa, kardex que ni
+    el dueño de las tablas modifica, salida sin contrato, lote de otro contrato, quien captura no
+    autoriza, documento aplicado inmutable, mes cerrado, conteo, merma sin foto y RLS.
+  - El dominio de costeo (Java puro) con 15 pruebas.
+  - **Los servicios reales contra PostgreSQL**, sin Spring, con un JdbcClient mínimo sobre JDBC
+    (fuera del repositorio): 18 escenarios, de la recepción al cierre de mes. Incluye 60 vales
+    de 1 saco contra 50 sacos en hilos simultáneos (pool de 20 conexiones): aplican 50, se
+    rechazan 10, la existencia queda en 0 y el kardex suma 0, en tres corridas. Al final, para
+    cada material y almacén, existencia = Σ kardex y valor = Σ importes.
+  - El código compilado contra firmas de las APIs de Spring y con google-java-format 1.28.
+  - Frontend: tipos, lint, 34 pruebas y build. Pantallas en Chrome contra una API simulada, en
+    escritorio y a 412 px.
+- **Se verifica por primera vez en CI:** `CriterioH4Test` por HTTP real, con Spring
+  (`@PreAuthorize`, transacciones y el pool de Hikari), `ModularidadTest` con las APIs nuevas, el
+  formato con spotless y el e2e `inventario.spec.ts`. `frontend/openapi.json` se generó desde los
+  records de Java con las convenciones de springdoc: correr `make api` y revisar el diff.
+- **Criterio de aceptación de H4 pendiente de demostrar en preproducción:** el almacenista captura
+  una semana real del Excel (unos 500 movimientos) en menos de 4 horas.
+
+### Decisiones de esta etapa
+
+- **Un almacén por frente** (CORCELES, PALERMO, GRANADA). Un vale solo va a lotes del frente
+  de su almacén. Si el material está en otro almacén, se traspasa primero.
+- **El vale lo autoriza el residente del contrato o coordinación** (permiso nuevo
+  `vale:autorizar`), en grupo desde la bandeja. Traspaso, reasignación, merma y ajuste de costo
+  los autoriza coordinación o dirección. Nadie autoriza lo que capturó (regla 5, también en la
+  base).
+- **Ajuste de costo por factura:** lo que queda en el almacén ajusta el promedio; lo que ya salió
+  se carga como ajuste a los lotes de los vales posteriores a la recepción, en proporción a lo que
+  cada uno conserva (ADR-010).
+- Valuación con valor y existencia en el saldo; el costo de obra en `inventario.cargo`. Es la
+  fuente de los reportes de H6 (ADR-010).
+- Préstamo: aparta existencia (`saldo.prestado`). Una pérdida crea una merma que coordinación
+  autoriza.
+- Conteo a ciegas: quien cuenta no ve la existencia del sistema. Lo cierra administración, y no
+  quien lo abrió. Mientras está abierto, el almacén no aplica movimientos.
+- Cierre de mes en orden, sin documentos pendientes del mes. No se reabre desde la app.
+- Fotos de merma en `compartido.archivo` (base de datos), detrás de `compartido.Almacenamiento`.
+  Pasan a S3 en H7.
+- Cancelar un vale o una recepción aplicados crea su inverso (devolución o devolución al
+  proveedor). Los demás documentos aplicados se corrigen a mano con su inverso.
+- Rendimiento del frontend: cada pantalla se carga bajo demanda (`lazyRouteComponent`). El JS
+  inicial baja de 590 a 440 kB (de 180 a 140 kB comprimido).
+
+## Siguiente: H5 · Histórico del Excel migrado (issues 46 a 51)
+
+Importadores del histórico de almacén, SUA y destajo hacia el esquema `historico`, con el motor de
+H3. La vista de costo por lote une `historico.salida` con `inventario.cargo`.
