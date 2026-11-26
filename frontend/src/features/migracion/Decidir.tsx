@@ -171,6 +171,18 @@ function etiquetaValor(regla: string): string {
       return 'Lote correcto (M7L16)'
     case 'CONCEPTO_SIN_NOMBRE':
       return 'Nombre del concepto'
+    case 'LOTE_INEXISTENTE':
+    case 'MANZANAS_VARIAS':
+    case 'LOTE_SIN_MANZANA':
+      return 'Lote (M16L34) o SIN ASIGNAR'
+    case 'SIN_FECHA':
+    case 'FECHA_FUERA_DE_RANGO':
+      return 'Fecha (dd/mm/aaaa)'
+    case 'PAGO_ILEGIBLE':
+      return 'Monto del pago'
+    case 'SIN_CANTIDAD':
+    case 'FORMULA_CON_REFERENCIAS':
+      return 'Valor (número)'
     default:
       return 'Valor'
   }

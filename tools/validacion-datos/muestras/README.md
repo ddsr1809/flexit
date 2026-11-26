@@ -13,3 +13,6 @@ varias formas, códigos con "/", lotes ilegibles, apodos, conceptos repetidos), 
 | `muestra-sua.xlsx` | SUA RM Alemán | contratos, personas del SUA |
 | `muestra-destajo.xlsx` | Destajo y nómina | lotes, paquetes, trabajadores |
 | `muestra-lotes.xlsx` | Plantilla "Lotes" | lotes con contrato |
+| `muestra-historico-almacen.xlsx` | Entradas, Salidas, Semanal, Faltantes y Préstamos | histórico de almacén (H5) |
+| `muestra-historico-sua.xlsx` | IMSS, ASISTENCIA, SUA ANTERIOR y BD de un mes | histórico del SUA (H5) |
+| `muestra-historico-destajo.xlsx` | Una hoja de pagos del destajo | histórico de destajo (H5) |

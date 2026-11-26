@@ -17,6 +17,7 @@ import {
   ACCIONES,
   consultasMigracion,
   decisionesEnGrupo,
+  esHistorico,
   ESTADOS,
   lotesPorManzana,
   origen,
@@ -30,6 +31,7 @@ import {
 } from './consultas'
 import { BuscarDestino, Decidir } from './Decidir'
 import { EstadoCarga } from './PantallaMigracion'
+import { Totales } from './Totales'
 
 /**
  * Una carga: conciliación por hoja y por regla, renglones con su cuarentena, y los botones de
@@ -43,6 +45,7 @@ export function PantallaCarga({ cargaId }: { cargaId: number }) {
   const actualizar = (detalle: DetalleCarga) => {
     cliente.setQueryData(consultasMigracion.carga(cargaId).queryKey, detalle)
     void cliente.invalidateQueries({ queryKey: ['importaciones', cargaId, 'filas'] })
+    void cliente.invalidateQueries({ queryKey: ['importaciones', cargaId, 'conciliacion'] })
     void cliente.invalidateQueries({ queryKey: ['importaciones', 'lista'] })
     void cliente.invalidateQueries({ queryKey: ['importaciones', 'tipos'] })
     void cliente.invalidateQueries({ queryKey: ['alias'] })
@@ -109,6 +112,7 @@ export function PantallaCarga({ cargaId }: { cargaId: number }) {
         detalle={detalle}
         alElegirRegla={(regla) => setFiltro({ ...filtro, regla, pagina: 0 })}
       />
+      {esHistorico(r.tipo) && <Totales cargaId={cargaId} />}
       <Filas
         cargaId={cargaId}
         abierta={abierta}

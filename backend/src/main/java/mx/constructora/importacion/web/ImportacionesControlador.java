@@ -10,6 +10,7 @@ import mx.constructora.compartido.Versiones;
 import mx.constructora.importacion.aplicacion.ServicioImportacion;
 import mx.constructora.importacion.aplicacion.ServicioImportacion.AliasCarga;
 import mx.constructora.importacion.aplicacion.ServicioImportacion.CambioAlias;
+import mx.constructora.importacion.aplicacion.ServicioImportacion.ConciliacionCarga;
 import mx.constructora.importacion.aplicacion.ServicioImportacion.DecisionesCarga;
 import mx.constructora.importacion.aplicacion.ServicioImportacion.DestinoPosible;
 import mx.constructora.importacion.aplicacion.ServicioImportacion.DetalleCarga;
@@ -69,6 +70,8 @@ class ImportacionesControlador {
   ResponseEntity<ResumenCarga> subir(
       @RequestParam String tipo,
       @RequestParam(required = false) Long clienteId,
+      @RequestParam(required = false) String mes,
+      @RequestParam(required = false) Integer anio,
       @RequestPart("archivo") MultipartFile archivo) {
     byte[] contenido;
     try {
@@ -76,7 +79,8 @@ class ImportacionesControlador {
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
-    ResumenCarga carga = servicio.subir(tipo, archivo.getOriginalFilename(), contenido, clienteId);
+    ResumenCarga carga =
+        servicio.subir(tipo, archivo.getOriginalFilename(), contenido, clienteId, mes, anio);
     return ResponseEntity.status(carga.repetida() ? HttpStatus.OK : HttpStatus.CREATED).body(carga);
   }
 
@@ -99,6 +103,17 @@ class ImportacionesControlador {
       @RequestParam(defaultValue = "0") int pagina,
       @RequestParam(defaultValue = "50") int tamano) {
     return servicio.filas(id, estado, regla, q, pendientes, pagina, tamano);
+  }
+
+  @GetMapping("/importaciones/{id}/conciliacion")
+  @Operation(
+      operationId = "conciliacionDeCarga",
+      summary =
+          "Totales del Excel contra lo que se carga (solo histórico). Sin todas=true, solo las"
+              + " líneas con diferencia, cuarentena o descartes")
+  ConciliacionCarga conciliacion(
+      @PathVariable long id, @RequestParam(defaultValue = "false") boolean todas) {
+    return servicio.conciliacion(id, todas);
   }
 
   @PostMapping("/importaciones/{id}/decisiones")

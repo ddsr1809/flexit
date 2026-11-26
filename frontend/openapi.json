@@ -1915,6 +1915,23 @@
               "type": "integer",
               "format": "int64"
             }
+          },
+          {
+            "name": "mes",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "anio",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
           }
         ],
         "requestBody": {
@@ -2059,6 +2076,47 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PaginaFilas"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/importaciones/{id}/conciliacion": {
+      "get": {
+        "tags": [
+          "Migración"
+        ],
+        "summary": "Totales del Excel contra lo que se carga (solo histórico). Sin todas=true, solo las líneas con diferencia, cuarentena o descartes",
+        "operationId": "conciliacionDeCarga",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "todas",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConciliacionCarga"
                 }
               }
             }
@@ -3873,6 +3931,38 @@
                   "items": {
                     "$ref": "#/components/schemas/PersonaNombre"
                   }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/historico/unidades/{id}": {
+      "get": {
+        "tags": [
+          "Histórico"
+        ],
+        "summary": "Lo que dice el Excel de un lote: sus vales, sus pagos de destajo y las altas del IMSS de su contrato",
+        "operationId": "historiaDeUnidad",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HistoriaUnidad"
                 }
               }
             }
@@ -7030,6 +7120,350 @@
           "activa",
           "id",
           "nombre"
+        ]
+      },
+      "TotalConciliado": {
+        "type": "object",
+        "properties": {
+          "concepto": {
+            "type": "string"
+          },
+          "llave": {
+            "type": "string",
+            "description": "Material y mes, frente y lote, trabajador…"
+          },
+          "excel": {
+            "type": "number"
+          },
+          "cargado": {
+            "type": "number"
+          },
+          "pendiente": {
+            "type": "number",
+            "description": "En cuarentena"
+          },
+          "descartado": {
+            "type": "number",
+            "description": "Descartado con motivo"
+          },
+          "diferencia": {
+            "type": "number",
+            "description": "excel − cargado − pendiente − descartado: tiene que ser 0"
+          }
+        },
+        "required": [
+          "cargado",
+          "concepto",
+          "descartado",
+          "diferencia",
+          "excel",
+          "llave",
+          "pendiente"
+        ]
+      },
+      "ConceptoConciliado": {
+        "type": "object",
+        "properties": {
+          "concepto": {
+            "type": "string"
+          },
+          "excel": {
+            "type": "number"
+          },
+          "cargado": {
+            "type": "number"
+          },
+          "pendiente": {
+            "type": "number"
+          },
+          "descartado": {
+            "type": "number"
+          },
+          "diferencia": {
+            "type": "number"
+          },
+          "lineas": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "conDiferencia": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Líneas con diferencia distinta de 0"
+          }
+        },
+        "required": [
+          "cargado",
+          "conDiferencia",
+          "concepto",
+          "descartado",
+          "diferencia",
+          "excel",
+          "lineas",
+          "pendiente"
+        ]
+      },
+      "ConciliacionCarga": {
+        "type": "object",
+        "properties": {
+          "cargaId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "conceptos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConceptoConciliado"
+            }
+          },
+          "lineas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TotalConciliado"
+            },
+            "description": "Líneas con diferencia, pendiente o descartado (o todas, si se piden), hasta 500"
+          },
+          "recortada": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "cargaId",
+          "conceptos",
+          "lineas",
+          "recortada"
+        ]
+      },
+      "SalidaHistorica": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "fecha": {
+            "type": "string",
+            "format": "date"
+          },
+          "tipo": {
+            "type": "string",
+            "description": "salida, devolucion o reasignacion"
+          },
+          "documento": {
+            "type": "string"
+          },
+          "folio": {
+            "type": "string"
+          },
+          "material": {
+            "type": "string"
+          },
+          "unidad": {
+            "type": "string"
+          },
+          "cantidad": {
+            "type": "number"
+          },
+          "paquete": {
+            "type": "string"
+          },
+          "clasificacion": {
+            "type": "string"
+          },
+          "solicitante": {
+            "type": "string"
+          },
+          "entregado": {
+            "type": "boolean"
+          },
+          "costoUnitario": {
+            "type": "number",
+            "description": "Sin IVA; vacío sin permiso de costo"
+          },
+          "importe": {
+            "type": "number"
+          },
+          "costoEstimado": {
+            "type": "boolean"
+          },
+          "lotesTexto": {
+            "type": "string",
+            "description": "El renglón del Excel decía varios lotes (\"32-43\")"
+          },
+          "observaciones": {
+            "type": "string"
+          },
+          "origen": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "cantidad",
+          "costoEstimado",
+          "entregado",
+          "fecha",
+          "id",
+          "material",
+          "origen",
+          "tipo",
+          "unidad"
+        ]
+      },
+      "PagoHistorico": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "anio": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "semanas": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "semanaTexto": {
+            "type": "string"
+          },
+          "paquete": {
+            "type": "string"
+          },
+          "concepto": {
+            "type": "string"
+          },
+          "importeConcepto": {
+            "type": "number"
+          },
+          "monto": {
+            "type": "number",
+            "description": "Vacío sin permiso de costo"
+          },
+          "parcial": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "montoCompartido": {
+            "type": "boolean"
+          },
+          "sobreImporte": {
+            "type": "boolean"
+          },
+          "trabajadores": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Quién cobró; vacío sin permiso de personas"
+          },
+          "origen": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "anio",
+          "id",
+          "montoCompartido",
+          "origen",
+          "parcial",
+          "semanas",
+          "sobreImporte",
+          "trabajadores"
+        ]
+      },
+      "AltaHistorica": {
+        "type": "object",
+        "properties": {
+          "mes": {
+            "type": "string",
+            "format": "date"
+          },
+          "origen": {
+            "type": "string",
+            "description": "mes o anterior"
+          },
+          "persona": {
+            "type": "string"
+          },
+          "estatus": {
+            "type": "string"
+          },
+          "dias": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "mes",
+          "origen",
+          "persona"
+        ]
+      },
+      "HistoriaUnidad": {
+        "type": "object",
+        "properties": {
+          "unidadId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "clave": {
+            "type": "string"
+          },
+          "contratoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "contrato": {
+            "type": "string"
+          },
+          "salidas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SalidaHistorica"
+            }
+          },
+          "pagos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PagoHistorico"
+            }
+          },
+          "altas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AltaHistorica"
+            },
+            "description": "Altas del IMSS en el contrato; vacía sin permiso de personas"
+          },
+          "costoMaterial": {
+            "type": "number",
+            "description": "Σ importe de lo entregado; vacío sin permiso de costo"
+          },
+          "destajo": {
+            "type": "number",
+            "description": "Σ pagos de destajo; vacío sin permiso de costo"
+          },
+          "veCostos": {
+            "type": "boolean"
+          },
+          "vePersonas": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "altas",
+          "clave",
+          "contrato",
+          "contratoId",
+          "pagos",
+          "salidas",
+          "unidadId",
+          "veCostos",
+          "vePersonas"
         ]
       }
     }

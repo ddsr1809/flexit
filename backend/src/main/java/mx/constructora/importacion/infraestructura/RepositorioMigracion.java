@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import mx.constructora.importacion.dominio.Json;
+import mx.constructora.importacion.dominio.Modelo.Accion;
 import mx.constructora.importacion.dominio.Modelo.Decision;
+import mx.constructora.importacion.dominio.Modelo.EstadoFila;
 import mx.constructora.importacion.dominio.Modelo.FilaCruda;
 import mx.constructora.importacion.dominio.Modelo.FilaValidada;
 import mx.constructora.importacion.dominio.Modelo.Incidencia;
@@ -720,6 +722,44 @@ public class RepositorioMigracion {
         .param("entidad", entidad)
         .param("registro", registro)
         .update();
+  }
+
+  /** Todos los renglones de la carga como quedaron en la última validación (para conciliar). */
+  public List<FilaValidada> validadas(long empresa, long carga) {
+    return jdbc.sql(
+            """
+            SELECT numero, hoja, fila_excel, crudo::text AS crudo, normal::text AS normal, estado,
+                   accion
+              FROM migracion.fila
+             WHERE empresa_id = :empresa AND carga_id = :carga ORDER BY numero
+            """)
+        .param("empresa", empresa)
+        .param("carga", carga)
+        .query(
+            (rs, n) ->
+                new FilaValidada(
+                    new FilaCruda(
+                        rs.getInt("numero"),
+                        rs.getString("hoja"),
+                        (Integer) rs.getObject("fila_excel"),
+                        Json.textos(rs.getString("crudo"))),
+                    EstadoFila.deClave(rs.getString("estado")),
+                    Accion.deClave(rs.getString("accion")),
+                    rs.getString("normal") == null ? Map.of() : Json.textos(rs.getString("normal")),
+                    List.of()))
+        .list();
+  }
+
+  /** Cargas confirmadas de un tipo, la más reciente primero. */
+  public List<FilaCarga> confirmadas(long empresa, String tipo) {
+    return jdbc.sql(
+            CARGA
+                + " WHERE empresa_id = :empresa AND tipo = :tipo AND estado = 'confirmada'"
+                + " ORDER BY id DESC")
+        .param("empresa", empresa)
+        .param("tipo", tipo)
+        .query(FilaCarga.class)
+        .list();
   }
 
   /** Cuántos registros de cada entidad creó la carga. */

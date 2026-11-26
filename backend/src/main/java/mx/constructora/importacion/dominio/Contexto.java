@@ -1,8 +1,10 @@
 package mx.constructora.importacion.dominio;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import mx.constructora.historico.Registros.EntradaValorada;
 
 /**
  * Lo que la validación necesita saber del sistema: los catálogos actuales y la tabla de alias. Solo
@@ -38,6 +40,9 @@ public interface Contexto {
 
   record Persona(long id, String nombre, String nombreNormal) {}
 
+  /** Clasificación de costo: la "Razón" de una salida (Programa, Garantía Ruba…). */
+  record Clasificacion(int id, String clave, String nombre) {}
+
   /** Destino de un alias guardado ({@code entidad} y texto normalizado), si existe. */
   Optional<Long> alias(String entidad, String texto);
 
@@ -65,4 +70,26 @@ public interface Contexto {
 
   /** Parámetros con los que se subió la carga ({@code clienteId}). */
   Map<String, String> parametros();
+
+  // ------------------------------------------------------------------- lo que pide el histórico
+
+  /** Clasificaciones de costo (catálogo fijo del sistema). */
+  default List<Clasificacion> clasificaciones() {
+    return List.of();
+  }
+
+  /** Tasa de IVA por defecto de cada proveedor que la tiene (proveedor → tasa). */
+  default Map<Long, BigDecimal> tasasIva() {
+    return Map.of();
+  }
+
+  /** Precio de referencia sin IVA de cada material que lo tiene (material → precio). */
+  default Map<Long, BigDecimal> preciosReferencia() {
+    return Map.of();
+  }
+
+  /** Entradas del histórico ya confirmadas, con importe: la base para valuar las salidas. */
+  default List<EntradaValorada> entradasHistoricas() {
+    return List.of();
+  }
 }

@@ -1,8 +1,11 @@
 import {
   candidatos,
   decisionesEnGrupo,
+  ENTIDADES,
   entidadDe,
+  esHistorico,
   lotesPorManzana,
+  mesAnterior,
   origen,
   textoCrudo,
   type FilaCargada,
@@ -79,5 +82,22 @@ describe('centro de migración', () => {
         incidencia({ sugerencia: { candidatos: [{ id: 4, nombre: 'Ana' }, { id: 'x' }] } }),
       ),
     ).toEqual([{ id: 4, texto: 'Ana' }])
+  })
+})
+
+describe('histórico (H5)', () => {
+  it('reconoce las cargas del histórico por su tipo', () => {
+    expect(esHistorico('HIST_SALIDAS')).toBe(true)
+    expect(esHistorico('MATERIALES')).toBe(false)
+  })
+
+  it('propone el mes anterior para el SUA, también en enero', () => {
+    expect(mesAnterior(new Date(2026, 10, 26))).toBe('2026-10')
+    expect(mesAnterior(new Date(2027, 0, 5))).toBe('2026-12')
+  })
+
+  it('busca lotes y paquetes al elegir otro registro', () => {
+    expect(ENTIDADES['unidad_obra']).toBe('Lote')
+    expect(ENTIDADES['paquete']).toBe('Paquete')
   })
 })

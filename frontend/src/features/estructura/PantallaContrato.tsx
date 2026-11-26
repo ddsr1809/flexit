@@ -86,6 +86,12 @@ export function PantallaContrato({ contratoId }: { contratoId: number }) {
 
 function Unidades({ contrato, administra }: { contrato: Contrato; administra: boolean }) {
   const cliente = useQueryClient()
+  const veHistoria = puedeAlguno(
+    useSesion(),
+    PERMISOS.costoVerPropio,
+    PERMISOS.costoVerTodo,
+    PERMISOS.administrar,
+  )
   const unidades = useQuery(consultas.unidades(contrato.id))
   const prototipos = useQuery(consultas.prototipos)
   const tipos = useQuery(consultas.tiposUnidad)
@@ -170,7 +176,19 @@ function Unidades({ contrato, administra }: { contrato: Contrato; administra: bo
         columnas={[
           {
             titulo: 'Clave',
-            celda: (u) => <span className="font-mono font-medium">{u.clave}</span>,
+            celda: (u) =>
+              veHistoria ? (
+                <Link
+                  to="/historico/lote/$unidadId"
+                  params={{ unidadId: String(u.id) }}
+                  className="font-mono font-medium text-marca underline"
+                  title="Lo que dice el Excel de este lote"
+                >
+                  {u.clave}
+                </Link>
+              ) : (
+                <span className="font-mono font-medium">{u.clave}</span>
+              ),
           },
           {
             titulo: 'Tipo',

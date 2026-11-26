@@ -48,7 +48,43 @@ public enum TipoCarga {
       "Solicitante y Entregar a de Salidas, Semanal, Préstamos y Faltantes; Quién recibe de"
           + " Entradas",
       List.of(PERSONAS_SUA),
-      List.of());
+      List.of()),
+  HIST_ENTRADAS(
+      5,
+      "Histórico: entradas",
+      "Entradas (almacén): cada recepción con su precio sin IVA",
+      List.of(MATERIALES, PROVEEDORES, PERSONAS_ALMACEN),
+      List.of()),
+  HIST_SALIDAS(
+      5,
+      "Histórico: salidas",
+      "Salidas (almacén): vales por lote, valuados con las entradas del histórico",
+      List.of(HIST_ENTRADAS, LOTES, PAQUETES),
+      List.of()),
+  HIST_REQUISICIONES(
+      5,
+      "Histórico: Semanal y faltantes",
+      "Semanal y Faltante solicitud diaria (almacén)",
+      List.of(MATERIALES, LOTES, PAQUETES, PERSONAS_ALMACEN),
+      List.of()),
+  HIST_PRESTAMOS(
+      5,
+      "Histórico: préstamos",
+      "Prestamo Herramientas-Material (almacén)",
+      List.of(MATERIALES, FRENTES, PERSONAS_ALMACEN),
+      List.of()),
+  HIST_SUA(
+      6,
+      "Histórico: SUA del mes",
+      "IMSS, ASISTENCIA, SUA ANTERIOR y BD del SUA de un mes",
+      List.of(CONTRATOS, PERSONAS_SUA),
+      List.of("mes")),
+  HIST_DESTAJO(
+      7,
+      "Histórico: pagos de destajo",
+      "Hojas de pagos del destajo: pago por lote, concepto, semana y trabajador",
+      List.of(PAQUETES, PERSONAS_DESTAJO),
+      List.of("anio"));
 
   private final int paso;
   private final String nombre;
@@ -65,7 +101,10 @@ public enum TipoCarga {
     this.parametros = parametros;
   }
 
-  /** Paso del orden de carga: 1 listas, 2 estructura, 3 catálogo, 4 personas. */
+  /**
+   * Paso del orden de carga: 1 listas, 2 estructura, 3 catálogo, 4 personas, 5 histórico de
+   * almacén, 6 histórico de personal, 7 histórico de destajo.
+   */
   public int paso() {
     return paso;
   }
@@ -84,7 +123,15 @@ public enum TipoCarga {
     return requiere;
   }
 
-  /** Parámetros obligatorios al subir (el cliente de los frentes). */
+  /** {@code true} si escribe en el histórico (H5) y no en los catálogos. */
+  public boolean historico() {
+    return name().startsWith("HIST_");
+  }
+
+  /**
+   * Parámetros obligatorios al subir: el cliente de los frentes, el mes del SUA ({@code 2026-10}) o
+   * el año de las semanas del destajo.
+   */
   public List<String> parametros() {
     return parametros;
   }

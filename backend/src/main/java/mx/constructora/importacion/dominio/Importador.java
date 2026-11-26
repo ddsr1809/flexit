@@ -34,4 +34,12 @@ public interface Importador {
    * llama si ningún renglón está en cuarentena.
    */
   void aplicar(List<FilaValidada> filas, Contexto contexto, Destino destino);
+
+  /**
+   * Totales del Excel contra lo que se carga (H5). Solo los importadores del histórico los tienen:
+   * los catálogos se concilian por renglón.
+   */
+  default List<Conciliacion.Total> conciliar(List<FilaValidada> filas, Contexto contexto) {
+    return List.of();
+  }
 }

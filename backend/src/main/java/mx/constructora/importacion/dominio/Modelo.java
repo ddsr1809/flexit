@@ -57,6 +57,15 @@ public final class Modelo {
     public String clave() {
       return clave;
     }
+
+    public static Accion deClave(String clave) {
+      for (Accion accion : values()) {
+        if (accion.clave.equals(clave)) {
+          return accion;
+        }
+      }
+      throw new IllegalArgumentException("Acción desconocida: " + clave);
+    }
   }
 
   /** Gravedad de una incidencia. */

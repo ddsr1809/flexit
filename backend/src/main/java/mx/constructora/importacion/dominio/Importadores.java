@@ -20,7 +20,13 @@ public final class Importadores {
           new ImportadorProveedores(),
           new ImportadorPersonas(Perfil.SUA),
           new ImportadorPersonas(Perfil.DESTAJO),
-          new ImportadorPersonas(Perfil.ALMACEN)
+          new ImportadorPersonas(Perfil.ALMACEN),
+          new ImportadorEntradasHistoricas(),
+          new ImportadorSalidasHistoricas(),
+          new ImportadorRequisicionesHistoricas(),
+          new ImportadorPrestamosHistoricos(),
+          new ImportadorSuaHistorico(),
+          new ImportadorDestajoHistorico()
         }) {
       POR_TIPO.put(importador.tipo(), importador);
     }

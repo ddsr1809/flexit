@@ -45,6 +45,9 @@ Docker Compose, Caddy, Terraform (Vultr + Cloudflare), GitHub Actions + GHCR.
     anonimizada y, si cambia resultados, sube `Comun.VERSION_REGLAS`.
 15. El costo de obra se lee de `inventario.cargo`, nunca de las líneas de vale: devolver,
     reasignar o corregir una factura agrega cargos, no cambia los anteriores (ADR-010).
+16. El histórico del Excel (esquema `historico`) solo lo escribe la migración por
+    `ImportacionHistorico`, nunca se edita (se revierte la carga completa) y no entra al kardex.
+    Un reporte de costo suma histórico y vivo con `reportes.v_costo_unidad` (ADR-011).
 
 ## Cómo funciona la seguridad por empresa
 `ContextoEmpresa` (sesión web o `ContextoEmpresa.como(...)`) → `DataSourceConEmpresa` fija

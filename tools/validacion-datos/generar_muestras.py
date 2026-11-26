@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Genera las muestras anonimizadas que usan las pruebas de los importadores (H3).
+"""Genera las muestras anonimizadas que usan las pruebas de los importadores (H3 y H5).
 
 Reproducen la forma de los tres Excel reales (hojas, filas de encabezado, columnas, fórmulas y
 los problemas conocidos del plan), pero con datos inventados: ningún nombre, monto ni contrato es
@@ -291,8 +291,204 @@ def plantilla_lotes():
     guardar(libro, "muestra-lotes.xlsx")
 
 
+def historico_almacen():
+    """Hojas de movimientos del almacén con los problemas que motivan las reglas de H5."""
+    libro = Workbook()
+    en = libro.active
+    en.title = "Entradas"
+    for col, texto in {"A": "Semana", "B": "Fecha Recepción", "D": "Cant.", "E": "Unidad",
+                       "F": "Artículo", "G": "Precio Unitario ", "H": "Subtotal",
+                       "I": "Descuento (SIN IVA)", "J": "IVA", "M": "Proveedor ",
+                       "N": "Folio/N. factura", "O": "Quién Recibe:"}.items():
+        en[f"{col}1"] = texto
+    entradas = [
+        # semana, fecha, cantidad, artículo, precio, descuento, iva, proveedor
+        (None, dt.date(2026, 6, 10), 10, "Cemento gris 50 kg", 200, None, 0.16, "Materiales del Valle"),
+        (None, dt.date(2026, 6, 20), 10, "Cemento gris 50 kg", 220, 100, None, "Materiales del Valle"),
+        (None, dt.date(2026, 6, 25), 30, "Pintura vinílica blanca 19 L", "=206.95/30", None, 0.08, "Pinturas Sol"),
+        (None, dt.date(2026, 6, 26), 5, "Cemento gris 50 kg", None, None, None, "Materiales del Valle"),
+        ("Semana 32", dt.date(2027, 8, 3), "=3*4", "Aerosol negro", 40, None, None, "Pinturas Sol"),
+        (None, None, 2, "Aerosol negro", 41, None, 0.08, "Pinturas Sol"),
+        (None, dt.date(2026, 7, 1), 4, "Lija 220", 8, None, 0.08, None),
+    ]
+    for i, (sem, fecha, cant, art, precio, desc, iva, prov) in enumerate(entradas, start=2):
+        if sem:
+            en[f"A{i}"] = sem
+        if fecha:
+            en[f"B{i}"] = fecha
+        en[f"D{i}"] = cant
+        en[f"E{i}"] = f"=_xlfn.XLOOKUP(F{i},Existencias!F:F,Existencias!I:I)"
+        en[f"F{i}"] = art
+        if precio is not None:
+            en[f"G{i}"] = precio
+        en[f"H{i}"] = f"=D{i}*G{i}"
+        if desc is not None:
+            en[f"I{i}"] = desc
+        if iva is not None:
+            en[f"J{i}"] = iva
+        if prov:
+            en[f"M{i}"] = prov
+        en[f"O{i}"] = "Lalo"
+
+    sa = libro.create_sheet("Salidas")
+    sa["F1"] = "Requisiciones y Vales de Material / 2026"
+    for col, texto in {"A": "Fecha", "B": "Documento", "C": "Razón", "D": "Folio",
+                       "E": "Paqueteria", "F": "Mza", "G": "Lote", "H": "Cant.", "I": "Unidad",
+                       "J": "Artículo", "K": "Solicitante", "L": "Frente", "M": "Entregar a:",
+                       "N": "Entregado", "O": "Observaciones"}.items():
+        sa[f"{col}2"] = texto
+    salidas = [
+        # fecha, razón, paquetería, mza, lote, cantidad, artículo, solicitante, frente, entregado, obs
+        (dt.date(2026, 6, 22), "Programa", "Acabados ", 20, 30, 2, "Cemento gris 50 kg", "Lalo", "Corceles", True, None),
+        (dt.date(2026, 6, 22), "Programa", None, 20, 31, "=1/3", "Pintura vinílica blanca 19 L", "Lalo", "Corceles", True, None),
+        (dt.date(2026, 6, 22), "Programa", None, 20, 32, "=1/3", "Pintura vinílica blanca 19 L", "Lalo", "Corceles", True, None),
+        (dt.date(2026, 6, 22), "Programa", None, 20, 33, "=1/3", "Pintura vinílica blanca 19 L", "Lalo", "Corceles", True, None),
+        (dt.date(2026, 6, 23), "Retrabajo", None, 20, "30, 31, 32", 10, "Cemento gris 50 kg", "Mari", "Corceles", True, None),
+        (dt.date(2026, 6, 23), "Programa", None, 20, "-", 1, "Lija 220", "Mari", "Corceles", True, None),
+        (dt.date(2026, 6, 24), "Programa", None, "16, 6, 5", "-", 3, "Lija 220", "Mari", "Corceles", True, None),
+        (dt.date(2026, 6, 24), "Programa", None, 20, 99, 1, "Aerosol negro", "Pepe", "Corceles", True, None),
+        (dt.date(2026, 6, 25), "Programa", None, 20, 99, 2, "Aerosol negro", "Pepe", "Corceles", True, None),
+        (dt.date(2026, 6, 25), "Garantía Ruba", None, 16, 34, 1, "Aerosol negro", "Pepe", "Corceles", True, None),
+        (dt.date(2026, 6, 26), "Programa", None, 20, 30, -1, "Cemento gris 50 kg", "Lalo", "Corceles", True, None),
+        (dt.date(2026, 6, 26), "Programa", None, 20, 31, -2, "Cemento gris 50 kg", "Lalo", "Corceles", True,
+         "AJUSTE DE MATERIALES EN LOTES, SE REFLEJA MATERIAL REAL POR CASA"),
+        (dt.date(2026, 6, 27), None, None, None, None, 1, "Lija 220", "Lalo", "Almacén", True, None),
+        (dt.date(2026, 6, 27), "Programa", None, 20, 30, 5, "Cemento gris 50 kg", "Lalo", "Corceles", False, None),
+        (dt.date(2026, 6, 28), "Programa", None, 20, 30, "=12-SUM(H3:H5)", "Cemento gris 50 kg", "Lalo", "Corceles", True, None),
+    ]
+    for i, (fecha, razon, paq, mza, lote, cant, art, sol, frente, entregado, obs) in enumerate(salidas, start=3):
+        sa[f"A{i}"] = fecha
+        sa[f"B{i}"] = "Vale"
+        if razon:
+            sa[f"C{i}"] = razon
+        if paq:
+            sa[f"E{i}"] = paq
+        if mza is not None:
+            sa[f"F{i}"] = mza
+        if lote is not None:
+            sa[f"G{i}"] = lote
+        sa[f"H{i}"] = cant
+        sa[f"I{i}"] = f"=_xlfn.XLOOKUP(J{i},Existencias!F:F,Existencias!I:I)"
+        sa[f"J{i}"] = art
+        sa[f"K{i}"] = sol
+        sa[f"L{i}"] = frente
+        sa[f"M{i}"] = sol
+        sa[f"N{i}"] = entregado
+        if obs:
+            sa[f"O{i}"] = obs
+
+    se = libro.create_sheet("Semanal")
+    for col, texto in {"A": "Semana", "E": "Autorización Coordinación", "F": "Solicitante",
+                       "G": "Frente", "H": "Prototipo", "I": "Manzana", "J": "Lote", "K": "Cantidad",
+                       "L": "Unidad", "M": "Paqueteria", "N": "Material", "O": "Lunes",
+                       "P": "Martes", "U": "Subtotal (pedido)"}.items():
+        se[f"{col}2"] = texto
+    se["A3"], se["E3"], se["F3"], se["G3"], se["H3"], se["I3"], se["J3"] = (
+        "Semana 31", "Autorizado", "Pepe", "Corceles", 65, 20, 30)
+    se["K3"], se["L3"], se["M3"], se["N3"], se["O3"], se["P3"] = (
+        1, "Paquete", "Acabados", "Cemento gris 50 kg", 2, "=1/2")
+    se["U3"] = "=SUM(O3:T3)"
+    se["A4"], se["E4"], se["F4"], se["G4"], se["I4"], se["J4"] = (
+        "Sem. 20-25 julio", "No Autorizado", "Mari", "Corceles", "20-21", "-")
+    se["K4"], se["L4"], se["N4"] = 3, "Piezas", "Lija 220"
+
+    fa = libro.create_sheet("Faltante solicitud diaria")
+    for col, texto in {"A": "Fecha de Solicitud", "B": "URGENCIA", "C": "Cantidad", "D": "Unidad",
+                       "E": "Material", "F": "Solicitante", "G": "Frente", "H": "Observación",
+                       "I": "Estado del pedido", "J": "Suministrado"}.items():
+        fa[f"{col}2"] = texto
+    fa["A3"], fa["B3"], fa["C3"], fa["D3"], fa["E3"], fa["G3"], fa["I3"], fa["J3"] = (
+        dt.date(2026, 6, 12), "NO URGENTE", 2, "Piezas", "Aerosol negro", "Almacén ", "PENDIENTE", 1)
+
+    pr = libro.create_sheet("Prestamo Herramientas-Material")
+    for col, texto in {"A": "Mza", "B": "Lote", "C": "Cant.", "D": "Unidad", "E": "Artículo",
+                       "F": "Fecha Entrega", "H": "Solicitante", "I": "Frente", "J": "Entregar a:",
+                       "K": "Recibido", "L": "Fecha Recepción"}.items():
+        pr[f"{col}1"] = texto
+    pr["C2"], pr["D2"], pr["E2"], pr["F2"], pr["H2"], pr["I2"], pr["J2"], pr["K2"], pr["L2"] = (
+        1, "Pieza", "Rotomartillo", dt.date(2026, 6, 10), "Pepe", "Corceles", "Pepe", True,
+        dt.date(2026, 7, 2))
+    pr["C3"], pr["D3"], pr["E3"], pr["F3"], pr["H3"], pr["I3"], pr["J3"], pr["K3"] = (
+        1, "Pieza", "Lija 220", dt.date(2026, 6, 18), "Mari", "Corceles", "Trabajadores", False)
+    guardar(libro, "muestra-historico-almacen.xlsx")
+
+
+def historico_sua():
+    """SUA de octubre con asistencia diaria, contrato con "/" y el del mes anterior por texto."""
+    libro = Workbook()
+    imss = libro.active
+    imss.title = "IMSS OCTUBRE"
+    for col, texto in {"A": "STATUS", "B": "NOMBRE", "C": "DIAS IMSS", "D": "SUA IMSS OCTUBRE",
+                       "E": "CONTRATO", "F": "NO. OBRA"}.items():
+        imss[f"{col}1"] = texto
+    for i, (estatus, nombre, dias, contrato) in enumerate([
+            ("ALTA ", "PEREZ LUNA MARIO ALBERTO ", 31, "60-AAA-MF6/C002/2026"),
+            ("BAJA", "SALAS RUIZ ANA MARIA", 6, "60-AAA-MF6-C002-2026"),
+            ("ALTA", "RIOS CANO LUIS", 31, "60-ZZZ-NOEXISTE-2026")], start=2):
+        imss[f"A{i}"], imss[f"B{i}"], imss[f"C{i}"] = estatus, nombre, dias
+        imss[f"D{i}"], imss[f"E{i}"], imss[f"F{i}"] = "CORCELES", contrato, "C1269209"
+    asistencia = libro.create_sheet("ASISTENCIA OCTUBRE")
+    for col, texto in {"A": "#", "B": "FRENTE", "D": "NOMBRE DEL PERSONAL", "E": "TIPO DE PAGO",
+                       "F": "OCUPACION"}.items():
+        asistencia[f"{col}1"] = texto
+    for dia in range(1, 32):
+        asistencia.cell(row=1, column=6 + dia, value=dia)
+    filas = [
+        ("CORCELES", "PEREZ LUNA MARIO ALBERTO", "NOMINA", "OFICIAL", {1: 1, 2: 0.5, 3: 0, 4: 1}),
+        ("PALERMO", "MARIO ALBERTO PEREZ LUNA", "NOMINA", "OFICIAL", {4: 1, 5: 1}),
+        ("CORCELES", "SALAS RUIZ ANA MARIA", "DESTAJO", "AYUDANTE", {1: 1, 2: "F"}),
+    ]
+    for i, (frente, nombre, tipo, ocupacion, dias) in enumerate(filas, start=2):
+        asistencia[f"A{i}"], asistencia[f"B{i}"], asistencia[f"D{i}"] = i - 1, frente, nombre
+        asistencia[f"E{i}"], asistencia[f"F{i}"] = tipo, ocupacion
+        for dia, valor in dias.items():
+            asistencia.cell(row=i, column=6 + dia, value=valor)
+    anterior = libro.create_sheet("SUA ANTERIOR")
+    anterior["A1"], anterior["B1"], anterior["C1"] = "NOMBRE", "FRENTE", "CONTRATO ACTIVO"
+    anterior["A2"], anterior["B2"], anterior["C2"] = "PEREZ LUNA MARIO ALBERTO   ", "CORCELES", "1 MF6 10 VIVIENDAS"
+    bd = libro.create_sheet("BD")
+    bd["A1"], bd["B1"], bd["C1"] = "NOMBRE", "FRENTE", "ASIGNACION PARA IMSS POR CONTRATO"
+    bd["A2"], bd["B2"], bd["C2"] = "SALAS RUIZ ANA MARIA", "2 G - C ", "CORCELES"
+    guardar(libro, "muestra-historico-sua.xlsx")
+
+
+def historico_destajo():
+    """Pagos de destajo con fórmulas, semanas y trabajadores juntos, sobrepago y subtotales."""
+    libro = Workbook()
+    hoja = libro.active
+    hoja.title = "Pagos Corceles P-65"
+    hoja["A2"] = "Conceptos y Pagos"
+    hoja["C5"], hoja["D5"] = "PROTOTIPO:", 65
+    for col, texto in {"A": "No.", "B": "Concepto RUBA", "C": "P.U.", "D": "Destajo RM",
+                       "E": "Cantidad", "F": "Unidad", "G": "P.U.", "H": "Importe"}.items():
+        hoja[f"{col}6"] = texto
+    for j, lote in enumerate(["M20L30", "M20L31", "M2OL3"]):
+        base = 9 + j * 3
+        hoja.cell(row=5, column=base, value="Pagos")
+        hoja.cell(row=5, column=base + 1, value="Sem")
+        hoja.cell(row=5, column=base + 2, value="Trabajador")
+        hoja.cell(row=6, column=base, value=lote)
+    hoja["A7"], hoja["B7"], hoja["D7"] = 1, "CIMENTACIÓN", "CIMENTACIÓN"
+    hoja["A8"], hoja["D8"], hoja["E8"], hoja["F8"], hoja["G8"] = 1.1, "TRAZO Y EXCAVACION", "Lote", 1, 2400
+    hoja["H8"] = "=F8*G8"
+    hoja["I8"], hoja["J8"], hoja["K8"] = "=1000+1400", "s39\ns38(2)", "Lalo G(1,2)"
+    hoja["L8"], hoja["M8"], hoja["N8"] = 3000, "s40", "Pepe y Mari"
+    hoja["O8"], hoja["P8"], hoja["Q8"] = 2400, "S40", "Lalo"
+    hoja["A9"], hoja["D9"], hoja["E9"], hoja["F9"], hoja["G9"] = 1.2, "COLADO", "Lote", 1, 1600
+    hoja["I9"], hoja["J9"], hoja["K9"] = 1600, "s41", "1000"
+    hoja["L9"] = 0
+    hoja["O9"] = 0
+    hoja["I10"] = "=SUM(I8:I9)"
+    hoja["L10"] = "=SUM(L8:L9)"
+    hoja["B12"], hoja["C12"] = "PRECIOS", "RUBA"
+    guardar(libro, "muestra-historico-destajo.xlsx")
+
+
 if __name__ == "__main__":
     almacen()
     sua()
     destajo()
     plantilla_lotes()
+    historico_almacen()
+    historico_sua()
+    historico_destajo()

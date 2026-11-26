@@ -27,6 +27,10 @@ const PantallaCatalogos = lazyRouteComponent(
   () => import('@/features/estructura/PantallaCatalogos'),
   'PantallaCatalogos',
 )
+const PantallaHistoricoLote = lazyRouteComponent(
+  () => import('@/features/historico/PantallaHistoricoLote'),
+  'PantallaHistoricoLote',
+)
 const PantallaContrato = lazyRouteComponent(
   () => import('@/features/estructura/PantallaContrato'),
   'PantallaContrato',
@@ -184,6 +188,18 @@ const contrato = createRoute({
   getParentRoute: () => privado,
   path: '/contratos/$contratoId',
   component: RutaContrato,
+})
+
+function RutaHistoricoLote() {
+  const { unidadId } = historicoLote.useParams()
+  return <PantallaHistoricoLote key={unidadId} unidadId={Number(unidadId)} />
+}
+
+const historicoLote = createRoute({
+  getParentRoute: () => privado,
+  path: '/historico/lote/$unidadId',
+  beforeLoad: conAlguno(PERMISOS.costoVerPropio, PERMISOS.costoVerTodo, PERMISOS.administrar),
+  component: RutaHistoricoLote,
 })
 
 const paquetes = createRoute({
@@ -382,6 +398,7 @@ const arbol = raiz.addChildren([
     inicio,
     contratos,
     contrato,
+    historicoLote,
     paquetes,
     catalogos,
     materiales,

@@ -12,6 +12,7 @@ export type DecisionCarga = components['schemas']['DecisionCarga']
 export type AliasCarga = components['schemas']['AliasCarga']
 export type DestinoPosible = components['schemas']['DestinoPosible']
 export type Persona = components['schemas']['Persona']
+export type ConciliacionCarga = components['schemas']['ConciliacionCarga']
 
 export type Opcion = 'ACEPTAR' | 'ELEGIR' | 'CREAR' | 'VALOR' | 'DESCARTAR'
 
@@ -34,6 +35,8 @@ export const ENTIDADES: Record<string, string> = {
   material: 'Material',
   proveedor: 'Proveedor',
   persona: 'Persona',
+  paquete: 'Paquete',
+  unidad_obra: 'Lote',
 }
 
 export const consultasMigracion = {
@@ -62,6 +65,16 @@ export const consultasMigracion = {
         ),
       placeholderData: keepPreviousData,
     }),
+  conciliacion: (id: number, todas = false) =>
+    queryOptions({
+      queryKey: ['importaciones', id, 'conciliacion', { todas }],
+      queryFn: async () =>
+        exigir(
+          await api.GET('/api/v1/importaciones/{id}/conciliacion', {
+            params: { path: { id }, query: { todas } },
+          }),
+        ),
+    }),
   destinos: (entidad: string, q: string, frenteId?: number) =>
     queryOptions({
       queryKey: ['importaciones', 'destinos', { entidad, q, frenteId }],
@@ -89,13 +102,20 @@ export const consultasMigracion = {
     }),
 }
 
+/** Parámetros de una carga: el cliente de los frentes, el mes del SUA o el año del destajo. */
+export interface ParametrosCarga {
+  clienteId?: number
+  mes?: string
+  anio?: number
+}
+
 /** Sube el Excel como multipart/form-data. */
-export async function subirArchivo(tipo: string, archivo: File, clienteId?: number) {
+export async function subirArchivo(tipo: string, archivo: File, parametros: ParametrosCarga = {}) {
   const datos = new FormData()
   datos.append('archivo', archivo, archivo.name)
   return exigir(
     await api.POST('/api/v1/importaciones', {
-      params: { query: { tipo, clienteId } },
+      params: { query: { tipo, ...parametros } },
       body: datos as unknown as { archivo: string },
       bodySerializer: (cuerpo) => cuerpo as unknown as FormData,
     }),
@@ -164,6 +184,17 @@ export function entidadDe(incidencia: IncidenciaCarga): string | undefined {
   if (entidad) return entidad
   if (incidencia.regla === 'LOTE_SIN_CONTRATO') return 'contrato'
   return undefined
+}
+
+/** {@code true} si la carga es del histórico (H5): tiene conciliación de totales. */
+export function esHistorico(tipo: string): boolean {
+  return tipo.startsWith('HIST_')
+}
+
+/** Mes anterior al de hoy como aaaa-mm: el SUA que suele cargarse. */
+export function mesAnterior(hoy = new Date()): string {
+  const fecha = new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1)
+  return `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`
 }
 
 /**

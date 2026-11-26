@@ -2,6 +2,7 @@ package mx.constructora.importacion.dominio;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import mx.constructora.historico.Registros;
 
 /**
  * A dónde escribe una carga al confirmarse. En la aplicación cada método llama a la API pública del
@@ -46,4 +47,7 @@ public interface Destino {
 
   /** Guarda que {@code texto} (normalizado) en el Excel es el registro {@code destinoId}. */
   void alias(String entidad, String texto, long destinoId);
+
+  /** Escribe en el histórico todo lo que produjo la carga (H5). */
+  void historico(Registros.Lote lote);
 }

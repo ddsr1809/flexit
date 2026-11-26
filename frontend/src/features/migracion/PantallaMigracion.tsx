@@ -6,6 +6,7 @@ import { mensajeDe } from '@/api/errores'
 import { Tabla } from '@/components/Tabla'
 import { Aviso } from '@/components/ui/aviso'
 import { Boton } from '@/components/ui/boton'
+import { Campo } from '@/components/ui/campo'
 import { Insignia } from '@/components/ui/insignia'
 import { Seleccion } from '@/components/ui/seleccion'
 import { Tarjeta } from '@/components/ui/tarjeta'
@@ -15,6 +16,7 @@ import { id } from '@/lib/valores'
 import {
   consultasMigracion,
   ESTADOS,
+  mesAnterior,
   subirArchivo,
   type ResumenCarga,
   type TipoCargaInfo,
@@ -25,6 +27,9 @@ const PASOS: Record<number, string> = {
   2: 'Estructura',
   3: 'Catálogo',
   4: 'Personas',
+  5: 'Histórico de almacén',
+  6: 'Histórico de personal',
+  7: 'Histórico de destajo',
 }
 
 /**
@@ -181,15 +186,27 @@ function Subir({ tipos }: { tipos: TipoCargaInfo[] }) {
   const disponibles = tipos.filter((t) => t.disponible)
   const [tipo, setTipo] = useState(disponibles[0]?.tipo ?? '')
   const [clienteId, setClienteId] = useState('')
+  const [mes, setMes] = useState(mesAnterior())
+  const [anio, setAnio] = useState(String(new Date().getFullYear()))
   const [archivo, setArchivo] = useState<File>()
   const elegido = tipos.find((t) => t.tipo === tipo)
   const pideCliente = elegido?.parametros.includes('clienteId') ?? false
+  const pideMes = elegido?.parametros.includes('mes') ?? false
+  const pideAnio = elegido?.parametros.includes('anio') ?? false
+  const faltaParametro =
+    (pideCliente && !clienteId) ||
+    (pideMes && !/^\d{4}-\d{2}$/.test(mes)) ||
+    (pideAnio && !/^\d{4}$/.test(anio))
   const clientes = useQuery({ ...consultas.clientes, enabled: pideCliente })
 
   const subir = useMutation({
     mutationFn: async () => {
       if (!archivo) throw new Error('Falta el archivo')
-      return subirArchivo(tipo, archivo, pideCliente ? id(clienteId) : undefined)
+      return subirArchivo(tipo, archivo, {
+        clienteId: pideCliente ? id(clienteId) : undefined,
+        mes: pideMes ? mes : undefined,
+        anio: pideAnio ? Number(anio) : undefined,
+      })
     },
     onSuccess: (carga) => {
       void cliente.invalidateQueries({ queryKey: ['importaciones'] })
@@ -222,6 +239,25 @@ function Subir({ tipos }: { tipos: TipoCargaInfo[] }) {
               onChange={(e) => setClienteId(e.target.value)}
             />
           )}
+          {pideMes && (
+            <Campo
+              etiqueta="Mes del SUA"
+              type="month"
+              value={mes}
+              onChange={(e) => setMes(e.target.value)}
+            />
+          )}
+          {pideAnio && (
+            <Campo
+              etiqueta="Año de las semanas"
+              type="number"
+              inputMode="numeric"
+              min={2020}
+              max={2100}
+              value={anio}
+              onChange={(e) => setAnio(e.target.value)}
+            />
+          )}
           <div className="flex min-w-0 flex-col gap-1.5">
             <label htmlFor="archivo-excel" className="text-sm font-medium">
               Archivo de Excel (.xlsx)
@@ -234,10 +270,7 @@ function Subir({ tipos }: { tipos: TipoCargaInfo[] }) {
               onChange={(e) => setArchivo(e.target.files?.[0])}
             />
           </div>
-          <Boton
-            type="submit"
-            disabled={!archivo || !tipo || (pideCliente && !clienteId) || subir.isPending}
-          >
+          <Boton type="submit" disabled={!archivo || !tipo || faltaParametro || subir.isPending}>
             <Upload className="size-4" /> {subir.isPending ? 'Leyendo…' : 'Subir y validar'}
           </Boton>
         </div>

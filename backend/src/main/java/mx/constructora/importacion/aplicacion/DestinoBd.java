@@ -6,6 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import mx.constructora.catalogo.ImportacionCatalogo;
 import mx.constructora.estructura.ImportacionEstructura;
+import mx.constructora.historico.ImportacionHistorico;
+import mx.constructora.historico.Registros;
 import mx.constructora.importacion.dominio.Destino;
 import mx.constructora.importacion.infraestructura.RepositorioMigracion;
 import mx.constructora.organizacion.Personas;
@@ -23,6 +25,7 @@ final class DestinoBd implements Destino {
   private final ImportacionEstructura estructura;
   private final ImportacionCatalogo catalogo;
   private final Personas personas;
+  private final ImportacionHistorico historico;
   private final RepositorioMigracion repositorio;
   private final Map<String, Long> creados = new LinkedHashMap<>();
 
@@ -33,6 +36,7 @@ final class DestinoBd implements Destino {
       ImportacionEstructura estructura,
       ImportacionCatalogo catalogo,
       Personas personas,
+      ImportacionHistorico historico,
       RepositorioMigracion repositorio) {
     this.empresa = empresa;
     this.carga = carga;
@@ -40,6 +44,7 @@ final class DestinoBd implements Destino {
     this.estructura = estructura;
     this.catalogo = catalogo;
     this.personas = personas;
+    this.historico = historico;
     this.repositorio = repositorio;
   }
 
@@ -128,5 +133,13 @@ final class DestinoBd implements Destino {
   public void alias(String entidad, String texto, long destinoId) {
     repositorio.guardarAlias(empresa, entidad, texto, destinoId, "regla", carga, usuario);
     creados.merge("alias", 1L, Long::sum);
+  }
+
+  @Override
+  public void historico(Registros.Lote lote) {
+    if (lote.total() == 0) {
+      return;
+    }
+    historico.guardar(carga, lote).forEach((tabla, n) -> creados.merge(tabla, n, Long::sum));
   }
 }

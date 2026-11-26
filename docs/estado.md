@@ -1,6 +1,6 @@
 # Estado del proyecto
 
-Última actualización: 26 nov 2026 · Hito en curso: **H4 · Inventario operando en preproducción** (semanas 6 a 9)
+Última actualización: 26 nov 2026 · Hito en curso: **H5 · Histórico del Excel migrado** (semanas 8 a 11)
 
 ## H1 · issues 1 a 11
 
@@ -202,7 +202,68 @@ porque Spring 7 ya no lo copia en la excepción traducida.
 - Rendimiento del frontend: cada pantalla se carga bajo demanda (`lazyRouteComponent`). El JS
   inicial baja de 590 a 440 kB (de 180 a 140 kB comprimido).
 
-## Siguiente: H5 · Histórico del Excel migrado (issues 46 a 51)
+## H5 · issues 46 a 51
 
-Importadores del histórico de almacén, SUA y destajo hacia el esquema `historico`, con el motor de
-H3. La vista de costo por lote une `historico.salida` con `inventario.cargo`.
+| # | Issue | Estado | Dónde se comprueba |
+| --- | --- | --- | --- |
+| 46 | Esquema `historico` con RLS y la vista de costo que une histórico y vivo | Hecho | V008, `tools/pruebas-sql/historico.sql` |
+| 47 | Histórico de entradas y valuación ponderada sin IVA, con precios estimados | Hecho | `ImportadoresHistoricoTest`, `CriterioH5Test` |
+| 48 | Histórico de salidas: reparto de lotes, "Sin asignar", devoluciones, reasignaciones | Hecho | `ImportadoresHistoricoTest`, `CriterioH5Test` |
+| 49 | Histórico de Semanal, faltantes diarios y préstamos | Hecho | `ImportadoresHistoricoTest` |
+| 50 | Histórico del SUA: altas, asistencia diaria, asignaciones, doble asistencia | Hecho | `ImportadoresHistoricoTest`, `CriterioH5Test` |
+| 51 | Histórico de destajo: pagos parciales, montos compartidos, "sobre importe" | Hecho | `ImportadoresHistoricoTest`, `CriterioH5Test` |
+| — | Conciliación de totales y la historia del lote (demo) | Hecho | pantalla de la carga, *Contratos › lote* |
+| — | Carga de los Excel en preproducción y validación con administración | Pendiente: lo hace administración | `docs/runbooks/migracion-historico.md` |
+
+### Qué ya se verificó y qué no
+
+- **Verificado:**
+  - V008 y 21 pruebas SQL nuevas contra PostgreSQL 16: histórico inmutable incluso para el dueño,
+    solo la reversa borra (y solo lo de su empresa, nunca sin empresa), FK compuestas (lote de otro
+    contrato, carga o persona de otra empresa), cuarentena que no entra, vistas de costo con el RLS
+    de quien consulta.
+  - El dominio (Java puro): 9 pruebas nuevas sobre las muestras `muestra-historico-*.xlsx`, una por
+    regla; las 24 de H3 siguen en verde.
+  - **El orden de carga completo (H3 + H5) con los tres Excel reales, por los servicios reales
+    contra PostgreSQL** como rol `app` con RLS, sin Spring (un JdbcClient mínimo sobre JDBC, fuera
+    del repositorio): 15 cargas, más de 13,000 renglones de histórico, todas las conciliaciones de
+    totales en 0, la demo del lote, permisos que ocultan importes y datos personales, la reversa
+    que respeta dependencias y el archivo que se vuelve a subir. Resultados en el runbook.
+  - El escenario de `CriterioH5Test` corrido por el servicio real contra PostgreSQL da los mismos
+    conteos que la prueba espera.
+  - El código compilado contra firmas de las APIs de Spring y con google-java-format 1.28.
+  - Frontend: tipos, lint, 40 pruebas (6 nuevas) y build.
+- **Se verifica por primera vez en CI:** `CriterioH5Test` por HTTP real con Spring,
+  `ModularidadTest` con el módulo nuevo `historico`, spotless y los e2e existentes.
+  `frontend/openapi.json` se escribió a mano con las convenciones de springdoc: correr `make api`
+  y revisar el diff.
+- **Criterio de aceptación de H5 pendiente de demostrar en preproducción:** cargar los Excel,
+  resolver la cuarentena (unas 120 decisiones), verificar 30 renglones al azar y la demo del lote
+  Mza 16 Lote 34.
+
+### Decisiones de esta etapa
+
+- **El histórico vive aparte del kardex**, en el esquema `historico` y su módulo; los reportes
+  suman histórico y vivo por `reportes.v_costo_unidad` (ADR-011).
+- **Valuación del histórico: ponderado acumulado** de las entradas hasta la fecha de la salida,
+  sin IVA. Antes de la primera entrada o sin entradas, costo estimado (ADR-011).
+- **"Sin asignar" es la salida sin lote** (`unidad_obra_id` nulo), con el contrato si la manzana es
+  de uno solo. Las salidas al propio almacén quedan sin frente.
+- **Una decisión de lote vale para el grupo**: todos los renglones con el mismo frente, manzana y
+  lote escritos igual (en el destajo, toda la columna).
+- **Paquetería y solicitantes del almacén no bloquean**: advertencias que se ligan con alias
+  (`paquete` es una entidad de alias nueva). Trabajadores del destajo y personas del SUA sí.
+- **Una carga vigente por tipo de histórico** (el SUA, por mes). Una carga que el histórico usa no
+  se revierte mientras siga confirmado lo que depende de ella.
+- El SUA se sube con su mes y el destajo con el año de sus semanas; el mes del SUA tiene que
+  coincidir con el de sus hojas.
+- Se migran también los vales no entregados (153), marcados: no suman al costo.
+- Además de las reglas de transformación del plan, dos que salieron de los Excel reales: las
+  cantidades de Salidas capturadas como fórmula (`=1/3`, 413 renglones) se evalúan igual que los
+  pagos del destajo, y un renglón de subtotales `=SUM(…)` en el destajo no es un pago.
+- La carga sigue en la misma petición: Salidas valida en 1.8 s y confirma en 1.9 s.
+
+## Siguiente: H6 · Abastecimiento y reportes (issues 32 a 38 y 52)
+
+Requisición, pedido y recepción contra pedido; reportes de costo por contrato, lote, paquete y
+clasificación sobre `reportes.v_costo_unidad` (histórico + vivo).

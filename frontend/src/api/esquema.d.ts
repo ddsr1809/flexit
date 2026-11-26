@@ -701,6 +701,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/importaciones/{id}/conciliacion": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Totales del Excel contra lo que se carga (solo histórico). Sin todas=true, solo las líneas con diferencia, cuarentena o descartes */
+        get: operations["conciliacionDeCarga"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/importaciones/{id}/decisiones": {
         parameters: {
             query?: never;
@@ -1364,6 +1381,23 @@ export interface paths {
         };
         /** Nombres de personas activas para elegir solicitante o responsable (20) */
         get: operations["buscarNombresPersonas"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/historico/unidades/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lo que dice el Excel de un lote: sus vales, sus pagos de destajo y las altas del IMSS de su contrato */
+        get: operations["historiaDeUnidad"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2380,6 +2414,115 @@ export interface components {
             id: number;
             nombre: string;
             activa: boolean;
+        };
+        TotalConciliado: {
+            concepto: string;
+            /** @description Material y mes, frente y lote, trabajador… */
+            llave: string;
+            excel: number;
+            cargado: number;
+            /** @description En cuarentena */
+            pendiente: number;
+            /** @description Descartado con motivo */
+            descartado: number;
+            /** @description excel − cargado − pendiente − descartado: tiene que ser 0 */
+            diferencia: number;
+        };
+        ConceptoConciliado: {
+            concepto: string;
+            excel: number;
+            cargado: number;
+            pendiente: number;
+            descartado: number;
+            diferencia: number;
+            /** Format: int64 */
+            lineas: number;
+            /**
+             * Format: int64
+             * @description Líneas con diferencia distinta de 0
+             */
+            conDiferencia: number;
+        };
+        ConciliacionCarga: {
+            /** Format: int64 */
+            cargaId: number;
+            conceptos: components["schemas"]["ConceptoConciliado"][];
+            /** @description Líneas con diferencia, pendiente o descartado (o todas, si se piden), hasta 500 */
+            lineas: components["schemas"]["TotalConciliado"][];
+            recortada: boolean;
+        };
+        SalidaHistorica: {
+            /** Format: int64 */
+            id: number;
+            /** Format: date */
+            fecha: string;
+            /** @description salida, devolucion o reasignacion */
+            tipo: string;
+            documento?: string;
+            folio?: string;
+            material: string;
+            unidad: string;
+            cantidad: number;
+            paquete?: string;
+            clasificacion?: string;
+            solicitante?: string;
+            entregado: boolean;
+            /** @description Sin IVA; vacío sin permiso de costo */
+            costoUnitario?: number;
+            importe?: number;
+            costoEstimado: boolean;
+            /** @description El renglón del Excel decía varios lotes ("32-43") */
+            lotesTexto?: string;
+            observaciones?: string;
+            origen: string;
+        };
+        PagoHistorico: {
+            /** Format: int64 */
+            id: number;
+            /** Format: int32 */
+            anio: number;
+            semanas: number[];
+            semanaTexto?: string;
+            paquete?: string;
+            concepto?: string;
+            importeConcepto?: number;
+            /** @description Vacío sin permiso de costo */
+            monto?: number;
+            /** Format: int32 */
+            parcial: number;
+            montoCompartido: boolean;
+            sobreImporte: boolean;
+            /** @description Quién cobró; vacío sin permiso de personas */
+            trabajadores: string[];
+            origen: string;
+        };
+        AltaHistorica: {
+            /** Format: date */
+            mes: string;
+            /** @description mes o anterior */
+            origen: string;
+            persona: string;
+            estatus?: string;
+            /** Format: int32 */
+            dias?: number;
+        };
+        HistoriaUnidad: {
+            /** Format: int64 */
+            unidadId: number;
+            clave: string;
+            /** Format: int64 */
+            contratoId: number;
+            contrato: string;
+            salidas: components["schemas"]["SalidaHistorica"][];
+            pagos: components["schemas"]["PagoHistorico"][];
+            /** @description Altas del IMSS en el contrato; vacía sin permiso de personas */
+            altas: components["schemas"]["AltaHistorica"][];
+            /** @description Σ importe de lo entregado; vacío sin permiso de costo */
+            costoMaterial?: number;
+            /** @description Σ pagos de destajo; vacío sin permiso de costo */
+            destajo?: number;
+            veCostos: boolean;
+            vePersonas: boolean;
         };
     };
     responses: never;
@@ -3665,6 +3808,8 @@ export interface operations {
             query: {
                 tipo: string;
                 clienteId?: number;
+                mes?: string;
+                anio?: number;
             };
             header?: never;
             path?: never;
@@ -3737,6 +3882,30 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PaginaFilas"];
+                };
+            };
+        };
+    };
+    conciliacionDeCarga: {
+        parameters: {
+            query?: {
+                todas?: boolean;
+            };
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConciliacionCarga"];
                 };
             };
         };
@@ -4853,6 +5022,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PersonaNombre"][];
+                };
+            };
+        };
+    };
+    historiaDeUnidad: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HistoriaUnidad"];
                 };
             };
         };

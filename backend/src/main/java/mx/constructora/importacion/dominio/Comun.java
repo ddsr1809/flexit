@@ -23,7 +23,7 @@ import mx.constructora.importacion.dominio.xlsx.Renglon;
 public final class Comun {
 
   /** Versión de las reglas: cambia cuando cambia el resultado de alguna regla. */
-  public static final String VERSION_REGLAS = "h3.1";
+  public static final String VERSION_REGLAS = "h5.1";
 
   /** Opciones para ligar un nombre a un registro. */
   public static final Set<Opcion> LIGAR =

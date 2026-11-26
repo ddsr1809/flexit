@@ -1,11 +1,16 @@
 package mx.constructora.importacion.aplicacion;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
+import mx.constructora.catalogo.CatalogoApi;
 import mx.constructora.catalogo.ImportacionCatalogo;
 import mx.constructora.estructura.ImportacionEstructura;
+import mx.constructora.historico.ImportacionHistorico;
+import mx.constructora.historico.Registros.EntradaValorada;
 import mx.constructora.importacion.dominio.Contexto;
 import mx.constructora.organizacion.Personas;
 
@@ -32,11 +37,17 @@ final class ContextoBd implements Contexto {
   private final Perezosa<List<Material>> materiales;
   private final Perezosa<List<Proveedor>> proveedores;
   private final Perezosa<List<Persona>> listaPersonas;
+  private final Perezosa<List<Clasificacion>> clasificaciones;
+  private final Perezosa<Map<Long, BigDecimal>> tasasIva;
+  private final Perezosa<Map<Long, BigDecimal>> preciosReferencia;
+  private final Perezosa<List<EntradaValorada>> entradasHistoricas;
 
   ContextoBd(
       ImportacionEstructura estructura,
       ImportacionCatalogo catalogo,
+      CatalogoApi catalogoApi,
       Personas personas,
+      ImportacionHistorico historico,
       Map<String, Long> alias,
       Map<String, String> parametros) {
     this.estructura = estructura;
@@ -124,6 +135,31 @@ final class ContextoBd implements Contexto {
                 personas.activas().stream()
                     .map(p -> new Persona(p.id(), p.nombre(), p.nombreNormal()))
                     .toList());
+    clasificaciones =
+        new Perezosa<>(
+            () ->
+                catalogoApi.clasificaciones().stream()
+                    .map(c -> new Clasificacion(c.id(), c.clave(), c.nombre()))
+                    .toList());
+    tasasIva =
+        new Perezosa<>(
+            () -> {
+              Map<Long, BigDecimal> tasas = new HashMap<>();
+              catalogoApi.proveedores(proveedores().stream().map(Proveedor::id).toList()).stream()
+                  .filter(p -> p.tasaIva() != null)
+                  .forEach(p -> tasas.put(p.id(), p.tasaIva()));
+              return tasas;
+            });
+    preciosReferencia =
+        new Perezosa<>(
+            () -> {
+              Map<Long, BigDecimal> precios = new HashMap<>();
+              catalogoApi.materiales(materiales().stream().map(Material::id).toList()).stream()
+                  .filter(m -> m.precioReferencia() != null)
+                  .forEach(m -> precios.put(m.id(), m.precioReferencia()));
+              return precios;
+            });
+    entradasHistoricas = new Perezosa<>(historico::entradasValoradas);
   }
 
   /** Un valor que se calcula la primera vez que se pide. */
@@ -208,6 +244,26 @@ final class ContextoBd implements Contexto {
     return parametros;
   }
 
+  @Override
+  public List<Clasificacion> clasificaciones() {
+    return clasificaciones.get();
+  }
+
+  @Override
+  public Map<Long, BigDecimal> tasasIva() {
+    return tasasIva.get();
+  }
+
+  @Override
+  public Map<Long, BigDecimal> preciosReferencia() {
+    return preciosReferencia.get();
+  }
+
+  @Override
+  public List<EntradaValorada> entradasHistoricas() {
+    return entradasHistoricas.get();
+  }
+
   /** {@code true} si existe el registro {@code id} de la entidad (para validar un alias). */
   boolean existe(String entidad, long id) {
     return switch (entidad) {
@@ -218,6 +274,8 @@ final class ContextoBd implements Contexto {
       case "material" -> materiales().stream().anyMatch(m -> m.id() == id);
       case "proveedor" -> proveedores().stream().anyMatch(p -> p.id() == id);
       case "persona" -> personas().stream().anyMatch(p -> p.id() == id);
+      case "paquete" -> paquetes().stream().anyMatch(p -> p.id() == id && p.clienteId() == null);
+      case "unidad_obra" -> unidades().stream().anyMatch(u -> u.id() == id);
       default -> false;
     };
   }
@@ -263,6 +321,14 @@ final class ContextoBd implements Contexto {
               .map(Persona::nombre)
               .findFirst()
               .orElse(null);
+      case "paquete" ->
+          paquetes().stream()
+              .filter(p -> p.id() == id)
+              .map(p -> p.clave() + " · " + p.nombreNormal())
+              .findFirst()
+              .orElse(null);
+      case "unidad_obra" ->
+          unidades().stream().filter(u -> u.id() == id).map(Unidad::clave).findFirst().orElse(null);
       default -> null;
     };
   }

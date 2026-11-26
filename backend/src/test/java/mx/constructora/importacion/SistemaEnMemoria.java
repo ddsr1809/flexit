@@ -8,6 +8,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import mx.constructora.historico.Registros;
+import mx.constructora.historico.Registros.EntradaValorada;
 import mx.constructora.importacion.dominio.Contexto;
 import mx.constructora.importacion.dominio.Destino;
 import mx.constructora.importacion.dominio.Normal;
@@ -37,6 +39,10 @@ public final class SistemaEnMemoria implements Contexto, Destino {
   final Map<Long, Boolean> personaRevisar = new HashMap<>();
   final Map<String, Long> alias = new HashMap<>();
   final Map<String, String> parametros = new HashMap<>();
+  final List<Clasificacion> clasificaciones = new ArrayList<>();
+
+  /** Lo que escribieron las cargas del histórico, en orden. */
+  final Registros.Lote historico = new Registros.Lote();
 
   public SistemaEnMemoria() {
     for (String[] u :
@@ -58,6 +64,19 @@ public final class SistemaEnMemoria implements Contexto, Destino {
           {"M3", "Metro cúbico"}
         }) {
       unidadesMedida.add(new UnidadMedida(siguiente++, u[0], u[1]));
+    }
+    String[][] razones = {
+      {"PROGRAMA", "Programa"},
+      {"GARANTIA_CLIENTE", "Garantía Ruba"},
+      {"GARANTIA_PROPIA", "Garantía RM"},
+      {"RETRABAJO", "Retrabajo"},
+      {"ESCRITURABLES", "Escriturables"},
+      {"ENTREGA", "Entrega"},
+      {"RESCATE", "Rescate"},
+      {"REEMPLAZO_FALLA", "Reemplazo por falla"}
+    };
+    for (int i = 0; i < razones.length; i++) {
+      clasificaciones.add(new Clasificacion(i + 1, razones[i][0], razones[i][1]));
     }
   }
 
@@ -143,6 +162,29 @@ public final class SistemaEnMemoria implements Contexto, Destino {
   @Override
   public Map<String, String> parametros() {
     return Map.copyOf(parametros);
+  }
+
+  @Override
+  public List<Clasificacion> clasificaciones() {
+    return List.copyOf(clasificaciones);
+  }
+
+  @Override
+  public Map<Long, BigDecimal> tasasIva() {
+    return Map.copyOf(ivaProveedor);
+  }
+
+  @Override
+  public Map<Long, BigDecimal> preciosReferencia() {
+    return Map.copyOf(preciosMaterial);
+  }
+
+  @Override
+  public List<EntradaValorada> entradasHistoricas() {
+    return historico.entradas.stream()
+        .filter(e -> e.importe() != null)
+        .map(e -> new EntradaValorada(e.materialId(), e.fecha(), e.cantidad(), e.importe()))
+        .toList();
   }
 
   // ----------------------------------------------------------------------------------- Destino
@@ -271,5 +313,17 @@ public final class SistemaEnMemoria implements Contexto, Destino {
   @Override
   public void alias(String entidad, String texto, long destinoId) {
     alias.put(entidad + "|" + texto, destinoId);
+  }
+
+  @Override
+  public void historico(Registros.Lote lote) {
+    historico.entradas.addAll(lote.entradas);
+    historico.salidas.addAll(lote.salidas);
+    historico.requisiciones.addAll(lote.requisiciones);
+    historico.prestamos.addAll(lote.prestamos);
+    historico.altas.addAll(lote.altas);
+    historico.asistencias.addAll(lote.asistencias);
+    historico.asignaciones.addAll(lote.asignaciones);
+    historico.pagos.addAll(lote.pagos);
   }
 }

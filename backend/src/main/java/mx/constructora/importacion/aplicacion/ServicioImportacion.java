@@ -12,6 +12,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
@@ -29,6 +30,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import mx.constructora.catalogo.CatalogoApi;
 import mx.constructora.catalogo.ImportacionCatalogo;
 import mx.constructora.compartido.Autorizacion;
 import mx.constructora.compartido.ContextoEmpresa;
@@ -37,7 +39,9 @@ import mx.constructora.compartido.Permisos;
 import mx.constructora.compartido.Textos;
 import mx.constructora.compartido.Versiones;
 import mx.constructora.estructura.ImportacionEstructura;
+import mx.constructora.historico.ImportacionHistorico;
 import mx.constructora.importacion.dominio.Comun;
+import mx.constructora.importacion.dominio.Conciliacion;
 import mx.constructora.importacion.dominio.Importador;
 import mx.constructora.importacion.dominio.Importadores;
 import mx.constructora.importacion.dominio.Json;
@@ -89,7 +93,30 @@ public class ServicioImportacion {
 
   private static final Set<String> ENTIDADES =
       Set.of(
-          "frente", "contrato", "prototipo", "unidad_medida", "material", "proveedor", "persona");
+          "frente",
+          "contrato",
+          "prototipo",
+          "unidad_medida",
+          "material",
+          "proveedor",
+          "persona",
+          "paquete",
+          "unidad_obra");
+
+  /** Entidades que se ligan por alias (las demás solo se eligen en un renglón). */
+  private static final Set<String> CON_ALIAS =
+      Set.of(
+          "frente",
+          "contrato",
+          "prototipo",
+          "unidad_medida",
+          "material",
+          "proveedor",
+          "persona",
+          "paquete");
+
+  /** Total de conciliación con más líneas que esto solo devuelve las que tienen algo que ver. */
+  public static final int LINEAS_MAXIMAS = 500;
 
   // ------------------------------------------------------------------------------------- DTOs
 
@@ -232,6 +259,43 @@ public class ServicioImportacion {
   public record DestinoPosible(
       @Schema(requiredMode = REQUIRED) long id, @Schema(requiredMode = REQUIRED) String texto) {}
 
+  /** Una línea de la conciliación del histórico: lo que dice el Excel contra lo que se carga. */
+  public record TotalConciliado(
+      @Schema(requiredMode = REQUIRED) String concepto,
+      @Schema(requiredMode = REQUIRED, description = "Material y mes, frente y lote, trabajador…")
+          String llave,
+      @Schema(requiredMode = REQUIRED) BigDecimal excel,
+      @Schema(requiredMode = REQUIRED) BigDecimal cargado,
+      @Schema(requiredMode = REQUIRED, description = "En cuarentena") BigDecimal pendiente,
+      @Schema(requiredMode = REQUIRED, description = "Descartado con motivo") BigDecimal descartado,
+      @Schema(
+              requiredMode = REQUIRED,
+              description = "excel − cargado − pendiente − descartado: tiene que ser 0")
+          BigDecimal diferencia) {}
+
+  /** Un concepto de la conciliación con sus sumas. */
+  public record ConceptoConciliado(
+      @Schema(requiredMode = REQUIRED) String concepto,
+      @Schema(requiredMode = REQUIRED) BigDecimal excel,
+      @Schema(requiredMode = REQUIRED) BigDecimal cargado,
+      @Schema(requiredMode = REQUIRED) BigDecimal pendiente,
+      @Schema(requiredMode = REQUIRED) BigDecimal descartado,
+      @Schema(requiredMode = REQUIRED) BigDecimal diferencia,
+      @Schema(requiredMode = REQUIRED) long lineas,
+      @Schema(requiredMode = REQUIRED, description = "Líneas con diferencia distinta de 0")
+          long conDiferencia) {}
+
+  /** Conciliación de totales de una carga del histórico (H5). */
+  public record ConciliacionCarga(
+      @Schema(requiredMode = REQUIRED) long cargaId,
+      @Schema(requiredMode = REQUIRED) List<ConceptoConciliado> conceptos,
+      @Schema(
+              requiredMode = REQUIRED,
+              description =
+                  "Líneas con diferencia, pendiente o descartado (o todas, si se piden), hasta 500")
+          List<TotalConciliado> lineas,
+      @Schema(requiredMode = REQUIRED) boolean recortada) {}
+
   // ------------------------------------------------------------------------------- servicio
 
   private final RepositorioMigracion repositorio;
@@ -239,18 +303,24 @@ public class ServicioImportacion {
   private final ImportacionCatalogo catalogo;
   private final Personas personas;
   private final DirectorioUsuarios usuarios;
+  private final CatalogoApi catalogoApi;
+  private final ImportacionHistorico historico;
 
   public ServicioImportacion(
       RepositorioMigracion repositorio,
       ImportacionEstructura estructura,
       ImportacionCatalogo catalogo,
       Personas personas,
-      DirectorioUsuarios usuarios) {
+      DirectorioUsuarios usuarios,
+      CatalogoApi catalogoApi,
+      ImportacionHistorico historico) {
     this.repositorio = repositorio;
     this.estructura = estructura;
     this.catalogo = catalogo;
     this.personas = personas;
     this.usuarios = usuarios;
+    this.catalogoApi = catalogoApi;
+    this.historico = historico;
   }
 
   /** Los tipos de carga en su orden, con lo que ya está confirmado. */
@@ -287,7 +357,8 @@ public class ServicioImportacion {
    */
   @PreAuthorize(ADMINISTRAR)
   @Transactional
-  public ResumenCarga subir(String tipoTexto, String nombre, byte[] contenido, Long clienteId) {
+  public ResumenCarga subir(
+      String tipoTexto, String nombre, byte[] contenido, Long clienteId, String mes, Integer anio) {
     TipoCarga tipo = tipo(tipoTexto);
     exigirPermiso(tipo);
     String archivo = Textos.limpio(nombre);
@@ -314,6 +385,19 @@ public class ServicioImportacion {
         throw ErrorNegocio.invalido("CLIENTE_NO_ENCONTRADO", "No existe el cliente");
       }
       parametros.put("clienteId", clienteId.toString());
+    }
+    if (tipo.parametros().contains("mes")) {
+      String valor = Textos.limpio(mes);
+      if (valor == null || !valor.matches("^20[2-9][0-9]-(0[1-9]|1[0-2])$")) {
+        throw ErrorNegocio.invalido("FALTA_MES", "Elige el mes del SUA (aaaa-mm)");
+      }
+      parametros.put("mes", valor);
+    }
+    if (tipo.parametros().contains("anio")) {
+      if (anio == null || anio < 2020 || anio > 2100) {
+        throw ErrorNegocio.invalido("FALTA_ANIO", "Elige el año de las semanas del destajo");
+      }
+      parametros.put("anio", anio.toString());
     }
 
     String sha = sha256(contenido);
@@ -533,7 +617,7 @@ public class ServicioImportacion {
       long elegido =
           opcion == Opcion.ACEPTAR ? ((Number) sugerencia.get("destinoId")).longValue() : destino;
       String nombreEntidad = (String) entidad;
-      if (!ENTIDADES.contains(nombreEntidad) || !contexto.existe(nombreEntidad, elegido)) {
+      if (!CON_ALIAS.contains(nombreEntidad) || !contexto.existe(nombreEntidad, elegido)) {
         throw ErrorNegocio.invalido("DESTINO_NO_ENCONTRADO", "No existe el registro elegido");
       }
       repositorio.guardarAlias(
@@ -615,9 +699,11 @@ public class ServicioImportacion {
               .formatted(pendientes));
     }
     Map<String, String> parametros = Json.textos(carga.parametros());
+    exigirUnicaEnHistorico(tipo, id, parametros);
     ContextoBd contexto = contexto(parametros);
     DestinoBd destino =
-        new DestinoBd(empresa(), id, usuario(), estructura, catalogo, personas, repositorio);
+        new DestinoBd(
+            empresa(), id, usuario(), estructura, catalogo, personas, historico, repositorio);
     Importador importador = Importadores.de(tipo);
     try {
       importador.aplicar(filas, contexto, destino);
@@ -649,7 +735,9 @@ public class ServicioImportacion {
       throw ErrorNegocio.conflicto("CARGA_REVERTIDA", "La carga ya está revertida");
     }
     if (carga.estado().equals("confirmada")) {
+      exigirSinDependientesEnHistorico(TipoCarga.valueOf(carga.tipo()));
       try {
+        historico.revertirCarga(id);
         estructura.revertirCarga(id);
         catalogo.revertirCarga(id);
         personas.revertirCarga(id);
@@ -665,13 +753,80 @@ public class ServicioImportacion {
     return detalle(existente(id));
   }
 
+  /**
+   * Conciliación de totales de una carga del histórico: por concepto (cantidad por material y mes,
+   * pagado por lote…) lo que dice el Excel contra lo que se carga, lo que está en cuarentena y lo
+   * descartado. Se calcula con los renglones de la última validación, que son los que se
+   * confirmaron.
+   */
+  @PreAuthorize(ADMINISTRAR)
+  @Transactional(readOnly = true)
+  public ConciliacionCarga conciliacion(long id, boolean todas) {
+    FilaCarga carga = existente(id);
+    TipoCarga tipo = TipoCarga.valueOf(carga.tipo());
+    exigirPermiso(tipo);
+    if (!tipo.historico()) {
+      throw ErrorNegocio.invalido(
+          "SIN_TOTALES", "Solo las cargas del histórico tienen conciliación de totales");
+    }
+    List<Conciliacion.Total> totales =
+        Importadores.de(tipo)
+            .conciliar(
+                repositorio.validadas(empresa(), id), contexto(Json.textos(carga.parametros())));
+    Map<String, ConceptoConciliado> conceptos = new LinkedHashMap<>();
+    List<TotalConciliado> lineas = new ArrayList<>();
+    boolean recortada = false;
+    for (Conciliacion.Total t : totales) {
+      boolean conDiferencia = t.diferencia().signum() != 0;
+      conceptos.merge(
+          t.concepto(),
+          new ConceptoConciliado(
+              t.concepto(),
+              t.excel(),
+              t.cargado(),
+              t.pendiente(),
+              t.descartado(),
+              t.diferencia(),
+              1,
+              conDiferencia ? 1 : 0),
+          (a, b) ->
+              new ConceptoConciliado(
+                  a.concepto(),
+                  a.excel().add(b.excel()),
+                  a.cargado().add(b.cargado()),
+                  a.pendiente().add(b.pendiente()),
+                  a.descartado().add(b.descartado()),
+                  a.diferencia().add(b.diferencia()),
+                  a.lineas() + 1,
+                  a.conDiferencia() + b.conDiferencia()));
+      boolean interesa =
+          todas || conDiferencia || t.pendiente().signum() != 0 || t.descartado().signum() != 0;
+      if (interesa) {
+        if (lineas.size() < LINEAS_MAXIMAS) {
+          lineas.add(
+              new TotalConciliado(
+                  t.concepto(),
+                  t.llave(),
+                  t.excel(),
+                  t.cargado(),
+                  t.pendiente(),
+                  t.descartado(),
+                  t.diferencia()));
+        } else {
+          recortada = true;
+        }
+      }
+    }
+    return new ConciliacionCarga(id, List.copyOf(conceptos.values()), lineas, recortada);
+  }
+
   // ------------------------------------------------------------------------------------ alias
 
   @PreAuthorize(ADMINISTRAR)
   @Transactional(readOnly = true)
   public List<AliasCarga> alias(String entidad, String texto) {
     String entidadValida = Textos.limpio(entidad);
-    if (entidadValida != null && !ENTIDADES.contains(entidadValida)) {
+    if (entidadValida != null && !CON_ALIAS.contains(entidadValida)) {
       throw ErrorNegocio.invalido("ENTIDAD_DESCONOCIDA", "No hay alias de " + entidadValida);
     }
     boolean vePersonas = Autorizacion.tiene(Permisos.PERSONAS_ADMINISTRAR);
@@ -787,6 +942,22 @@ public class ServicioImportacion {
               contexto.proveedores().stream()
                   .map(p -> new DestinoPosible(p.id(), p.nombre()))
                   .toList();
+          case "paquete" ->
+              contexto.paquetes().stream()
+                  .filter(p -> p.clienteId() == null)
+                  .map(p -> new DestinoPosible(p.id(), p.clave() + " · " + p.nombreNormal()))
+                  .toList();
+          case "unidad_obra" -> {
+            Map<Long, String> frentes = new LinkedHashMap<>();
+            contexto.frentes().forEach(f -> frentes.put(f.id(), f.nombre()));
+            yield contexto.unidades().stream()
+                .filter(u -> frenteId == null || Objects.equals(u.frenteId(), frenteId))
+                .map(
+                    u ->
+                        new DestinoPosible(
+                            u.id(), u.clave() + " · " + frentes.getOrDefault(u.frenteId(), "—")))
+                .toList();
+          }
           default ->
               contexto.personas().stream()
                   .map(p -> new DestinoPosible(p.id(), p.nombre()))
@@ -799,7 +970,13 @@ public class ServicioImportacion {
 
   private ContextoBd contexto(Map<String, String> parametros) {
     return new ContextoBd(
-        estructura, catalogo, personas, repositorio.mapaAlias(empresa()), parametros);
+        estructura,
+        catalogo,
+        catalogoApi,
+        personas,
+        historico,
+        repositorio.mapaAlias(empresa()),
+        parametros);
   }
 
   private FilaCarga existente(long id) {
@@ -837,8 +1014,55 @@ public class ServicioImportacion {
   }
 
   private static void exigirPermiso(TipoCarga tipo) {
-    if (tipo.name().startsWith("PERSONAS") && !Autorizacion.tiene(Permisos.PERSONAS_ADMINISTRAR)) {
+    boolean personal =
+        tipo.name().startsWith("PERSONAS")
+            || tipo == TipoCarga.HIST_SUA
+            || tipo == TipoCarga.HIST_DESTAJO;
+    if (personal && !Autorizacion.tiene(Permisos.PERSONAS_ADMINISTRAR)) {
       throw new AccessDeniedException("Las cargas de personas traen datos personales");
+    }
+  }
+
+  /**
+   * El histórico se carga una vez: un archivo más nuevo reemplaza al anterior revirtiendo primero
+   * la carga confirmada (si no, cada renglón quedaría dos veces). El SUA, una vez por mes.
+   */
+  private void exigirUnicaEnHistorico(TipoCarga tipo, long id, Map<String, String> parametros) {
+    if (!tipo.historico()) {
+      return;
+    }
+    for (FilaCarga otra : repositorio.confirmadas(empresa(), tipo.name())) {
+      boolean mismoMes =
+          !tipo.parametros().contains("mes")
+              || Objects.equals(Json.textos(otra.parametros()).get("mes"), parametros.get("mes"));
+      if (otra.id() != id && mismoMes) {
+        throw ErrorNegocio.conflicto(
+            "HISTORICO_YA_CARGADO",
+            "Ya está confirmada la carga %d (%s)%s. Para cargar un archivo más nuevo, revierte esa carga primero: el histórico se reemplaza completo"
+                .formatted(
+                    otra.id(),
+                    otra.archivo(),
+                    parametros.containsKey("mes") ? " del mes " + parametros.get("mes") : ""));
+      }
+    }
+  }
+
+  /**
+   * Una carga que el histórico ya usa no se revierte: las salidas se valuaron con las entradas, los
+   * pagos se ligaron a los paquetes. Primero se revierte el histórico.
+   */
+  private void exigirSinDependientesEnHistorico(TipoCarga tipo) {
+    List<String> dependientes =
+        Arrays.stream(TipoCarga.values())
+            .filter(t -> t.historico() && t.requiere().contains(tipo))
+            .filter(t -> !repositorio.confirmadas(empresa(), t.name()).isEmpty())
+            .map(TipoCarga::nombre)
+            .toList();
+    if (!dependientes.isEmpty()) {
+      throw ErrorNegocio.conflicto(
+          "CARGA_EN_USO",
+          "El histórico ya usa esta carga (%s). Revierte primero esas cargas."
+              .formatted(String.join(", ", dependientes)));
     }
   }
 
@@ -895,9 +1119,24 @@ public class ServicioImportacion {
         Json.textos(carga.parametros()),
         conciliacion,
         reglas,
-        repositorio.creados(empresa(), carga.id()),
+        creados(carga),
         carga.confirmadaPor() == null ? null : nombres.get(carga.confirmadaPor()),
         carga.revertidaPor() == null ? null : nombres.get(carga.revertidaPor()));
+  }
+
+  /** Lo que creó la carga: registros de catálogo, o renglones del histórico (de su resumen). */
+  private Map<String, Long> creados(FilaCarga carga) {
+    Map<String, Long> creados = repositorio.creados(empresa(), carga.id());
+    if (TipoCarga.valueOf(carga.tipo()).historico() && carga.resumen() != null) {
+      Json.objeto(carga.resumen())
+          .forEach(
+              (tabla, n) -> {
+                if (n instanceof Number numero) {
+                  creados.put(tabla, numero.longValue());
+                }
+              });
+    }
+    return creados;
   }
 
   private Map<Long, String> nombresDe(FilaCarga carga) {
