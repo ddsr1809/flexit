@@ -69,6 +69,15 @@ Hito en curso: **H2 · Catálogos y estructura** (semanas 3 y 4).
   contrato con 3 lotes y 5 materiales; el residente solo ve los lotes de su contrato. Demo: alta
   del contrato 60-KZ7-MF6-C002-2026 con dos lotes y búsqueda de un material por nombre parcial.
 
+### Corrección de H1 encontrada al correr las pruebas por primera vez
+
+Con una sesión abierta, cada petición agotaba el pool de conexiones: leer el usuario en sesión
+carga la sesión de la base, esa conexión preguntaba otra vez por el usuario y así en cadena hasta
+tomar las 20 conexiones (`CannotGetJdbcConnectionException`, y de ahí 27 pruebas en rojo).
+`ContextoEmpresa.actual()` ya no vuelve a leer el contexto mientras lo está leyendo; la prueba es
+`ContextoEmpresaTest`. `make sql` usa el cliente de la imagen de PostgreSQL si la máquina no
+tiene `psql`.
+
 ### Decisiones de esta etapa
 
 - `usuario_contrato` quedó como `estructura.contrato_usuario` (ADR-006).

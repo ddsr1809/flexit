@@ -38,8 +38,15 @@ api: ## Regenera frontend/openapi.json y los tipos desde el backend corriendo (m
 	curl -fsS http://localhost:8080/v3/api-docs | jq . > frontend/openapi.json
 	cd frontend && npm run gen:api
 
-sql: db ## Pruebas de RLS, permisos, bitácora y folios directo en la base
-	PGHOST=localhost PGUSER=postgres PGPASSWORD=postgres-local tools/pruebas-sql/correr.sh
+# Con psql instalado usa el de la máquina; si no, el cliente de la imagen de PostgreSQL 18.
+sql: db ## Pruebas de RLS, permisos, bitácora, folios, estructura y catálogo directo en la base
+	@if command -v psql >/dev/null 2>&1; then \
+	  PGHOST=localhost PGUSER=postgres PGPASSWORD=postgres-local tools/pruebas-sql/correr.sh; \
+	else \
+	  docker run --rm --network host -v "$$PWD":/repo -w /repo \
+	    -e PGHOST=localhost -e PGUSER=postgres -e PGPASSWORD=postgres-local \
+	    postgres:18 tools/pruebas-sql/correr.sh; \
+	fi
 
 e2e: ## La app completa en Docker + Playwright (igual que CI)
 	$(COMPOSE_E2E) build migrar

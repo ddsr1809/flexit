@@ -15,6 +15,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
  *
  * <p>Importante: el valor se aplica al <em>tomar</em> la conexión. Cambiar de empresa dentro de una
  * transacción abierta no cambia lo que ve esa transacción; {@code como} se llama por fuera.
+ *
+ * <p>Leer el usuario en sesión puede requerir la base: Spring Security carga el contexto de forma
+ * diferida y Spring Session lo lee de {@code organizacion.sesion}. Esa lectura pide una conexión, y
+ * la conexión vuelve a preguntar aquí por la empresa. Sin protección, cada vuelta toma otra
+ * conexión hasta agotar el pool. Por eso, mientras se resuelve el contexto en este hilo, una
+ * pregunta anidada responde "sin empresa": la tabla de sesiones no tiene RLS y no la necesita.
  */
 public final class ContextoEmpresa {
 
@@ -23,6 +29,9 @@ public final class ContextoEmpresa {
 
   private static final ThreadLocal<Identidad> FORZADA = new ThreadLocal<>();
 
+  /** Marca que este hilo está leyendo el contexto de seguridad (ver la nota de la clase). */
+  private static final ThreadLocal<Boolean> RESOLVIENDO = new ThreadLocal<>();
+
   private ContextoEmpresa() {}
 
   public static Optional<Identidad> actual() {
@@ -30,7 +39,16 @@ public final class ContextoEmpresa {
     if (forzada != null) {
       return Optional.of(forzada);
     }
-    Authentication autenticacion = SecurityContextHolder.getContext().getAuthentication();
+    if (RESOLVIENDO.get() != null) {
+      return Optional.empty();
+    }
+    Authentication autenticacion;
+    RESOLVIENDO.set(Boolean.TRUE);
+    try {
+      autenticacion = SecurityContextHolder.getContext().getAuthentication();
+    } finally {
+      RESOLVIENDO.remove();
+    }
     if (autenticacion != null
         && autenticacion.isAuthenticated()
         && autenticacion.getPrincipal() instanceof UsuarioAutenticado usuario) {
