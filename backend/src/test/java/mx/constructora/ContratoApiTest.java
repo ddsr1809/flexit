@@ -51,7 +51,17 @@ class ContratoApiTest extends PruebaIntegracion {
             "/api/v1/materiales/buscar",
             "/api/v1/materiales/{id}",
             "/api/v1/proveedores",
-            "/api/v1/proveedores/{id}");
+            "/api/v1/proveedores/{id}",
+            "/api/v1/importaciones",
+            "/api/v1/importaciones/tipos",
+            "/api/v1/importaciones/{id}",
+            "/api/v1/importaciones/{id}/filas",
+            "/api/v1/importaciones/{id}/decisiones",
+            "/api/v1/importaciones/{id}/confirmar",
+            "/api/v1/importaciones/{id}/revertir",
+            "/api/v1/alias",
+            "/api/v1/personas",
+            "/api/v1/personas/{id}");
 
     Path destino = Path.of("target", "openapi.json");
     Files.createDirectories(destino.getParent());

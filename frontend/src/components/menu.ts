@@ -1,6 +1,8 @@
 import {
   Boxes,
   ClipboardList,
+  Contact,
+  FileSpreadsheet,
   FileText,
   House,
   Layers,
@@ -50,6 +52,18 @@ export const MENU: Entrada[] = [
   { ruta: '/paquetes', texto: 'Paquetes', icono: Layers, permiso: PERMISOS.estructuraVerTodo },
   { ruta: '/catalogos', texto: 'Catálogos', icono: Library, permiso: PERMISOS.estructuraVerTodo },
   { ruta: '/proveedores', texto: 'Proveedores', icono: Truck, permiso: PERMISOS.catalogoEditar },
+  {
+    ruta: '/migracion',
+    texto: 'Migración',
+    icono: FileSpreadsheet,
+    permiso: PERMISOS.administrar,
+  },
+  {
+    ruta: '/personas',
+    texto: 'Personas',
+    icono: Contact,
+    permiso: PERMISOS.personasAdministrar,
+  },
   { ruta: '/usuarios', texto: 'Usuarios', icono: Users, permiso: PERMISOS.usuariosAdministrar },
 ]
 

@@ -632,6 +632,247 @@ export interface paths {
         patch: operations["cambiarProveedor"];
         trace?: never;
     };
+    "/api/v1/importaciones/tipos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Tipos de carga en su orden, con lo que ya está confirmado */
+        get: operations["ordenDeCarga"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/importaciones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Bitácora de cargas, la más reciente primero */
+        get: operations["listarCargas"];
+        put?: never;
+        /** Subir un Excel y validarlo. 201 si es una carga nueva; 200 con repetida=true si el mismo archivo ya estaba cargado */
+        post: operations["subirCarga"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/importaciones/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Una carga con su conciliación */
+        get: operations["obtenerCarga"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/importaciones/{id}/filas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Renglones de la carga con sus incidencias, filtrados y paginados */
+        get: operations["filasDeCarga"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/importaciones/{id}/decisiones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Resolver incidencias (una o en grupo) y volver a validar */
+        post: operations["decidirCarga"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/importaciones/{id}/decisiones/{numero}/{regla}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Quitar una decisión y volver a validar */
+        delete: operations["quitarDecision"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/importaciones/{id}/revalidar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Volver a validar con los catálogos y alias de ahora */
+        post: operations["revalidarCarga"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/importaciones/{id}/confirmar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Confirmar: escribe todo en una transacción si no queda nada en cuarentena */
+        post: operations["confirmarCarga"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/importaciones/{id}/revertir": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Revertir: borra lo que creó la carga si nada lo usa */
+        post: operations["revertirCarga"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/importaciones/destinos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Registros a los que se puede ligar un nombre del Excel (50 como máximo) */
+        get: operations["destinosPosibles"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alias": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Cómo se tradujo cada nombre del Excel */
+        get: operations["listarAlias"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alias/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Olvidar un alias: la siguiente carga vuelve a preguntar */
+        delete: operations["borrarAlias"];
+        options?: never;
+        head?: never;
+        /** Ligar el nombre a otro registro */
+        patch: operations["cambiarAlias"];
+        trace?: never;
+    };
+    "/api/v1/personas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Personas por nombre, NSS o CURP (200 como máximo) */
+        get: operations["buscarPersonas"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personas/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Una persona (ETag con su versión) */
+        get: operations["obtenerPersona"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Corregir nombre, NSS, CURP o notas */
+        patch: operations["cambiarPersona"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1016,6 +1257,210 @@ export interface components {
             /** Format: int32 */
             diasCredito?: number;
             activo?: boolean;
+        };
+        TipoCargaInfo: {
+            tipo: string;
+            /** Format: int32 */
+            paso: number;
+            nombre: string;
+            origen: string;
+            requiere: string[];
+            parametros: string[];
+            /** @description Hay al menos una carga confirmada */
+            confirmada: boolean;
+            /** @description Sus cargas previas ya están confirmadas */
+            disponible: boolean;
+            /** Format: int64 */
+            ultimaCargaId?: number;
+            ultimoEstado?: string;
+        };
+        ResumenCarga: {
+            /** Format: int64 */
+            id: number;
+            tipo: string;
+            tipoNombre: string;
+            archivo: string;
+            hojas: string;
+            /** @description validada, confirmada o revertida */
+            estado: string;
+            versionReglas: string;
+            usuario: string;
+            /** Format: date-time */
+            creada: string;
+            /** Format: date-time */
+            confirmada?: string;
+            /** Format: date-time */
+            revertida?: string;
+            /** Format: int64 */
+            renglones: number;
+            /** Format: int64 */
+            validos: number;
+            /** Format: int64 */
+            corregidos: number;
+            /** Format: int64 */
+            enCuarentena: number;
+            /** Format: int64 */
+            descartados: number;
+            /** Format: int64 */
+            porCrear: number;
+            /** Format: int64 */
+            existentes: number;
+            /** @description El mismo archivo ya estaba cargado: se devuelve esa carga */
+            repetida: boolean;
+        };
+        HojaConciliada: {
+            hoja: string;
+            /** Format: int64 */
+            leidos: number;
+            /** Format: int64 */
+            validos: number;
+            /** Format: int64 */
+            corregidos: number;
+            /** Format: int64 */
+            enCuarentena: number;
+            /** Format: int64 */
+            descartados: number;
+            /** Format: int64 */
+            porCrear: number;
+            /** Format: int64 */
+            existentes: number;
+            /**
+             * Format: int64
+             * @description Leídos que no quedaron en ningún estado: 0
+             */
+            diferencia: number;
+        };
+        ReglaAplicada: {
+            regla: string;
+            severidad: string;
+            /** Format: int64 */
+            renglones: number;
+            /** Format: int64 */
+            pendientes: number;
+            ejemplo: string;
+        };
+        DetalleCarga: {
+            resumen: components["schemas"]["ResumenCarga"];
+            parametros: {
+                [key: string]: string;
+            };
+            conciliacion: components["schemas"]["HojaConciliada"][];
+            reglas: components["schemas"]["ReglaAplicada"][];
+            /** @description Registros creados al confirmar, por entidad */
+            creados: {
+                [key: string]: number;
+            };
+            confirmadaPor?: string;
+            revertidaPor?: string;
+        };
+        IncidenciaCarga: {
+            regla: string;
+            /** @description info, advertencia, cuarentena o bloqueo */
+            severidad: string;
+            detalle: string;
+            /** @description Sugerencia: destinoId y destino; con entidad y texto, aceptarla guarda un alias */
+            sugerencia?: {
+                [key: string]: unknown;
+            };
+            /** @description ACEPTAR, ELEGIR, CREAR, VALOR o DESCARTAR */
+            opciones: string[];
+            pendiente: boolean;
+            resolucion?: {
+                [key: string]: unknown;
+            };
+            resueltaPor?: string;
+            /** Format: date-time */
+            resueltaEn?: string;
+        };
+        FilaCargada: {
+            /** Format: int32 */
+            numero: number;
+            hoja: string;
+            /** Format: int32 */
+            filaExcel?: number;
+            crudo: {
+                [key: string]: string;
+            };
+            normal: {
+                [key: string]: string;
+            };
+            estado: string;
+            /** @description crear, existe u omitir */
+            accion: string;
+            incidencias: components["schemas"]["IncidenciaCarga"][];
+        };
+        PaginaFilas: {
+            elementos: components["schemas"]["FilaCargada"][];
+            /** Format: int64 */
+            total: number;
+            /** Format: int32 */
+            pagina: number;
+            /** Format: int32 */
+            tamano: number;
+        };
+        DecisionCarga: {
+            /** Format: int32 */
+            numero: number;
+            regla: string;
+            opcion: string;
+            /** Format: int64 */
+            destinoId?: number;
+            valor?: string;
+            motivo?: string;
+        };
+        DecisionesCarga: {
+            decisiones: components["schemas"]["DecisionCarga"][];
+        };
+        AliasCarga: {
+            /** Format: int64 */
+            id: number;
+            entidad: string;
+            texto: string;
+            /** Format: int64 */
+            destinoId: number;
+            /** @description Nombre del registro; vacío si ya no existe */
+            destino?: string;
+            /** @description regla, sugerencia_aceptada o manual */
+            origen: string;
+            /** Format: int64 */
+            cargaId?: number;
+            usuario?: string;
+            /** Format: date-time */
+            creado: string;
+            /** Format: int32 */
+            version: number;
+        };
+        CambioAlias: {
+            /** Format: int64 */
+            destinoId: number;
+        };
+        DestinoPosible: {
+            /** Format: int64 */
+            id: number;
+            texto: string;
+        };
+        Persona: {
+            /** Format: int64 */
+            id: number;
+            nombre: string;
+            nss?: string;
+            curp?: string;
+            /** @description Alta desde un apodo o posible duplicado */
+            revisar: boolean;
+            nota?: string;
+            activa: boolean;
+            /** @description La dio de alta una carga de Excel */
+            importada: boolean;
+            /** Format: int32 */
+            version: number;
+        };
+        DatosPersona: {
+            nombre: string;
+            nss?: string;
+            curp?: string;
+            revisar?: boolean;
+            nota?: string;
+            activa?: boolean;
         };
     };
     responses: never;
@@ -2252,6 +2697,411 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Proveedor"];
+                };
+            };
+        };
+    };
+    ordenDeCarga: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TipoCargaInfo"][];
+                };
+            };
+        };
+    };
+    listarCargas: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResumenCarga"][];
+                };
+            };
+        };
+    };
+    subirCarga: {
+        parameters: {
+            query: {
+                tipo: string;
+                clienteId?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    archivo: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResumenCarga"];
+                };
+            };
+        };
+    };
+    obtenerCarga: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleCarga"];
+                };
+            };
+        };
+    };
+    filasDeCarga: {
+        parameters: {
+            query?: {
+                estado?: string;
+                regla?: string;
+                q?: string;
+                pendientes?: boolean;
+                pagina?: number;
+                tamano?: number;
+            };
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginaFilas"];
+                };
+            };
+        };
+    };
+    decidirCarga: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DecisionesCarga"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleCarga"];
+                };
+            };
+        };
+    };
+    quitarDecision: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+                numero: number;
+                regla: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleCarga"];
+                };
+            };
+        };
+    };
+    revalidarCarga: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleCarga"];
+                };
+            };
+        };
+    };
+    confirmarCarga: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleCarga"];
+                };
+            };
+        };
+    };
+    revertirCarga: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleCarga"];
+                };
+            };
+        };
+    };
+    destinosPosibles: {
+        parameters: {
+            query: {
+                entidad: string;
+                q?: string;
+                frenteId?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DestinoPosible"][];
+                };
+            };
+        };
+    };
+    listarAlias: {
+        parameters: {
+            query?: {
+                entidad?: string;
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AliasCarga"][];
+                };
+            };
+        };
+    };
+    borrarAlias: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    cambiarAlias: {
+        parameters: {
+            query?: never;
+            header?: {
+                "If-Match"?: string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CambioAlias"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AliasCarga"];
+                };
+            };
+        };
+    };
+    buscarPersonas: {
+        parameters: {
+            query?: {
+                q?: string;
+                soloRevisar?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Persona"][];
+                };
+            };
+        };
+    };
+    obtenerPersona: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Persona"];
+                };
+            };
+        };
+    };
+    cambiarPersona: {
+        parameters: {
+            query?: never;
+            header?: {
+                "If-Match"?: string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosPersona"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Persona"];
                 };
             };
         };

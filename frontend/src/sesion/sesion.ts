@@ -17,6 +17,7 @@ export const PERMISOS = {
   costoVerTodo: 'costo:ver-todo',
   administrar: 'sistema:administrar',
   usuariosAdministrar: 'usuarios:administrar',
+  personasAdministrar: 'personas:administrar',
   catalogoEditar: 'catalogo:editar',
   estructuraVerTodo: 'estructura:ver-todo',
 } as const
@@ -35,6 +36,7 @@ export const DESCRIPCION_PERMISO: Record<string, string> = {
   'costo:ver-todo': 'Ver el costo de todos los contratos',
   'sistema:administrar': 'Administrar contratos, lotes y paquetes',
   'usuarios:administrar': 'Dar de alta usuarios y roles',
+  'personas:administrar': 'Ver y corregir personas (datos personales)',
   'catalogo:editar': 'Dar de alta materiales y proveedores',
   'estructura:ver-todo': 'Ver todos los contratos',
 }

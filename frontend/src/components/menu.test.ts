@@ -34,4 +34,14 @@ describe('menú por permisos', () => {
     const textos = menuPara(sesion(['usuarios:administrar'])).map((e) => e.texto)
     expect(textos).toContain('Usuarios')
   })
+
+  it('la migración y las personas son solo de administración', () => {
+    const admin = menuPara(sesion(['sistema:administrar', 'personas:administrar'])).map(
+      (e) => e.texto,
+    )
+    expect(admin).toEqual(expect.arrayContaining(['Migración', 'Personas']))
+    const compras = menuPara(sesion(['catalogo:editar', 'estructura:ver-todo'])).map((e) => e.texto)
+    expect(compras).not.toContain('Migración')
+    expect(compras).not.toContain('Personas')
+  })
 })

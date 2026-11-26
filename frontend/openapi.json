@@ -1844,6 +1844,703 @@
           }
         }
       }
+    },
+    "/api/v1/importaciones/tipos": {
+      "get": {
+        "tags": [
+          "Migración"
+        ],
+        "summary": "Tipos de carga en su orden, con lo que ya está confirmado",
+        "operationId": "ordenDeCarga",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TipoCargaInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/importaciones": {
+      "get": {
+        "tags": [
+          "Migración"
+        ],
+        "summary": "Bitácora de cargas, la más reciente primero",
+        "operationId": "listarCargas",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ResumenCarga"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Migración"
+        ],
+        "summary": "Subir un Excel y validarlo. 201 si es una carga nueva; 200 con repetida=true si el mismo archivo ya estaba cargado",
+        "operationId": "subirCarga",
+        "parameters": [
+          {
+            "name": "tipo",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "clienteId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "archivo": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "archivo"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResumenCarga"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/importaciones/{id}": {
+      "get": {
+        "tags": [
+          "Migración"
+        ],
+        "summary": "Una carga con su conciliación",
+        "operationId": "obtenerCarga",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetalleCarga"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/importaciones/{id}/filas": {
+      "get": {
+        "tags": [
+          "Migración"
+        ],
+        "summary": "Renglones de la carga con sus incidencias, filtrados y paginados",
+        "operationId": "filasDeCarga",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "estado",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "regla",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pendientes",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "pagina",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "tamano",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginaFilas"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/importaciones/{id}/decisiones": {
+      "post": {
+        "tags": [
+          "Migración"
+        ],
+        "summary": "Resolver incidencias (una o en grupo) y volver a validar",
+        "operationId": "decidirCarga",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecisionesCarga"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetalleCarga"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/importaciones/{id}/decisiones/{numero}/{regla}": {
+      "delete": {
+        "tags": [
+          "Migración"
+        ],
+        "summary": "Quitar una decisión y volver a validar",
+        "operationId": "quitarDecision",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "numero",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "regla",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetalleCarga"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/importaciones/{id}/revalidar": {
+      "post": {
+        "tags": [
+          "Migración"
+        ],
+        "summary": "Volver a validar con los catálogos y alias de ahora",
+        "operationId": "revalidarCarga",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetalleCarga"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/importaciones/{id}/confirmar": {
+      "post": {
+        "tags": [
+          "Migración"
+        ],
+        "summary": "Confirmar: escribe todo en una transacción si no queda nada en cuarentena",
+        "operationId": "confirmarCarga",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetalleCarga"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/importaciones/{id}/revertir": {
+      "post": {
+        "tags": [
+          "Migración"
+        ],
+        "summary": "Revertir: borra lo que creó la carga si nada lo usa",
+        "operationId": "revertirCarga",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetalleCarga"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/importaciones/destinos": {
+      "get": {
+        "tags": [
+          "Migración"
+        ],
+        "summary": "Registros a los que se puede ligar un nombre del Excel (50 como máximo)",
+        "operationId": "destinosPosibles",
+        "parameters": [
+          {
+            "name": "entidad",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "frenteId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DestinoPosible"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/alias": {
+      "get": {
+        "tags": [
+          "Migración"
+        ],
+        "summary": "Cómo se tradujo cada nombre del Excel",
+        "operationId": "listarAlias",
+        "parameters": [
+          {
+            "name": "entidad",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AliasCarga"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/alias/{id}": {
+      "delete": {
+        "tags": [
+          "Migración"
+        ],
+        "summary": "Olvidar un alias: la siguiente carga vuelve a preguntar",
+        "operationId": "borrarAlias",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Migración"
+        ],
+        "summary": "Ligar el nombre a otro registro",
+        "operationId": "cambiarAlias",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CambioAlias"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AliasCarga"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/personas": {
+      "get": {
+        "tags": [
+          "Personas"
+        ],
+        "summary": "Personas por nombre, NSS o CURP (200 como máximo)",
+        "operationId": "buscarPersonas",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "soloRevisar",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Persona"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/personas/{id}": {
+      "get": {
+        "tags": [
+          "Personas"
+        ],
+        "summary": "Una persona (ETag con su versión)",
+        "operationId": "obtenerPersona",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Persona"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Personas"
+        ],
+        "summary": "Corregir nombre, NSS, CURP o notas",
+        "operationId": "cambiarPersona",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosPersona"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Persona"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -3105,6 +3802,619 @@
             "minimum": 0
           },
           "activo": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "nombre"
+        ]
+      },
+      "TipoCargaInfo": {
+        "type": "object",
+        "properties": {
+          "tipo": {
+            "type": "string"
+          },
+          "paso": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "origen": {
+            "type": "string"
+          },
+          "requiere": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "parametros": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "confirmada": {
+            "type": "boolean",
+            "description": "Hay al menos una carga confirmada"
+          },
+          "disponible": {
+            "type": "boolean",
+            "description": "Sus cargas previas ya están confirmadas"
+          },
+          "ultimaCargaId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "ultimoEstado": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "confirmada",
+          "disponible",
+          "nombre",
+          "origen",
+          "parametros",
+          "paso",
+          "requiere",
+          "tipo"
+        ]
+      },
+      "ResumenCarga": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "tipo": {
+            "type": "string"
+          },
+          "tipoNombre": {
+            "type": "string"
+          },
+          "archivo": {
+            "type": "string"
+          },
+          "hojas": {
+            "type": "string"
+          },
+          "estado": {
+            "type": "string",
+            "description": "validada, confirmada o revertida"
+          },
+          "versionReglas": {
+            "type": "string"
+          },
+          "usuario": {
+            "type": "string"
+          },
+          "creada": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "confirmada": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "revertida": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "renglones": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "validos": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "corregidos": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "enCuarentena": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "descartados": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "porCrear": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "existentes": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "repetida": {
+            "type": "boolean",
+            "description": "El mismo archivo ya estaba cargado: se devuelve esa carga"
+          }
+        },
+        "required": [
+          "archivo",
+          "corregidos",
+          "creada",
+          "descartados",
+          "enCuarentena",
+          "estado",
+          "existentes",
+          "hojas",
+          "id",
+          "porCrear",
+          "renglones",
+          "repetida",
+          "tipo",
+          "tipoNombre",
+          "usuario",
+          "validos",
+          "versionReglas"
+        ]
+      },
+      "HojaConciliada": {
+        "type": "object",
+        "properties": {
+          "hoja": {
+            "type": "string"
+          },
+          "leidos": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "validos": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "corregidos": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "enCuarentena": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "descartados": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "porCrear": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "existentes": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "diferencia": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Leídos que no quedaron en ningún estado: 0"
+          }
+        },
+        "required": [
+          "corregidos",
+          "descartados",
+          "diferencia",
+          "enCuarentena",
+          "existentes",
+          "hoja",
+          "leidos",
+          "porCrear",
+          "validos"
+        ]
+      },
+      "ReglaAplicada": {
+        "type": "object",
+        "properties": {
+          "regla": {
+            "type": "string"
+          },
+          "severidad": {
+            "type": "string"
+          },
+          "renglones": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "pendientes": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "ejemplo": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "ejemplo",
+          "pendientes",
+          "regla",
+          "renglones",
+          "severidad"
+        ]
+      },
+      "DetalleCarga": {
+        "type": "object",
+        "properties": {
+          "resumen": {
+            "$ref": "#/components/schemas/ResumenCarga"
+          },
+          "parametros": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "conciliacion": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HojaConciliada"
+            }
+          },
+          "reglas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReglaAplicada"
+            }
+          },
+          "creados": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "Registros creados al confirmar, por entidad"
+          },
+          "confirmadaPor": {
+            "type": "string"
+          },
+          "revertidaPor": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "conciliacion",
+          "creados",
+          "parametros",
+          "reglas",
+          "resumen"
+        ]
+      },
+      "IncidenciaCarga": {
+        "type": "object",
+        "properties": {
+          "regla": {
+            "type": "string"
+          },
+          "severidad": {
+            "type": "string",
+            "description": "info, advertencia, cuarentena o bloqueo"
+          },
+          "detalle": {
+            "type": "string"
+          },
+          "sugerencia": {
+            "type": "object",
+            "additionalProperties": {},
+            "description": "Sugerencia: destinoId y destino; con entidad y texto, aceptarla guarda un alias"
+          },
+          "opciones": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "ACEPTAR, ELEGIR, CREAR, VALOR o DESCARTAR"
+          },
+          "pendiente": {
+            "type": "boolean"
+          },
+          "resolucion": {
+            "type": "object",
+            "additionalProperties": {}
+          },
+          "resueltaPor": {
+            "type": "string"
+          },
+          "resueltaEn": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "detalle",
+          "opciones",
+          "pendiente",
+          "regla",
+          "severidad"
+        ]
+      },
+      "FilaCargada": {
+        "type": "object",
+        "properties": {
+          "numero": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hoja": {
+            "type": "string"
+          },
+          "filaExcel": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "crudo": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "normal": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "estado": {
+            "type": "string"
+          },
+          "accion": {
+            "type": "string",
+            "description": "crear, existe u omitir"
+          },
+          "incidencias": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IncidenciaCarga"
+            }
+          }
+        },
+        "required": [
+          "accion",
+          "crudo",
+          "estado",
+          "hoja",
+          "incidencias",
+          "normal",
+          "numero"
+        ]
+      },
+      "PaginaFilas": {
+        "type": "object",
+        "properties": {
+          "elementos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FilaCargada"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "pagina": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tamano": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "elementos",
+          "pagina",
+          "tamano",
+          "total"
+        ]
+      },
+      "DecisionCarga": {
+        "type": "object",
+        "properties": {
+          "numero": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "regla": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[A-Z0-9_]{3,40}$"
+          },
+          "opcion": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^(ACEPTAR|ELEGIR|CREAR|VALOR|DESCARTAR)$"
+          },
+          "destinoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "valor": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 0
+          },
+          "motivo": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 0
+          }
+        },
+        "required": [
+          "numero",
+          "opcion",
+          "regla"
+        ]
+      },
+      "DecisionesCarga": {
+        "type": "object",
+        "properties": {
+          "decisiones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DecisionCarga"
+            },
+            "maxItems": 1000,
+            "minItems": 1
+          }
+        },
+        "required": [
+          "decisiones"
+        ]
+      },
+      "AliasCarga": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "entidad": {
+            "type": "string"
+          },
+          "texto": {
+            "type": "string"
+          },
+          "destinoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "destino": {
+            "type": "string",
+            "description": "Nombre del registro; vacío si ya no existe"
+          },
+          "origen": {
+            "type": "string",
+            "description": "regla, sugerencia_aceptada o manual"
+          },
+          "cargaId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "usuario": {
+            "type": "string"
+          },
+          "creado": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "creado",
+          "destinoId",
+          "entidad",
+          "id",
+          "origen",
+          "texto",
+          "version"
+        ]
+      },
+      "CambioAlias": {
+        "type": "object",
+        "properties": {
+          "destinoId": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "destinoId"
+        ]
+      },
+      "DestinoPosible": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "texto": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "texto"
+        ]
+      },
+      "Persona": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "nss": {
+            "type": "string"
+          },
+          "curp": {
+            "type": "string"
+          },
+          "revisar": {
+            "type": "boolean",
+            "description": "Alta desde un apodo o posible duplicado"
+          },
+          "nota": {
+            "type": "string"
+          },
+          "activa": {
+            "type": "boolean"
+          },
+          "importada": {
+            "type": "boolean",
+            "description": "La dio de alta una carga de Excel"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "activa",
+          "id",
+          "importada",
+          "nombre",
+          "revisar",
+          "version"
+        ]
+      },
+      "DatosPersona": {
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 0
+          },
+          "nss": {
+            "type": "string",
+            "pattern": "^\\s*$|^\\s*[0-9]{11}\\s*$"
+          },
+          "curp": {
+            "type": "string",
+            "pattern": "^\\s*$|^\\s*[A-Za-z][AEIOUXaeioux][A-Za-z]{2}[0-9]{6}[HMhm][A-Za-z]{5}[A-Za-z0-9][0-9]\\s*$"
+          },
+          "revisar": {
+            "type": "boolean"
+          },
+          "nota": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 0
+          },
+          "activa": {
             "type": "boolean"
           }
         },

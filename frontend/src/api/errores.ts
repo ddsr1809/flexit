@@ -25,6 +25,14 @@ const MENSAJES: Record<string, string> = {
   DUPLICADO: 'Ya existe un registro con esos datos.',
   DATOS_INCONSISTENTES: 'Los datos no son consistentes con otros registros.',
   CUERPO_INVALIDO: 'La información enviada no tiene el formato esperado.',
+  ARCHIVO_NO_XLSX: 'Sube un libro de Excel (.xlsx). Si está en .xls, ábrelo y guárdalo como .xlsx.',
+  ARCHIVO_GRANDE: 'El archivo pasa de 20 MB.',
+  ARCHIVO_VACIO: 'El archivo está vacío.',
+  FALTA_MOTIVO: 'Escribe por qué se descarta.',
+  FALTA_VALOR: 'Escribe el valor.',
+  FALTA_DESTINO: 'Elige el registro.',
+  CARGA_CERRADA: 'La carga ya se confirmó o se revirtió: ya no se puede cambiar.',
+  PERSONA_DUPLICADA: 'Otra persona ya tiene ese NSS o CURP.',
   ERROR_INTERNO: 'Ocurrió un error inesperado. Si se repite, avisa a sistemas.',
 }
 

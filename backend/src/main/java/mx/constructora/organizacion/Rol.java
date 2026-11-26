@@ -9,6 +9,7 @@ import static mx.constructora.compartido.Permisos.ESTRUCTURA_VER_TODO;
 import static mx.constructora.compartido.Permisos.EXISTENCIAS_VER;
 import static mx.constructora.compartido.Permisos.MOVIMIENTO_CAPTURAR;
 import static mx.constructora.compartido.Permisos.PEDIDO_CREAR;
+import static mx.constructora.compartido.Permisos.PERSONAS_ADMINISTRAR;
 import static mx.constructora.compartido.Permisos.PRECIO_VER;
 import static mx.constructora.compartido.Permisos.REQUISICION_CREAR;
 import static mx.constructora.compartido.Permisos.USUARIOS_ADMINISTRAR;
@@ -51,6 +52,7 @@ public enum Rol {
       Set.of(
           ADMINISTRAR,
           USUARIOS_ADMINISTRAR,
+          PERSONAS_ADMINISTRAR,
           EXISTENCIAS_VER,
           COSTO_VER_TODO,
           CATALOGO_EDITAR,

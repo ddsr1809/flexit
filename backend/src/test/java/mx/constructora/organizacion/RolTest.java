@@ -7,6 +7,7 @@ import static mx.constructora.compartido.Permisos.DOCUMENTO_AUTORIZAR;
 import static mx.constructora.compartido.Permisos.ESTRUCTURA_VER_TODO;
 import static mx.constructora.compartido.Permisos.MOVIMIENTO_CAPTURAR;
 import static mx.constructora.compartido.Permisos.PEDIDO_CREAR;
+import static mx.constructora.compartido.Permisos.PERSONAS_ADMINISTRAR;
 import static mx.constructora.compartido.Permisos.REQUISICION_CREAR;
 import static mx.constructora.compartido.Permisos.USUARIOS_ADMINISTRAR;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,6 +64,15 @@ class RolTest {
   void soloAdministracionAdministraUsuarios() {
     for (Rol rol : Rol.values()) {
       assertThat(rol.permisos().contains(USUARIOS_ADMINISTRAR))
+          .as(rol.clave())
+          .isEqualTo(rol == Rol.ADMIN);
+    }
+  }
+
+  @Test
+  void losDatosPersonalesSoloLosVeAdministracion() {
+    for (Rol rol : Rol.values()) {
+      assertThat(rol.permisos().contains(PERSONAS_ADMINISTRAR))
           .as(rol.clave())
           .isEqualTo(rol == Rol.ADMIN);
     }

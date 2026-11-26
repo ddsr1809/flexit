@@ -1,6 +1,6 @@
 # Estado del proyecto
 
-Última actualización: 25 nov 2026 · Hito en curso: **H2 · Catálogos y estructura** (semanas 3 y 4)
+Última actualización: 26 nov 2026 · Hito en curso: **H3 · Centro de migración y datos maestros** (semanas 4 y 5)
 
 ## H1 · issues 1 a 11
 
@@ -96,8 +96,50 @@ porque Spring 7 ya no lo copia en la excepción traducida.
   (`compartido.normalizar`: sin acentos, mayúsculas, espacios simples): "CEMENTO  GRÍS" es el mismo
   material que "Cemento gris".
 
-## Siguiente: H3 · Centro de migración y datos maestros (issues 17 a 20 y 42 a 45)
+## H3 · issues 17 a 20 y 42 a 45
 
-Motor de carga desde Excel (subir, normalizar, validar, cuarentena, confirmar, revertir) e
-importadores de contratos, lotes, prototipos, paquetes, materiales, proveedores y personas. Usa
-`ClaveUnidad`, `CodigoContrato` y `compartido.normalizar` de H2.
+| # | Issue | Estado | Dónde se comprueba |
+| --- | --- | --- | --- |
+| 17 | importacion: motor de carga (subir, filas, reporte, confirmar) | Hecho | `CriterioH3Test`, pantalla Migración |
+| 42 | Esquema `migracion`, perfiles por hoja y lectura en streaming | Hecho | V006, `LibroXlsxTest`, `tools/pruebas-sql/migracion.sql` |
+| 43 | Motor de reglas: normalización, alias, cuarentena, versión de reglas, idempotencia y reversa | Hecho | `ImportadoresTest`, `CriterioH3Test` |
+| 44 | Pantallas: cargas, orden, cuarentena, alias, bitácora | Hecho | e2e `migracion.spec.ts` |
+| 18 | Importadores de frentes, contratos, lotes, prototipos y paquetes | Hecho | `ImportadoresTest` |
+| 19 | Importadores de materiales y proveedores | Hecho | `ImportadoresTest`, `CriterioH3Test` |
+| 45 | Importador de personas (SUA, destajo, almacén) con sugerencias de parecido | Hecho | `ImportadoresTest`, pantalla Personas |
+| 20 | Carga de los datos en preproducción y validación con coordinación | Pendiente: lo hace administración | `docs/runbooks/migracion-catalogos.md` |
+
+### Qué ya se verificó y qué no
+
+- **Verificado:** V006 y 13 pruebas SQL nuevas contra PostgreSQL 16 (RLS de `migracion` y
+  `persona`, idempotencia por sha256, reversa que no toca otra empresa ni borra si algo usa lo
+  creado, sin empresa no corre); el dominio (lector, reglas e importadores, Java puro) con 24
+  pruebas sobre las muestras anonimizadas; el orden de carga completo contra los **tres Excel
+  reales** en una simulación en memoria (resultados en el runbook), y que subirlos por segunda vez
+  no crea nada; el código de aplicación compilado contra firmas de las APIs de Spring; frontend
+  (tipos, lint, 25 pruebas, build) y las pantallas en Chrome contra una API simulada, en
+  escritorio y a 412 px.
+- **Se verifica por primera vez en CI:** `CriterioH3Test` (por HTTP real: orden de carga, subir el
+  mismo archivo dos veces, cuarentena, confirmar, revertir, `CARGA_EN_USO`, permisos y otra
+  empresa), el formato con spotless y el e2e contra la app real. `frontend/openapi.json` se escribió
+  a mano: correr `make api` y revisar el diff.
+
+### Decisiones de esta etapa
+
+- Lector de .xlsx propio (StAX), archivo en `migracion.archivo` hasta S3, proceso en la misma
+  petición; el segundo plano llega en H5 (ADR-008).
+- `persona` en `organizacion`, permiso `personas:administrar` (solo administración); reversa por
+  `origen_carga` con funciones `SECURITY DEFINER` (ADR-009).
+- La relación lote → contrato no está en ningún Excel: la decide coordinación en la cuarentena, por
+  manzana, o con una hoja "Lotes" (frente, contrato, manzana, lote, prototipo).
+- Paquetes: la equivalencia Ruba ↔ RM es por sección (los renglones de las dos listas no se
+  corresponden). Un concepto repetido en la misma sección es otro paquete ("… (2)").
+- Precio de referencia de materiales: ponderado sin IVA y neto de descuento desde Entradas. Los que
+  no tienen entradas con precio entran sin él (advertencia), salvo que se capture en la cuarentena.
+- Un apodo del destajo o del almacén nunca se da de alta solo; uno del SUA sí, salvo que se parezca
+  a otra persona (≥ 0.85).
+
+## Siguiente: H4 · Inventario operando en preproducción (issues 21 a 31)
+
+Almacenes, saldo y kardex, recepción con costo promedio, vale con bloqueo y reparto. Usa los
+materiales, lotes y personas que dejó H3.

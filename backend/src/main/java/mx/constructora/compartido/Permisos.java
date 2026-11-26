@@ -43,6 +43,12 @@ public final class Permisos {
    */
   public static final String ESTRUCTURA_VER_TODO = "estructura:ver-todo";
 
+  /**
+   * Ver y corregir el registro de personas (trabajadores, solicitantes): son datos personales, solo
+   * administración (y RH cuando exista el rol).
+   */
+  public static final String PERSONAS_ADMINISTRAR = "personas:administrar";
+
   /** Dar de alta usuarios y asignar roles. */
   public static final String USUARIOS_ADMINISTRAR = "usuarios:administrar";
 

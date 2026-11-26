@@ -15,6 +15,10 @@ import { PantallaContrato } from '@/features/estructura/PantallaContrato'
 import { PantallaContratos } from '@/features/estructura/PantallaContratos'
 import { PantallaPaquetes } from '@/features/estructura/PantallaPaquetes'
 import { PantallaInicio } from '@/features/inicio/PantallaInicio'
+import { PantallaAlias } from '@/features/migracion/PantallaAlias'
+import { PantallaCarga } from '@/features/migracion/PantallaCarga'
+import { PantallaMigracion } from '@/features/migracion/PantallaMigracion'
+import { PantallaPersonas } from '@/features/personas/PantallaPersonas'
 import { PantallaLogin } from '@/features/sesion/PantallaLogin'
 import { PantallaUsuarios } from '@/features/usuarios/PantallaUsuarios'
 import { consultaSesion, PERMISOS, puede, type Permiso } from '@/sesion/sesion'
@@ -124,6 +128,39 @@ const proveedores = createRoute({
   component: PantallaProveedores,
 })
 
+const migracion = createRoute({
+  getParentRoute: () => privado,
+  path: '/migracion',
+  beforeLoad: conPermiso(PERMISOS.administrar),
+  component: PantallaMigracion,
+})
+
+const alias = createRoute({
+  getParentRoute: () => privado,
+  path: '/migracion/alias',
+  beforeLoad: conPermiso(PERMISOS.administrar),
+  component: PantallaAlias,
+})
+
+function RutaCarga() {
+  const { cargaId } = carga.useParams()
+  return <PantallaCarga key={cargaId} cargaId={Number(cargaId)} />
+}
+
+const carga = createRoute({
+  getParentRoute: () => privado,
+  path: '/migracion/$cargaId',
+  beforeLoad: conPermiso(PERMISOS.administrar),
+  component: RutaCarga,
+})
+
+const personas = createRoute({
+  getParentRoute: () => privado,
+  path: '/personas',
+  beforeLoad: conPermiso(PERMISOS.personasAdministrar),
+  component: PantallaPersonas,
+})
+
 const arbol = raiz.addChildren([
   login,
   privado.addChildren([
@@ -134,6 +171,10 @@ const arbol = raiz.addChildren([
     catalogos,
     materiales,
     proveedores,
+    migracion,
+    alias,
+    carga,
+    personas,
     usuarios,
   ]),
 ])

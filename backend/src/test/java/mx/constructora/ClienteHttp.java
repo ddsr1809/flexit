@@ -59,6 +59,43 @@ public final class ClienteHttp {
         true);
   }
 
+  public Respuesta delete(String ruta) {
+    return enviar(peticion(ruta).DELETE(), true);
+  }
+
+  /** POST multipart/form-data con campos de texto y un archivo en el campo {@code archivo}. */
+  public Respuesta subir(String ruta, Map<String, String> campos, String nombre, byte[] archivo) {
+    String limite = "----limite" + System.nanoTime();
+    java.io.ByteArrayOutputStream cuerpo = new java.io.ByteArrayOutputStream();
+    java.nio.charset.Charset utf8 = java.nio.charset.StandardCharsets.UTF_8;
+    for (Map.Entry<String, String> campo : campos.entrySet()) {
+      cuerpo.writeBytes(
+          ("--"
+                  + limite
+                  + "\r\nContent-Disposition: form-data; name=\""
+                  + campo.getKey()
+                  + "\"\r\n\r\n"
+                  + campo.getValue()
+                  + "\r\n")
+              .getBytes(utf8));
+    }
+    cuerpo.writeBytes(
+        ("--"
+                + limite
+                + "\r\nContent-Disposition: form-data; name=\"archivo\"; filename=\""
+                + nombre
+                + "\"\r\nContent-Type: application/vnd.openxmlformats-officedocument"
+                + ".spreadsheetml.sheet\r\n\r\n")
+            .getBytes(utf8));
+    cuerpo.writeBytes(archivo);
+    cuerpo.writeBytes(("\r\n--" + limite + "--\r\n").getBytes(utf8));
+    return enviar(
+        peticion(ruta)
+            .header("Content-Type", "multipart/form-data; boundary=" + limite)
+            .POST(HttpRequest.BodyPublishers.ofByteArray(cuerpo.toByteArray())),
+        true);
+  }
+
   /** PATCH con la versión leída en {@code If-Match}; {@code null} lo manda sin encabezado. */
   public Respuesta patch(String ruta, String json, Integer version) {
     HttpRequest.Builder constructor =

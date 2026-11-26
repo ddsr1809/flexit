@@ -39,6 +39,11 @@ Docker Compose, Caddy, Terraform (Vultr + Cloudflare), GitHub Actions + GHCR.
 13. El residente solo ve sus contratos (`estructura.contrato_usuario`); cualquier consulta nueva
     de contratos, lotes o costos aplica el mismo alcance (ADR-006).
 
+14. La migración (módulo `importacion`) nunca escribe en tablas de otro módulo: crea por
+    `ImportacionEstructura`, `ImportacionCatalogo` y `Personas`, con `origen_carga` para poder
+    revertir. Nunca lee una celda que sea fórmula. Cada regla nueva lleva su prueba con una muestra
+    anonimizada y, si cambia resultados, sube `Comun.VERSION_REGLAS`.
+
 ## Cómo funciona la seguridad por empresa
 `ContextoEmpresa` (sesión web o `ContextoEmpresa.como(...)`) → `DataSourceConEmpresa` fija
 `app.empresa_id` y `app.usuario_id` en cada conexión que sale del pool → las políticas de RLS

@@ -22,6 +22,11 @@ spring:
       table-name: organizacion.sesion
       initialize-schema: never
       cleanup-cron: "0 */10 * * * *"
+  # Cargas de Excel del centro de migración (H3): hasta 20 MB.
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 21MB
   mvc:
     problemdetails:
       enabled: true

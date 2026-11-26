@@ -18,6 +18,7 @@ import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 /**
  * Todos los errores de la API salen como Problem Details (RFC 9457) con un {@code codigo} estable.
@@ -68,6 +69,11 @@ class ManejadorErrores {
     }
     return problema(
         HttpStatus.CONFLICT, "DATOS_INCONSISTENTES", "Los datos no son consistentes con otros");
+  }
+
+  @ExceptionHandler(MaxUploadSizeExceededException.class)
+  ProblemDetail archivoGrande(MaxUploadSizeExceededException error) {
+    return problema(HttpStatus.PAYLOAD_TOO_LARGE, "ARCHIVO_GRANDE", "El archivo pasa de 20 MB");
   }
 
   @ExceptionHandler(AccessDeniedException.class)
