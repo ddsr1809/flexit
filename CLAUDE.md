@@ -48,6 +48,12 @@ Docker Compose, Caddy, Terraform (Vultr + Cloudflare), GitHub Actions + GHCR.
 16. El histórico del Excel (esquema `historico`) solo lo escribe la migración por
     `ImportacionHistorico`, nunca se edita (se revierte la carga completa) y no entra al kardex.
     Un reporte de costo suma histórico y vivo con `reportes.v_costo_unidad` (ADR-011).
+17. Lo apartado para una requisición vive en `inventario.reserva` (un renglón por renglón de
+    requisición); `saldo.reservado` es su suma y solo lo mueve el trigger. Un vale suelto nunca toma
+    lo apartado; solo el vale ligado a la requisición lo consume, al aplicarse (ADR-012).
+18. Lo surtido y lo recibido se calculan de los documentos aplicados ligados por renglón
+    (`movimiento_linea.requisicion_linea_id` y `pedido_linea_id`), nunca se guardan aparte. Un
+    documento ligado no se corrige: se cancela y se vuelve a surtir o recibir.
 
 ## Cómo funciona la seguridad por empresa
 `ContextoEmpresa` (sesión web o `ContextoEmpresa.como(...)`) → `DataSourceConEmpresa` fija

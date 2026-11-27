@@ -69,6 +69,20 @@ public class RepositorioContratos {
         .list();
   }
 
+  /** Todos los contratos de la empresa, por código. */
+  public List<ContratoInfo> infosTodos(long empresa) {
+    return jdbc.sql(
+            """
+            SELECT c.id, c.codigo, c.frente_id, c.estado
+              FROM estructura.contrato c
+             WHERE c.empresa_id = :empresa
+             ORDER BY c.codigo
+            """)
+        .param("empresa", empresa)
+        .query(ContratoInfo.class)
+        .list();
+  }
+
   /** Ids de los contratos asignados a {@code usuario} (alcance del residente). */
   public List<Long> asignados(long empresa, long usuario) {
     return jdbc.sql(

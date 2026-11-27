@@ -8,6 +8,7 @@ import static mx.constructora.compartido.Permisos.ESTRUCTURA_VER_TODO;
 import static mx.constructora.compartido.Permisos.MOVIMIENTO_CAPTURAR;
 import static mx.constructora.compartido.Permisos.PEDIDO_CREAR;
 import static mx.constructora.compartido.Permisos.PERSONAS_ADMINISTRAR;
+import static mx.constructora.compartido.Permisos.PRESUPUESTO_EDITAR;
 import static mx.constructora.compartido.Permisos.REQUISICION_CREAR;
 import static mx.constructora.compartido.Permisos.USUARIOS_ADMINISTRAR;
 import static mx.constructora.compartido.Permisos.VALE_AUTORIZAR;
@@ -61,6 +62,15 @@ class RolTest {
       assertThat(rol.permisos().contains(PEDIDO_CREAR))
           .as(rol.clave())
           .isEqualTo(rol == Rol.COMPRAS);
+    }
+  }
+
+  @Test
+  void elPresupuestoLoAsignanCoordinacionDireccionYAdministracion() {
+    for (Rol rol : Rol.values()) {
+      assertThat(rol.permisos().contains(PRESUPUESTO_EDITAR))
+          .as(rol.clave())
+          .isEqualTo(rol == Rol.COORDINACION || rol == Rol.DIRECCION || rol == Rol.ADMIN);
     }
   }
 

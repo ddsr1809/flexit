@@ -11,6 +11,7 @@ import static mx.constructora.compartido.Permisos.MOVIMIENTO_CAPTURAR;
 import static mx.constructora.compartido.Permisos.PEDIDO_CREAR;
 import static mx.constructora.compartido.Permisos.PERSONAS_ADMINISTRAR;
 import static mx.constructora.compartido.Permisos.PRECIO_VER;
+import static mx.constructora.compartido.Permisos.PRESUPUESTO_EDITAR;
 import static mx.constructora.compartido.Permisos.REQUISICION_CREAR;
 import static mx.constructora.compartido.Permisos.USUARIOS_ADMINISTRAR;
 import static mx.constructora.compartido.Permisos.VALE_AUTORIZAR;
@@ -45,6 +46,7 @@ public enum Rol {
           VALE_AUTORIZAR,
           EXISTENCIAS_VER,
           COSTO_VER_TODO,
+          PRESUPUESTO_EDITAR,
           ESTRUCTURA_VER_TODO)),
   COMPRAS(
       "compras",
@@ -58,6 +60,7 @@ public enum Rol {
           VALE_AUTORIZAR,
           EXISTENCIAS_VER,
           COSTO_VER_TODO,
+          PRESUPUESTO_EDITAR,
           ESTRUCTURA_VER_TODO)),
   ADMIN(
       "admin",
@@ -68,6 +71,7 @@ public enum Rol {
           PERSONAS_ADMINISTRAR,
           EXISTENCIAS_VER,
           COSTO_VER_TODO,
+          PRESUPUESTO_EDITAR,
           CATALOGO_EDITAR,
           ESTRUCTURA_VER_TODO));
 

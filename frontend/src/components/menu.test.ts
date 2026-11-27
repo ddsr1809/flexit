@@ -60,4 +60,27 @@ describe('menú por permisos', () => {
     expect(compras).not.toContain('Migración')
     expect(compras).not.toContain('Personas')
   })
+
+  it('abastecimiento: el residente pide, compras pide al proveedor y el almacén recibe', () => {
+    const residente = menuPara(sesion(['requisicion:crear', 'vale:autorizar'])).map((e) => e.texto)
+    expect(residente).toContain('Requisiciones')
+    expect(residente).not.toContain('Pedidos')
+    const compras = menuPara(sesion(['pedido:crear', 'precio:ver'])).map((e) => e.texto)
+    expect(compras).toEqual(expect.arrayContaining(['Requisiciones', 'Pedidos', 'Reportes']))
+    const almacen = menuPara(sesion(['movimiento:capturar', 'existencias:ver'])).map((e) => e.texto)
+    expect(almacen).toEqual(expect.arrayContaining(['Requisiciones', 'Pedidos']))
+    expect(almacen).not.toContain('Reportes')
+  })
+
+  it('los reportes los ve quien ve costos', () => {
+    const coordinacion = menuPara(sesion(['costo:ver-todo'])).map((e) => e.texto)
+    expect(coordinacion).toContain('Reportes')
+    const residente = menuPara(sesion(['costo:ver-propio'])).map((e) => e.texto)
+    expect(residente).toContain('Reportes')
+  })
+
+  it('ya no hay pantallas deshabilitadas de H6', () => {
+    const todas = menuPara(sesion(['requisicion:crear', 'pedido:crear']))
+    expect(todas.filter((e) => e.hito === 'H6')).toHaveLength(0)
+  })
 })

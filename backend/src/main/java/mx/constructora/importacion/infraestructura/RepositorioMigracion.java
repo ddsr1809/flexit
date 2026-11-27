@@ -115,6 +115,16 @@ public class RepositorioMigracion {
         > 0;
   }
 
+  /** El archivo subido (para releerlo: la conciliación contra la hoja del frente). */
+  public java.util.Optional<byte[]> contenidoArchivo(long empresa, String sha256) {
+    return jdbc.sql(
+            "SELECT contenido FROM migracion.archivo WHERE empresa_id = :empresa AND sha256 = :sha")
+        .param("empresa", empresa)
+        .param("sha", sha256)
+        .query((rs, fila) -> rs.getBytes(1))
+        .optional();
+  }
+
   public void guardarArchivo(
       long empresa, String sha256, String nombre, byte[] contenido, long usuario) {
     jdbc.sql(

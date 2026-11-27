@@ -34,6 +34,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class ServicioUnidades {
 
   private static final String ADMINISTRAR = "hasAuthority('" + Permisos.ADMINISTRAR + "')";
+  private static final String PRESUPUESTO =
+      "hasAnyAuthority('" + Permisos.PRESUPUESTO_EDITAR + "', '" + Permisos.ADMINISTRAR + "')";
 
   /** Lote, edificio o tramo de un contrato. */
   public record UnidadObra(
@@ -66,6 +68,16 @@ public class ServicioUnidades {
       Long prototipoId,
       @PositiveOrZero @Digits(integer = 14, fraction = 2) BigDecimal presupuestoMaterial,
       @NotNull Boolean activa) {}
+
+  /**
+   * Presupuesto de material (pesos sin IVA) para los lotes de un prototipo o para una lista de
+   * lotes del contrato. Monto vacío: quita el presupuesto. Solo la clasificación Programa lo
+   * consume (avisos al 80% y al 100%, H6).
+   */
+  public record DatosPresupuesto(
+      Long prototipoId,
+      @Size(max = 2000) List<Long> unidadIds,
+      @PositiveOrZero @Digits(integer = 14, fraction = 2) BigDecimal monto) {}
 
   private final RepositorioUnidades repositorio;
   private final RepositorioClientes clientes;
@@ -168,6 +180,26 @@ public class ServicioUnidades {
             datos.presupuestoMaterial(),
             datos.activa()));
     return repositorio.unidad(empresa(), id).orElseThrow();
+  }
+
+  /** Asigna el mismo presupuesto a los lotes del prototipo, o a los lotes indicados. */
+  @PreAuthorize(PRESUPUESTO)
+  @Transactional
+  public List<UnidadObra> asignarPresupuesto(long contratoId, DatosPresupuesto datos) {
+    contratos.visible(contratoId);
+    boolean conLista = datos.unidadIds() != null && !datos.unidadIds().isEmpty();
+    if (datos.prototipoId() == null && !conLista) {
+      throw ErrorNegocio.invalido(
+          "FALTA_DESTINO", "Elige el prototipo o los lotes a los que se asigna el presupuesto");
+    }
+    validarPrototipo(datos.prototipoId());
+    repositorio.fijarPresupuesto(
+        empresa(),
+        contratoId,
+        datos.prototipoId(),
+        conLista ? datos.unidadIds() : null,
+        datos.monto());
+    return repositorio.unidades(empresa(), contratoId);
   }
 
   private void validarPrototipo(Long prototipoId) {

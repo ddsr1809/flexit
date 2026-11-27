@@ -41,6 +41,8 @@ import mx.constructora.inventario.infraestructura.RepositorioMovimientos.LineaCo
 import mx.constructora.inventario.infraestructura.RepositorioMovimientos.NuevaLinea;
 import mx.constructora.inventario.infraestructura.RepositorioMovimientos.Restante;
 import mx.constructora.inventario.infraestructura.RepositorioPeriodos;
+import mx.constructora.inventario.infraestructura.RepositorioReservas;
+import mx.constructora.inventario.infraestructura.RepositorioReservas.FilaReserva;
 import mx.constructora.inventario.infraestructura.RepositorioSaldos;
 import mx.constructora.inventario.infraestructura.RepositorioSaldos.FilaSaldo;
 import mx.constructora.inventario.infraestructura.RepositorioSaldos.NuevoCargo;
@@ -61,12 +63,18 @@ import org.springframework.transaction.annotation.Transactional;
  *   <li>Cada línea congela su costo (regla 3) y deja su renglón de kardex y, si va a obra, su
  *       cargo. La base rechaza cualquier existencia negativa (regla 2) aunque el código fallara.
  * </ol>
+ *
+ * <p>Lo reservado para requisiciones no está disponible para otros vales. Un vale que surte una
+ * requisición usa su reserva y la consume; un ajuste de conteo que no alcanza recorta las reservas
+ * más recientes del material (el conteo físico es el que vale). Las reservas se bloquean siempre
+ * después de los saldos (ADR-012).
  */
 @Service
 public class ServicioAplicacion {
 
   private final RepositorioMovimientos movimientos;
   private final RepositorioSaldos saldos;
+  private final RepositorioReservas reservas;
   private final RepositorioAlmacenes almacenes;
   private final RepositorioPeriodos periodos;
   private final ServicioMovimientos servicioMovimientos;
@@ -77,6 +85,7 @@ public class ServicioAplicacion {
   public ServicioAplicacion(
       RepositorioMovimientos movimientos,
       RepositorioSaldos saldos,
+      RepositorioReservas reservas,
       RepositorioAlmacenes almacenes,
       RepositorioPeriodos periodos,
       ServicioMovimientos servicioMovimientos,
@@ -85,6 +94,7 @@ public class ServicioAplicacion {
       Folios folios) {
     this.movimientos = movimientos;
     this.saldos = saldos;
+    this.reservas = reservas;
     this.almacenes = almacenes;
     this.periodos = periodos;
     this.servicioMovimientos = servicioMovimientos;
@@ -243,11 +253,27 @@ public class ServicioAplicacion {
           revisarDestinos(lineas);
         }
         c.bloquear(m.almacenId());
+        List<Apartado> apartados =
+            switch (tipo) {
+              case SALIDA -> reservasQueSurte(m.almacenId(), lineas);
+              case AJUSTE_SALIDA -> recortarReservas(c, m.almacenId(), lineas);
+              default -> List.of();
+            };
+        Map<Long, BigDecimal> porMaterial = new HashMap<>();
+        apartados.forEach(
+            a -> porMaterial.merge(a.reserva().materialId(), a.usar(), BigDecimal::add));
         salidaAlPromedio(
             c,
             m.almacenId(),
             lineas,
+            porMaterial,
             tipo == TipoMovimiento.SALIDA ? (l, imp) -> cargarVale(m, l, imp) : null);
+        if (tipo == TipoMovimiento.SALIDA) {
+          // Antes de guardar el saldo: lo reservado baja primero y la existencia después.
+          for (Apartado a : apartados) {
+            reservas.fijar(empresa(), a.reserva().id(), a.reserva().cantidad().subtract(a.usar()));
+          }
+        }
       }
       case AJUSTE_ENTRADA -> sobrante(c, costosSobrante);
       case DEVOLUCION -> devolucion(c);
@@ -286,18 +312,74 @@ public class ServicioAplicacion {
     }
   }
 
+  /** Parte de una reserva que el documento puede usar. */
+  private record Apartado(FilaReserva reserva, BigDecimal usar) {}
+
+  /**
+   * Reservas de los renglones de requisición que surte el vale, bloqueadas: cada una aporta hasta
+   * lo que el vale lleva para su renglón.
+   */
+  private List<Apartado> reservasQueSurte(long almacen, List<FilaLinea> lineas) {
+    Map<Long, BigDecimal> porRenglon = new HashMap<>();
+    for (FilaLinea l : lineas) {
+      if (l.requisicionLineaId() != null) {
+        porRenglon.merge(l.requisicionLineaId(), l.cantidad(), BigDecimal::add);
+      }
+    }
+    List<Apartado> apartados = new ArrayList<>();
+    for (FilaReserva r : reservas.deRenglones(empresa(), porRenglon.keySet(), true)) {
+      BigDecimal usar = r.cantidad().min(porRenglon.get(r.requisicionLineaId()));
+      if (r.almacenId() == almacen && usar.signum() > 0) {
+        apartados.add(new Apartado(r, usar));
+      }
+    }
+    return apartados;
+  }
+
+  /**
+   * Ajuste de conteo que no alcanza por lo reservado: libera las reservas más recientes del
+   * material hasta cubrirlo. La requisición vuelve a tener ese faltante.
+   */
+  private List<Apartado> recortarReservas(Corrida c, long almacen, List<FilaLinea> lineas) {
+    Map<Long, BigDecimal> pedido = new java.util.TreeMap<>();
+    lineas.forEach(l -> pedido.merge(l.materialId(), l.cantidad(), BigDecimal::add));
+    List<Apartado> liberados = new ArrayList<>();
+    for (var e : pedido.entrySet()) {
+      BigDecimal falta = e.getValue().subtract(c.disponible(new Llave(almacen, e.getKey())));
+      if (falta.signum() <= 0) {
+        continue;
+      }
+      for (FilaReserva r : reservas.vigentesBloqueadas(empresa(), almacen, e.getKey())) {
+        if (falta.signum() <= 0) {
+          break;
+        }
+        BigDecimal quitar = r.cantidad().min(falta);
+        reservas.fijar(empresa(), r.id(), r.cantidad().subtract(quitar));
+        liberados.add(new Apartado(r, quitar));
+        falta = falta.subtract(quitar);
+      }
+    }
+    return liberados;
+  }
+
   /**
    * Salida al costo promedio. Las líneas de un mismo renglón (un bote repartido entre lotes) salen
-   * juntas: se calcula el importe del total y se reparte, para que la suma cuadre exacta.
+   * juntas: se calcula el importe del total y se reparte, para que la suma cuadre exacta. {@code
+   * apartado}: lo reservado que este documento puede usar, por material.
    */
   private void salidaAlPromedio(
-      Corrida c, long almacen, List<FilaLinea> lineas, BiConsumer<FilaLinea, BigDecimal> despues) {
+      Corrida c,
+      long almacen,
+      List<FilaLinea> lineas,
+      Map<Long, BigDecimal> apartado,
+      BiConsumer<FilaLinea, BigDecimal> despues) {
     // Primero se revisa que alcance todo el documento, material por material.
     Map<Long, BigDecimal> porMaterial = new LinkedHashMap<>();
     lineas.forEach(l -> porMaterial.merge(l.materialId(), l.cantidad(), BigDecimal::add));
     for (var pedido : porMaterial.entrySet()) {
       Llave k = new Llave(almacen, pedido.getKey());
-      BigDecimal disponible = c.disponible(k);
+      BigDecimal disponible =
+          c.disponible(k).add(apartado.getOrDefault(pedido.getKey(), BigDecimal.ZERO));
       if (pedido.getValue().compareTo(disponible) > 0) {
         throw insuficiente(pedido.getKey(), pedido.getValue(), disponible);
       }
@@ -504,6 +586,7 @@ public class ServicioAplicacion {
         c,
         origen,
         c.lineas,
+        Map.of(),
         (l, importe) -> {
           Llave k = new Llave(destino, l.materialId());
           BigDecimal costo =

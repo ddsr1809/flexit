@@ -67,7 +67,9 @@ public class RepositorioMovimientos {
       Long unidadObraId,
       Long paqueteId,
       Integer clasificacionId,
-      Long lineaOrigenId) {}
+      Long lineaOrigenId,
+      Long requisicionLineaId,
+      Long pedidoLineaId) {}
 
   /** Línea con datos de su documento: para validar devoluciones, reasignaciones y ajustes. */
   public record LineaConDocumento(
@@ -131,7 +133,8 @@ public class RepositorioMovimientos {
       """
       SELECT id, movimiento_id, tipo, renglon, material_id, cantidad, cantidad_captura,
              unidad_captura_id, precio_captura, descuento, tasa_iva, costo_nuevo, costo_unitario,
-             importe, contrato_id, unidad_obra_id, paquete_id, clasificacion_id, linea_origen_id
+             importe, contrato_id, unidad_obra_id, paquete_id, clasificacion_id, linea_origen_id,
+             requisicion_linea_id, pedido_linea_id
         FROM inventario.movimiento_linea
        WHERE empresa_id = :empresa
       """;
@@ -388,7 +391,10 @@ public class RepositorioMovimientos {
       String motivo,
       String observaciones) {}
 
-  /** Datos de una línea nueva. */
+  /**
+   * Datos de una línea nueva. {@code requisicionLineaId} (vale) y {@code pedidoLineaId} (recepción)
+   * los pone solo el abastecimiento, por {@code InventarioApi}.
+   */
   public record NuevaLinea(
       int renglon,
       long materialId,
@@ -403,7 +409,45 @@ public class RepositorioMovimientos {
       Long unidadObraId,
       Long paqueteId,
       Integer clasificacionId,
-      Long lineaOrigenId) {}
+      Long lineaOrigenId,
+      Long requisicionLineaId,
+      Long pedidoLineaId) {
+
+    /** Línea sin vínculo con el abastecimiento. */
+    public NuevaLinea(
+        int renglon,
+        long materialId,
+        BigDecimal cantidad,
+        BigDecimal cantidadCaptura,
+        long unidadCapturaId,
+        BigDecimal precioCaptura,
+        BigDecimal descuento,
+        BigDecimal tasaIva,
+        BigDecimal costoNuevo,
+        Long contratoId,
+        Long unidadObraId,
+        Long paqueteId,
+        Integer clasificacionId,
+        Long lineaOrigenId) {
+      this(
+          renglon,
+          materialId,
+          cantidad,
+          cantidadCaptura,
+          unidadCapturaId,
+          precioCaptura,
+          descuento,
+          tasaIva,
+          costoNuevo,
+          contratoId,
+          unidadObraId,
+          paqueteId,
+          clasificacionId,
+          lineaOrigenId,
+          null,
+          null);
+    }
+  }
 
   public long insertar(long empresa, String folio, Cabecera c, long usuario, UUID idempotencia) {
     return jdbc.sql(
@@ -474,10 +518,11 @@ public class RepositorioMovimientos {
             INSERT INTO inventario.movimiento_linea
               (empresa_id, movimiento_id, tipo, renglon, material_id, cantidad, cantidad_captura,
                unidad_captura_id, precio_captura, descuento, tasa_iva, costo_nuevo, contrato_id,
-               unidad_obra_id, paquete_id, clasificacion_id, linea_origen_id)
+               unidad_obra_id, paquete_id, clasificacion_id, linea_origen_id, requisicion_linea_id,
+               pedido_linea_id)
             VALUES (:empresa, :movimiento, :tipo, :renglon, :material, :cantidad, :captura,
                     :unidad, :precio, :descuento, :iva, :costoNuevo, :contrato, :unidadObra,
-                    :paquete, :clasificacion, :origen)
+                    :paquete, :clasificacion, :origen, :requisicionLinea, :pedidoLinea)
             """)
         .param("empresa", empresa)
         .param("movimiento", movimiento)
@@ -496,6 +541,8 @@ public class RepositorioMovimientos {
         .param("paquete", l.paqueteId())
         .param("clasificacion", l.clasificacionId())
         .param("origen", l.lineaOrigenId())
+        .param("requisicionLinea", l.requisicionLineaId())
+        .param("pedidoLinea", l.pedidoLineaId())
         .update();
   }
 

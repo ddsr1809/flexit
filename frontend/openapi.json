@@ -3969,6 +3969,1432 @@
           }
         }
       }
+    },
+    "/api/v1/requisiciones/por-autorizar": {
+      "get": {
+        "tags": [
+          "Abastecimiento"
+        ],
+        "summary": "Bandeja: requisiciones pendientes que el usuario puede autorizar",
+        "operationId": "requisicionesPorAutorizar",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ResumenRequisicion"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/requisiciones/{id}": {
+      "get": {
+        "tags": [
+          "Abastecimiento"
+        ],
+        "summary": "Una requisición con el avance de cada renglón (ETag)",
+        "operationId": "obtenerRequisicion",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Requisicion"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Abastecimiento"
+        ],
+        "summary": "Corregir un borrador (If-Match)",
+        "operationId": "reemplazarRequisicion",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosRequisicion"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Requisicion"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/requisiciones": {
+      "post": {
+        "tags": [
+          "Abastecimiento"
+        ],
+        "summary": "Capturar una requisición en borrador",
+        "operationId": "crearRequisicion",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosRequisicion"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Requisicion"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Abastecimiento"
+        ],
+        "summary": "Requisiciones filtradas, más recientes primero (el residente, solo sus contratos)",
+        "operationId": "listarRequisiciones",
+        "parameters": [
+          {
+            "name": "estados",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Separados por coma: borrador,pendiente,autorizada…"
+            }
+          },
+          {
+            "name": "contratoId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "desde",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "hasta",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "folio",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pagina",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "tamano",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ResumenRequisicion"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/requisiciones/{id}/enviar": {
+      "post": {
+        "tags": [
+          "Abastecimiento"
+        ],
+        "summary": "Enviar a autorizar",
+        "operationId": "enviarRequisicion",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Requisicion"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/requisiciones/{id}/autorizar": {
+      "post": {
+        "tags": [
+          "Abastecimiento"
+        ],
+        "summary": "Autorizar (nunca lo propio) y apartar lo que haya en el almacén",
+        "operationId": "autorizarRequisicion",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Requisicion"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/requisiciones/{id}/rechazar": {
+      "post": {
+        "tags": [
+          "Abastecimiento"
+        ],
+        "summary": "Regresar a borrador con una nota",
+        "operationId": "rechazarRequisicion",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Nota"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Requisicion"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/requisiciones/{id}/reservar": {
+      "post": {
+        "tags": [
+          "Abastecimiento"
+        ],
+        "summary": "Volver a apartar lo que haya en el almacén para lo pendiente",
+        "operationId": "reservarRequisicion",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Requisicion"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/requisiciones/{id}/surtir": {
+      "post": {
+        "tags": [
+          "Abastecimiento"
+        ],
+        "summary": "Crear el vale que surte la requisición; queda enviado a autorizar",
+        "operationId": "surtirRequisicion",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosSurtido"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValeCreado"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/requisiciones/{id}/cerrar": {
+      "post": {
+        "tags": [
+          "Abastecimiento"
+        ],
+        "summary": "Dar por terminada una requisición autorizada; libera lo apartado",
+        "operationId": "cerrarRequisicion",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Motivo"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Requisicion"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/requisiciones/{id}/cancelar": {
+      "post": {
+        "tags": [
+          "Abastecimiento"
+        ],
+        "summary": "Cancelar (autorizada, solo sin vales); libera lo apartado",
+        "operationId": "cancelarRequisicion",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Motivo"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Requisicion"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/pedidos": {
+      "get": {
+        "tags": [
+          "Abastecimiento"
+        ],
+        "summary": "Pedidos filtrados, más recientes primero",
+        "operationId": "listarPedidos",
+        "parameters": [
+          {
+            "name": "estados",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Separados por coma: borrador,enviado,recibido…"
+            }
+          },
+          {
+            "name": "proveedorId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "almacenId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "desde",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "hasta",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "folio",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pagina",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "tamano",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ResumenPedido"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Abastecimiento"
+        ],
+        "summary": "Capturar un pedido; lo pedido se asigna a las requisiciones más urgentes",
+        "operationId": "crearPedido",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosPedido"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/pedidos/{id}": {
+      "put": {
+        "tags": [
+          "Abastecimiento"
+        ],
+        "summary": "Corregir un borrador (If-Match)",
+        "operationId": "reemplazarPedido",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosPedido"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Abastecimiento"
+        ],
+        "summary": "Un pedido con lo recibido y las requisiciones que cubre (ETag)",
+        "operationId": "obtenerPedido",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/pedidos/{id}/enviar": {
+      "post": {
+        "tags": [
+          "Abastecimiento"
+        ],
+        "summary": "Marcar como enviado al proveedor",
+        "operationId": "enviarPedido",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/pedidos/{id}/cerrar": {
+      "post": {
+        "tags": [
+          "Abastecimiento"
+        ],
+        "summary": "Dar por terminado un pedido enviado; lo que no llegó vuelve a ser faltante",
+        "operationId": "cerrarPedido",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Motivo"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/pedidos/{id}/cancelar": {
+      "post": {
+        "tags": [
+          "Abastecimiento"
+        ],
+        "summary": "Cancelar un borrador o un pedido enviado sin nada recibido",
+        "operationId": "cancelarPedido",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Motivo"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/faltantes": {
+      "get": {
+        "tags": [
+          "Abastecimiento"
+        ],
+        "summary": "Lo que falta comprar de las requisiciones autorizadas, por proveedor sugerido (el último que surtió cada material)",
+        "operationId": "faltantesPorProveedor",
+        "parameters": [
+          {
+            "name": "proveedorId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "almacenId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GrupoFaltantes"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/pedidos/{id}/recibir": {
+      "post": {
+        "tags": [
+          "Abastecimiento"
+        ],
+        "summary": "Recibir contra el pedido: crea y aplica la recepción y aparta lo recibido para las requisiciones que cubre",
+        "operationId": "recibirPedido",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosRecepcion"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultadoRecepcion"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reportes/contratos": {
+      "get": {
+        "tags": [
+          "Reportes"
+        ],
+        "summary": "Costo por contrato: material (histórico + sistema), destajo y presupuesto",
+        "operationId": "reporteContratos",
+        "parameters": [
+          {
+            "name": "formato",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "json",
+                "xlsx"
+              ],
+              "default": "json"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ResumenContrato"
+                  }
+                }
+              },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reportes/contratos/{id}/lotes": {
+      "get": {
+        "tags": [
+          "Reportes"
+        ],
+        "summary": "Costo de cada lote por clasificación, destajo y presupuesto (reemplaza la hoja del frente)",
+        "operationId": "reporteCostoPorLote",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "formato",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "json",
+                "xlsx"
+              ],
+              "default": "json"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CostoContrato"
+                }
+              },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reportes/costo": {
+      "get": {
+        "tags": [
+          "Reportes"
+        ],
+        "summary": "Costo de obra agrupado por contrato, frente, unidad, paquete, clasificación, material o mes",
+        "operationId": "reporteCosto",
+        "parameters": [
+          {
+            "name": "agrupar",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "contrato",
+                "frente",
+                "unidad",
+                "paquete",
+                "clasificacion",
+                "material",
+                "mes"
+              ],
+              "default": "contrato"
+            }
+          },
+          {
+            "name": "contratoId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "frenteId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "unidadObraId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "paqueteId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "clasificacionId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "materialId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "desde",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "hasta",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "fuente",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "historico",
+                "sistema"
+              ]
+            }
+          },
+          {
+            "name": "formato",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "json",
+                "xlsx"
+              ],
+              "default": "json"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReporteCosto"
+                }
+              },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reportes/presupuesto": {
+      "get": {
+        "tags": [
+          "Reportes"
+        ],
+        "summary": "Presupuesto de material por lote con semáforo (aviso al 80% y al 100%); solo Programa consume",
+        "operationId": "reportePresupuesto",
+        "parameters": [
+          {
+            "name": "contratoId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "unidadIds",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "description": "Lotes separados por coma (avisos al capturar)"
+            }
+          },
+          {
+            "name": "avisos",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Solo los lotes del 80% en adelante",
+              "default": false
+            }
+          },
+          {
+            "name": "formato",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "json",
+                "xlsx"
+              ],
+              "default": "json"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LotePresupuesto"
+                  }
+                }
+              },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reportes/valor-inventario": {
+      "get": {
+        "tags": [
+          "Reportes"
+        ],
+        "summary": "Existencia valorizada por almacén y material (costo promedio sin IVA)",
+        "operationId": "reporteValorInventario",
+        "parameters": [
+          {
+            "name": "almacenId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "formato",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "json",
+                "xlsx"
+              ],
+              "default": "json"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValorInventario"
+                }
+              },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reportes/requisicion-vs-surtido": {
+      "get": {
+        "tags": [
+          "Reportes"
+        ],
+        "summary": "Cada renglón de requisición contra lo surtido, apartado, por recibir y faltante",
+        "operationId": "reporteRequisicionVsSurtido",
+        "parameters": [
+          {
+            "name": "contratoId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "desde",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "hasta",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "formato",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "json",
+                "xlsx"
+              ],
+              "default": "json"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SurtidoRequisicion"
+                  }
+                }
+              },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/conciliacion/contratos/{id}": {
+      "get": {
+        "tags": [
+          "Migración"
+        ],
+        "summary": "El costo de Programa de cada lote contra la hoja del frente recalculada, con cada diferencia explicada",
+        "operationId": "conciliarContrato",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "formato",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "json",
+                "xlsx"
+              ],
+              "default": "json"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConciliacionContrato"
+                }
+              },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/importaciones/{id}/conciliacion.xlsx": {
+      "get": {
+        "tags": [
+          "Migración"
+        ],
+        "summary": "La conciliación de totales de una carga del histórico, completa, en Excel",
+        "operationId": "conciliacionDeCargaExcel",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/contratos/{id}/presupuesto": {
+      "put": {
+        "tags": [
+          "Contratos"
+        ],
+        "summary": "Presupuesto de material para los lotes de un prototipo o una lista de lotes",
+        "operationId": "asignarPresupuesto",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosPresupuesto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UnidadObra"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -6271,6 +7697,16 @@
           "lineaOrigenId": {
             "type": "integer",
             "format": "int64"
+          },
+          "requisicionLineaId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Vale surtido desde una requisición: el renglón que surte"
+          },
+          "pedidoLineaId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Recepción contra pedido: el renglón del pedido que recibe"
           }
         },
         "required": [
@@ -7464,6 +8900,1901 @@
           "unidadId",
           "veCostos",
           "vePersonas"
+        ]
+      },
+      "AccionesPedido": {
+        "type": "object",
+        "properties": {
+          "editar": {
+            "type": "boolean"
+          },
+          "enviar": {
+            "type": "boolean"
+          },
+          "recibir": {
+            "type": "boolean"
+          },
+          "cerrar": {
+            "type": "boolean"
+          },
+          "cancelar": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "cancelar",
+          "cerrar",
+          "editar",
+          "enviar",
+          "recibir"
+        ]
+      },
+      "AccionesRequisicion": {
+        "type": "object",
+        "properties": {
+          "editar": {
+            "type": "boolean"
+          },
+          "enviar": {
+            "type": "boolean"
+          },
+          "autorizar": {
+            "type": "boolean"
+          },
+          "cancelar": {
+            "type": "boolean"
+          },
+          "cerrar": {
+            "type": "boolean"
+          },
+          "reservar": {
+            "type": "boolean"
+          },
+          "surtir": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "autorizar",
+          "cancelar",
+          "cerrar",
+          "editar",
+          "enviar",
+          "reservar",
+          "surtir"
+        ]
+      },
+      "Apartado": {
+        "type": "object",
+        "properties": {
+          "requisicionId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "folio": {
+            "type": "string"
+          },
+          "unidadObra": {
+            "type": "string"
+          },
+          "material": {
+            "type": "string"
+          },
+          "cantidad": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "cantidad",
+          "folio",
+          "material",
+          "requisicionId",
+          "unidadObra"
+        ]
+      },
+      "Cobertura": {
+        "type": "object",
+        "properties": {
+          "requisicionLineaId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "requisicionId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "folio": {
+            "type": "string"
+          },
+          "unidadObra": {
+            "type": "string"
+          },
+          "cantidad": {
+            "type": "number"
+          },
+          "recibido": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "cantidad",
+          "folio",
+          "recibido",
+          "requisicionId",
+          "requisicionLineaId",
+          "unidadObra"
+        ]
+      },
+      "ColumnaClasificacion": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "clave": {
+            "type": "string"
+          },
+          "nombre": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "clave",
+          "id",
+          "nombre"
+        ]
+      },
+      "ConciliacionContrato": {
+        "type": "object",
+        "properties": {
+          "contratoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "contrato": {
+            "type": "string"
+          },
+          "cargaId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "archivo": {
+            "type": "string"
+          },
+          "hoja": {
+            "type": "string"
+          },
+          "razon": {
+            "type": "string"
+          },
+          "columnasDeLote": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sistema": {
+            "type": "number"
+          },
+          "hojaTotal": {
+            "type": "number"
+          },
+          "efectos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Efecto"
+            },
+            "description": "Por motivo, del mayor al menor"
+          },
+          "lotes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LoteConciliado"
+            }
+          },
+          "renglones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RenglonDiferencia"
+            },
+            "description": "Los renglones que más pesan, hasta 500"
+          },
+          "recortada": {
+            "type": "boolean"
+          },
+          "avisos": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "archivo",
+          "avisos",
+          "cargaId",
+          "columnasDeLote",
+          "contrato",
+          "contratoId",
+          "efectos",
+          "hoja",
+          "hojaTotal",
+          "lotes",
+          "razon",
+          "recortada",
+          "renglones",
+          "sistema"
+        ]
+      },
+      "CostoContrato": {
+        "type": "object",
+        "properties": {
+          "contratoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "contrato": {
+            "type": "string"
+          },
+          "clasificaciones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ColumnaClasificacion"
+            }
+          },
+          "lotes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LoteCosto"
+            }
+          },
+          "totales": {
+            "$ref": "#/components/schemas/LoteCosto"
+          }
+        },
+        "required": [
+          "clasificaciones",
+          "contrato",
+          "contratoId",
+          "lotes",
+          "totales"
+        ]
+      },
+      "DatosPedido": {
+        "type": "object",
+        "properties": {
+          "proveedorId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "almacenId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "fechaEntrega": {
+            "type": "string",
+            "format": "date"
+          },
+          "observaciones": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 0
+          },
+          "renglones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RenglonPedidoCaptura"
+            },
+            "minItems": 1,
+            "maxItems": 300
+          },
+          "enviar": {
+            "type": "boolean",
+            "description": "Crear y enviar en un paso"
+          }
+        },
+        "required": [
+          "almacenId",
+          "proveedorId",
+          "renglones"
+        ]
+      },
+      "DatosPresupuesto": {
+        "type": "object",
+        "properties": {
+          "prototipoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "unidadIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "maxItems": 2000,
+            "minItems": 0
+          },
+          "monto": {
+            "type": "number",
+            "minimum": 0
+          }
+        }
+      },
+      "DatosRecepcion": {
+        "type": "object",
+        "properties": {
+          "fecha": {
+            "type": "string",
+            "format": "date"
+          },
+          "folioFactura": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 0
+          },
+          "flete": {
+            "type": "number",
+            "minimum": 0
+          },
+          "observaciones": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 0
+          },
+          "renglones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RenglonRecibido"
+            },
+            "minItems": 1,
+            "maxItems": 300
+          }
+        },
+        "required": [
+          "fecha",
+          "renglones"
+        ]
+      },
+      "DatosRequisicion": {
+        "type": "object",
+        "properties": {
+          "contratoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "fechaRequerida": {
+            "type": "string",
+            "format": "date"
+          },
+          "urgente": {
+            "type": "boolean"
+          },
+          "observaciones": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 0
+          },
+          "renglones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RenglonCaptura"
+            },
+            "minItems": 1,
+            "maxItems": 300
+          },
+          "enviar": {
+            "type": "boolean",
+            "description": "Crear y enviar a autorizar en un paso"
+          }
+        },
+        "required": [
+          "contratoId",
+          "fechaRequerida",
+          "renglones"
+        ]
+      },
+      "DatosSurtido": {
+        "type": "object",
+        "properties": {
+          "fecha": {
+            "type": "string",
+            "format": "date"
+          },
+          "solicitanteId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Persona que recibe en obra"
+          },
+          "observaciones": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 0
+          },
+          "renglones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RenglonSurtido"
+            },
+            "minItems": 1,
+            "maxItems": 1000
+          }
+        },
+        "required": [
+          "fecha",
+          "renglones"
+        ]
+      },
+      "Efecto": {
+        "type": "object",
+        "properties": {
+          "motivo": {
+            "type": "string",
+            "enum": [
+              "SIN_COLUMNA",
+              "REPARTO",
+              "LOTE_CORREGIDO",
+              "MATERIAL",
+              "RAZON",
+              "FRENTE",
+              "NO_ENTREGADO",
+              "CANTIDAD",
+              "SOLO_EN_HOJA",
+              "SIN_PRECIO",
+              "PONDERACION",
+              "IVA"
+            ]
+          },
+          "descripcion": {
+            "type": "string"
+          },
+          "importe": {
+            "type": "number",
+            "description": "Con signo: lo que suma o resta al sistema"
+          }
+        },
+        "required": [
+          "descripcion",
+          "importe",
+          "motivo"
+        ]
+      },
+      "ExistenciaValorizada": {
+        "type": "object",
+        "properties": {
+          "almacenId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "almacen": {
+            "type": "string"
+          },
+          "materialId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "clave": {
+            "type": "string"
+          },
+          "material": {
+            "type": "string"
+          },
+          "unidad": {
+            "type": "string"
+          },
+          "existencia": {
+            "type": "number"
+          },
+          "reservado": {
+            "type": "number"
+          },
+          "prestado": {
+            "type": "number"
+          },
+          "disponible": {
+            "type": "number"
+          },
+          "costoPromedio": {
+            "type": "number"
+          },
+          "valor": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "almacen",
+          "almacenId",
+          "clave",
+          "costoPromedio",
+          "disponible",
+          "existencia",
+          "material",
+          "materialId",
+          "prestado",
+          "reservado",
+          "unidad",
+          "valor"
+        ]
+      },
+      "Faltante": {
+        "type": "object",
+        "properties": {
+          "requisicionLineaId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "requisicionId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "folio": {
+            "type": "string"
+          },
+          "renglon": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "contratoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "contrato": {
+            "type": "string"
+          },
+          "unidadObra": {
+            "type": "string"
+          },
+          "fechaRequerida": {
+            "type": "string",
+            "format": "date"
+          },
+          "urgente": {
+            "type": "boolean"
+          },
+          "almacenId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "materialId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "materialClave": {
+            "type": "string"
+          },
+          "material": {
+            "type": "string"
+          },
+          "unidadControlId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "unidadControl": {
+            "type": "string"
+          },
+          "faltante": {
+            "type": "number"
+          },
+          "precioReferencia": {
+            "type": "number",
+            "description": "Sin IVA; vacío sin permiso de precios"
+          },
+          "origenSugerencia": {
+            "type": "string",
+            "description": "De dónde sale el proveedor sugerido",
+            "enum": [
+              "sistema",
+              "excel"
+            ]
+          }
+        },
+        "required": [
+          "almacenId",
+          "contrato",
+          "contratoId",
+          "faltante",
+          "fechaRequerida",
+          "folio",
+          "material",
+          "materialClave",
+          "materialId",
+          "renglon",
+          "requisicionId",
+          "requisicionLineaId",
+          "unidadControl",
+          "unidadControlId",
+          "unidadObra",
+          "urgente"
+        ]
+      },
+      "FilaReporteCosto": {
+        "type": "object",
+        "properties": {
+          "llave": {
+            "type": "string",
+            "description": "Id del contrato, lote, paquete…; o el mes (2026-07). Vacío: sin dato"
+          },
+          "clave": {
+            "type": "string"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "historico": {
+            "type": "number",
+            "description": "Del Excel (junio a la fecha del corte)"
+          },
+          "sistema": {
+            "type": "number",
+            "description": "De los vales del sistema"
+          },
+          "total": {
+            "type": "number"
+          },
+          "cantidad": {
+            "type": "number",
+            "description": "Solo al agrupar por material"
+          },
+          "unidad": {
+            "type": "string"
+          },
+          "estimado": {
+            "type": "boolean",
+            "description": "Incluye renglones con costo estimado"
+          },
+          "movimientos": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "clave",
+          "estimado",
+          "historico",
+          "movimientos",
+          "nombre",
+          "sistema",
+          "total"
+        ]
+      },
+      "GrupoFaltantes": {
+        "type": "object",
+        "properties": {
+          "proveedorId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Vacío si ningún proveedor ha surtido estos materiales"
+          },
+          "proveedor": {
+            "type": "string"
+          },
+          "faltantes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Faltante"
+            }
+          }
+        },
+        "required": [
+          "faltantes",
+          "proveedor"
+        ]
+      },
+      "LoteConciliado": {
+        "type": "object",
+        "properties": {
+          "clave": {
+            "type": "string"
+          },
+          "unidadObraId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "columnaEnHoja": {
+            "type": "boolean",
+            "description": "El lote es columna de la hoja del frente"
+          },
+          "sistema": {
+            "type": "number",
+            "description": "Programa del histórico, sin IVA, ponderado"
+          },
+          "efectos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Efecto"
+            }
+          },
+          "hoja": {
+            "type": "number",
+            "description": "Lo que diría la hoja recalculada"
+          },
+          "redondeo": {
+            "type": "number",
+            "description": "Centavos por redondear cada efecto"
+          }
+        },
+        "required": [
+          "clave",
+          "columnaEnHoja",
+          "efectos",
+          "hoja",
+          "redondeo",
+          "sistema"
+        ]
+      },
+      "LoteCosto": {
+        "type": "object",
+        "properties": {
+          "unidadObraId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Vacío: salidas sin lote (\"Sin asignar\") o el renglón de totales"
+          },
+          "clave": {
+            "type": "string"
+          },
+          "prototipo": {
+            "type": "string"
+          },
+          "porClasificacion": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "description": "Material, en el orden de las clasificaciones"
+          },
+          "historico": {
+            "type": "number"
+          },
+          "sistema": {
+            "type": "number"
+          },
+          "material": {
+            "type": "number"
+          },
+          "destajo": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number",
+            "description": "Material + destajo"
+          },
+          "presupuesto": {
+            "type": "number"
+          },
+          "consumido": {
+            "type": "number",
+            "description": "Material de Programa"
+          },
+          "porcentaje": {
+            "type": "number"
+          },
+          "semaforo": {
+            "type": "string",
+            "enum": [
+              "sin",
+              "verde",
+              "amarillo",
+              "rojo"
+            ]
+          },
+          "estimado": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "clave",
+          "consumido",
+          "destajo",
+          "estimado",
+          "historico",
+          "material",
+          "porClasificacion",
+          "semaforo",
+          "sistema",
+          "total"
+        ]
+      },
+      "LotePresupuesto": {
+        "type": "object",
+        "properties": {
+          "contratoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "contrato": {
+            "type": "string"
+          },
+          "unidadObraId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "clave": {
+            "type": "string"
+          },
+          "prototipo": {
+            "type": "string"
+          },
+          "presupuesto": {
+            "type": "number"
+          },
+          "consumido": {
+            "type": "number"
+          },
+          "restante": {
+            "type": "number",
+            "description": "Presupuesto − consumido (negativo si se rebasó)"
+          },
+          "porcentaje": {
+            "type": "number"
+          },
+          "semaforo": {
+            "type": "string",
+            "enum": [
+              "sin",
+              "verde",
+              "amarillo",
+              "rojo"
+            ]
+          }
+        },
+        "required": [
+          "clave",
+          "consumido",
+          "contrato",
+          "contratoId",
+          "semaforo",
+          "unidadObraId"
+        ]
+      },
+      "Pedido": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "folio": {
+            "type": "string"
+          },
+          "estado": {
+            "type": "string",
+            "enum": [
+              "borrador",
+              "enviado",
+              "recibido",
+              "cerrado",
+              "cancelado"
+            ]
+          },
+          "proveedorId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "proveedor": {
+            "type": "string"
+          },
+          "almacenId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "almacen": {
+            "type": "string"
+          },
+          "fecha": {
+            "type": "string",
+            "format": "date"
+          },
+          "fechaEntrega": {
+            "type": "string",
+            "format": "date"
+          },
+          "observaciones": {
+            "type": "string"
+          },
+          "motivoCierre": {
+            "type": "string"
+          },
+          "capturo": {
+            "type": "string"
+          },
+          "envio": {
+            "type": "string"
+          },
+          "enviadoEn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "cerradoEn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "creado": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "subtotal": {
+            "type": "number",
+            "description": "Sin IVA; vacío sin permiso de precios"
+          },
+          "iva": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number"
+          },
+          "avance": {
+            "type": "number",
+            "description": "Porcentaje recibido (0 a 100)"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "renglones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RenglonPedido"
+            }
+          },
+          "recepciones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RecepcionDePedido"
+            }
+          },
+          "acciones": {
+            "$ref": "#/components/schemas/AccionesPedido"
+          }
+        },
+        "required": [
+          "acciones",
+          "almacen",
+          "almacenId",
+          "avance",
+          "capturo",
+          "creado",
+          "estado",
+          "fecha",
+          "folio",
+          "id",
+          "proveedor",
+          "proveedorId",
+          "recepciones",
+          "renglones",
+          "version"
+        ]
+      },
+      "PedidoDeRequisicion": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "folio": {
+            "type": "string"
+          },
+          "estado": {
+            "type": "string"
+          },
+          "cantidad": {
+            "type": "number"
+          },
+          "recibido": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "cantidad",
+          "estado",
+          "folio",
+          "id",
+          "recibido"
+        ]
+      },
+      "RecepcionDePedido": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "folio": {
+            "type": "string"
+          },
+          "estado": {
+            "type": "string"
+          },
+          "fecha": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        "required": [
+          "estado",
+          "fecha",
+          "folio",
+          "id"
+        ]
+      },
+      "RenglonCaptura": {
+        "type": "object",
+        "properties": {
+          "materialId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "cantidad": {
+            "type": "number",
+            "description": "En la unidad capturada; con varios lotes, el total que se reparte",
+            "exclusiveMinimum": 0
+          },
+          "unidadId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unidad capturada; vacía: la unidad de control del material"
+          },
+          "unidadObraIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "minItems": 1,
+            "maxItems": 200
+          },
+          "paqueteId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "clasificacionId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "observaciones": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 0
+          }
+        },
+        "required": [
+          "cantidad",
+          "clasificacionId",
+          "materialId",
+          "paqueteId",
+          "unidadObraIds"
+        ]
+      },
+      "RenglonDiferencia": {
+        "type": "object",
+        "properties": {
+          "filaExcel": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "lote": {
+            "type": "string"
+          },
+          "material": {
+            "type": "string"
+          },
+          "motivo": {
+            "type": "string"
+          },
+          "cantidad": {
+            "type": "number"
+          },
+          "importe": {
+            "type": "number"
+          },
+          "nota": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "filaExcel",
+          "importe",
+          "lote",
+          "motivo"
+        ]
+      },
+      "RenglonPedido": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "renglon": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "materialId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "materialClave": {
+            "type": "string"
+          },
+          "material": {
+            "type": "string"
+          },
+          "unidadControl": {
+            "type": "string"
+          },
+          "cantidad": {
+            "type": "number"
+          },
+          "cantidadCaptura": {
+            "type": "number"
+          },
+          "unidadCapturaId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "unidadCaptura": {
+            "type": "string"
+          },
+          "precio": {
+            "type": "number",
+            "description": "Vacío sin permiso de precios"
+          },
+          "tasaIva": {
+            "type": "number"
+          },
+          "importe": {
+            "type": "number",
+            "description": "Cantidad capturada × precio, sin IVA"
+          },
+          "recibido": {
+            "type": "number",
+            "description": "En unidad de control, neto de devoluciones"
+          },
+          "pendiente": {
+            "type": "number"
+          },
+          "observaciones": {
+            "type": "string"
+          },
+          "requisiciones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Cobertura"
+            }
+          }
+        },
+        "required": [
+          "cantidad",
+          "cantidadCaptura",
+          "id",
+          "material",
+          "materialClave",
+          "materialId",
+          "pendiente",
+          "recibido",
+          "renglon",
+          "requisiciones",
+          "tasaIva",
+          "unidadCaptura",
+          "unidadCapturaId",
+          "unidadControl"
+        ]
+      },
+      "RenglonPedidoCaptura": {
+        "type": "object",
+        "properties": {
+          "materialId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "cantidad": {
+            "type": "number",
+            "description": "En la unidad capturada",
+            "exclusiveMinimum": 0
+          },
+          "unidadId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unidad capturada; vacía: la unidad de control"
+          },
+          "precio": {
+            "type": "number",
+            "description": "Sin IVA, por unidad capturada",
+            "minimum": 0
+          },
+          "tasaIva": {
+            "type": "number",
+            "description": "Vacía: la del proveedor (o 8%)",
+            "minimum": 0,
+            "maximum": 0.16
+          },
+          "requisicionLineaIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "Renglones de requisición que cubre, el más urgente primero",
+            "maxItems": 500,
+            "minItems": 0
+          },
+          "observaciones": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 0
+          }
+        },
+        "required": [
+          "cantidad",
+          "materialId",
+          "precio"
+        ]
+      },
+      "RenglonRecibido": {
+        "type": "object",
+        "properties": {
+          "pedidoLineaId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "cantidad": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          }
+        },
+        "required": [
+          "cantidad",
+          "pedidoLineaId"
+        ]
+      },
+      "RenglonRequisicion": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "renglon": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "materialId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "materialClave": {
+            "type": "string"
+          },
+          "material": {
+            "type": "string"
+          },
+          "unidadControl": {
+            "type": "string"
+          },
+          "cantidad": {
+            "type": "number"
+          },
+          "cantidadCaptura": {
+            "type": "number"
+          },
+          "unidadCapturaId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "unidadCaptura": {
+            "type": "string"
+          },
+          "unidadObraId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "unidadObra": {
+            "type": "string"
+          },
+          "paqueteId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "paquete": {
+            "type": "string"
+          },
+          "clasificacionId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "clasificacion": {
+            "type": "string"
+          },
+          "observaciones": {
+            "type": "string"
+          },
+          "surtido": {
+            "type": "number",
+            "description": "Salió en vales aplicados, neto de devoluciones"
+          },
+          "enVale": {
+            "type": "number",
+            "description": "En vales que todavía no se aplican"
+          },
+          "reservado": {
+            "type": "number",
+            "description": "Apartado en el almacén"
+          },
+          "porRecibir": {
+            "type": "number",
+            "description": "Pedido al proveedor, sin llegar"
+          },
+          "porSurtir": {
+            "type": "number",
+            "description": "Lo que puede ir en un vale nuevo"
+          },
+          "faltante": {
+            "type": "number",
+            "description": "Pendiente sin cubrir ni pedir: hay que comprar"
+          },
+          "disponible": {
+            "type": "number",
+            "description": "Libre en el almacén para cualquier vale"
+          }
+        },
+        "required": [
+          "cantidad",
+          "cantidadCaptura",
+          "clasificacion",
+          "clasificacionId",
+          "disponible",
+          "enVale",
+          "faltante",
+          "id",
+          "material",
+          "materialClave",
+          "materialId",
+          "paquete",
+          "paqueteId",
+          "porRecibir",
+          "porSurtir",
+          "renglon",
+          "reservado",
+          "surtido",
+          "unidadCaptura",
+          "unidadCapturaId",
+          "unidadControl",
+          "unidadObra",
+          "unidadObraId"
+        ]
+      },
+      "RenglonSurtido": {
+        "type": "object",
+        "properties": {
+          "requisicionLineaId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "cantidad": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          }
+        },
+        "required": [
+          "cantidad",
+          "requisicionLineaId"
+        ]
+      },
+      "ReporteCosto": {
+        "type": "object",
+        "properties": {
+          "agrupar": {
+            "type": "string"
+          },
+          "filas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FilaReporteCosto"
+            }
+          },
+          "historico": {
+            "type": "number"
+          },
+          "sistema": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "agrupar",
+          "filas",
+          "historico",
+          "sistema",
+          "total"
+        ]
+      },
+      "Requisicion": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "folio": {
+            "type": "string"
+          },
+          "estado": {
+            "type": "string",
+            "enum": [
+              "borrador",
+              "pendiente",
+              "autorizada",
+              "cerrada",
+              "cancelada"
+            ]
+          },
+          "contratoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "contrato": {
+            "type": "string"
+          },
+          "almacenId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "almacen": {
+            "type": "string"
+          },
+          "fecha": {
+            "type": "string",
+            "format": "date"
+          },
+          "fechaRequerida": {
+            "type": "string",
+            "format": "date"
+          },
+          "urgente": {
+            "type": "boolean"
+          },
+          "observaciones": {
+            "type": "string"
+          },
+          "notaRechazo": {
+            "type": "string"
+          },
+          "motivoCierre": {
+            "type": "string"
+          },
+          "capturo": {
+            "type": "string"
+          },
+          "autorizo": {
+            "type": "string"
+          },
+          "autorizadaEn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "cerradaEn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "creado": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "avance": {
+            "type": "number",
+            "description": "Porcentaje surtido (0 a 100)"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "renglones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RenglonRequisicion"
+            }
+          },
+          "vales": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ValeDeRequisicion"
+            }
+          },
+          "pedidos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PedidoDeRequisicion"
+            }
+          },
+          "acciones": {
+            "$ref": "#/components/schemas/AccionesRequisicion"
+          }
+        },
+        "required": [
+          "acciones",
+          "almacen",
+          "almacenId",
+          "avance",
+          "capturo",
+          "contrato",
+          "contratoId",
+          "creado",
+          "estado",
+          "fecha",
+          "fechaRequerida",
+          "folio",
+          "id",
+          "pedidos",
+          "renglones",
+          "urgente",
+          "vales",
+          "version"
+        ]
+      },
+      "ResultadoRecepcion": {
+        "type": "object",
+        "properties": {
+          "movimientoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "folio": {
+            "type": "string"
+          },
+          "apartados": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Apartado"
+            }
+          },
+          "pedido": {
+            "$ref": "#/components/schemas/Pedido"
+          }
+        },
+        "required": [
+          "apartados",
+          "folio",
+          "movimientoId",
+          "pedido"
+        ]
+      },
+      "ResumenContrato": {
+        "type": "object",
+        "properties": {
+          "contratoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "contrato": {
+            "type": "string"
+          },
+          "frente": {
+            "type": "string"
+          },
+          "estado": {
+            "type": "string"
+          },
+          "historico": {
+            "type": "number"
+          },
+          "sistema": {
+            "type": "number"
+          },
+          "material": {
+            "type": "number"
+          },
+          "destajo": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number"
+          },
+          "presupuesto": {
+            "type": "number",
+            "description": "Suma de los lotes con presupuesto"
+          },
+          "consumido": {
+            "type": "number",
+            "description": "Programa de los lotes con presupuesto"
+          },
+          "porcentaje": {
+            "type": "number"
+          },
+          "semaforo": {
+            "type": "string",
+            "enum": [
+              "sin",
+              "verde",
+              "amarillo",
+              "rojo"
+            ]
+          },
+          "lotes": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "lotesEnAviso": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Lotes del 80% al 100%"
+          },
+          "lotesRebasados": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Lotes en o arriba del 100%"
+          }
+        },
+        "required": [
+          "consumido",
+          "contrato",
+          "contratoId",
+          "destajo",
+          "estado",
+          "historico",
+          "lotes",
+          "lotesEnAviso",
+          "lotesRebasados",
+          "material",
+          "semaforo",
+          "sistema",
+          "total"
+        ]
+      },
+      "ResumenPedido": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "folio": {
+            "type": "string"
+          },
+          "estado": {
+            "type": "string"
+          },
+          "proveedor": {
+            "type": "string"
+          },
+          "almacen": {
+            "type": "string"
+          },
+          "fecha": {
+            "type": "string",
+            "format": "date"
+          },
+          "fechaEntrega": {
+            "type": "string",
+            "format": "date"
+          },
+          "renglones": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "subtotal": {
+            "type": "number",
+            "description": "Sin IVA; vacío sin permiso de precios"
+          },
+          "creado": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "almacen",
+          "creado",
+          "estado",
+          "fecha",
+          "folio",
+          "id",
+          "proveedor",
+          "renglones"
+        ]
+      },
+      "ResumenRequisicion": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "folio": {
+            "type": "string"
+          },
+          "estado": {
+            "type": "string"
+          },
+          "contratoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "contrato": {
+            "type": "string"
+          },
+          "almacen": {
+            "type": "string"
+          },
+          "fecha": {
+            "type": "string",
+            "format": "date"
+          },
+          "fechaRequerida": {
+            "type": "string",
+            "format": "date"
+          },
+          "urgente": {
+            "type": "boolean"
+          },
+          "capturo": {
+            "type": "string"
+          },
+          "autorizo": {
+            "type": "string"
+          },
+          "renglones": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "avance": {
+            "type": "number"
+          },
+          "conFaltante": {
+            "type": "boolean",
+            "description": "Algún renglón tiene faltante por comprar"
+          },
+          "creado": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "almacen",
+          "avance",
+          "capturo",
+          "conFaltante",
+          "contrato",
+          "contratoId",
+          "creado",
+          "estado",
+          "fecha",
+          "fechaRequerida",
+          "folio",
+          "id",
+          "renglones",
+          "urgente"
+        ]
+      },
+      "SurtidoRequisicion": {
+        "type": "object",
+        "properties": {
+          "requisicionId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "folio": {
+            "type": "string"
+          },
+          "estado": {
+            "type": "string"
+          },
+          "fecha": {
+            "type": "string",
+            "format": "date"
+          },
+          "fechaRequerida": {
+            "type": "string",
+            "format": "date"
+          },
+          "contratoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "contrato": {
+            "type": "string"
+          },
+          "unidadObraId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "unidadObra": {
+            "type": "string"
+          },
+          "materialClave": {
+            "type": "string"
+          },
+          "material": {
+            "type": "string"
+          },
+          "unidad": {
+            "type": "string"
+          },
+          "pedido": {
+            "type": "number"
+          },
+          "surtido": {
+            "type": "number"
+          },
+          "enVale": {
+            "type": "number"
+          },
+          "reservado": {
+            "type": "number"
+          },
+          "porRecibir": {
+            "type": "number"
+          },
+          "faltante": {
+            "type": "number"
+          },
+          "porcentaje": {
+            "type": "number"
+          }
+        }
+      },
+      "ValeCreado": {
+        "type": "object",
+        "properties": {
+          "movimientoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "folio": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "folio",
+          "movimientoId"
+        ]
+      },
+      "ValeDeRequisicion": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "folio": {
+            "type": "string"
+          },
+          "estado": {
+            "type": "string"
+          },
+          "fecha": {
+            "type": "string",
+            "format": "date"
+          },
+          "renglones": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "estado",
+          "fecha",
+          "folio",
+          "id",
+          "renglones"
+        ]
+      },
+      "ValorInventario": {
+        "type": "object",
+        "properties": {
+          "materiales": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExistenciaValorizada"
+            }
+          },
+          "valor": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "materiales",
+          "valor"
         ]
       }
     }

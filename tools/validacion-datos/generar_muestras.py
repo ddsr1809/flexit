@@ -484,7 +484,108 @@ def historico_destajo():
     guardar(libro, "muestra-historico-destajo.xlsx")
 
 
+def conciliacion():
+    """Hoja de un frente con sus fórmulas, para conciliar un contrato contra ella (H6, issue 38).
+
+    Un renglón de Salidas por cada motivo de diferencia: razón con espacio de más, varios lotes en
+    una celda, lote que no es columna, nombre de material distinto, lote corregido en la
+    cuarentena, material sin precio, no entregado, cantidad como fórmula.
+    """
+    libro = Workbook()
+    ex = libro.active
+    ex.title = "Existencias"
+    for col, texto in {"A": "Precio Unitario Promedio", "E": "Clave", "F": "Artículo/Material",
+                       "I": "Unidad de medida"}.items():
+        ex[f"{col}3"] = texto
+    materiales = ["Cemento gris 50 kg", "Pintura vinílica blanca 19 L", "Lija 220",
+                  "Aerosol negro", "Varilla 3/8\""]
+    for i, nombre in enumerate(materiales, start=5):
+        ex[f"A{i}"] = f'=IFERROR(AVERAGEIFS(Entradas!K:K,Entradas!F:F,Existencias!F{i},Entradas!K:K,">0"),"")'
+        ex[f"E{i}"] = f"{i - 4:03d}"
+        ex[f"F{i}"] = nombre
+        ex[f"I{i}"] = "Pieza"
+
+    en = libro.create_sheet("Entradas")
+    for col, texto in {"B": "Fecha Recepción", "D": "Cant.", "F": "Artículo",
+                       "G": "Precio Unitario ", "J": "IVA", "K": "Precio Unitario +IVA"}.items():
+        en[f"{col}1"] = texto
+    entradas = [
+        # material, cantidad, precio sin IVA, IVA (el promedio simple no pondera por cantidad)
+        ("Cemento gris 50 kg", 30, 200, 0.16),
+        ("Cemento gris 50 kg", 10, 300, 0.16),
+        ("Pintura vinílica blanca 19 L", 2, 1500, 0.08),
+        ("Lija 220", 20, 8.5, None),
+        ("Varilla 3/8\"", 100, 50, 0.16),
+    ]
+    for i, (mat, cant, precio, iva) in enumerate(entradas, start=2):
+        en[f"B{i}"] = dt.date(2026, 6, 10 + i)
+        en[f"D{i}"] = cant
+        en[f"F{i}"] = mat
+        en[f"G{i}"] = precio
+        if iva is not None:
+            en[f"J{i}"] = iva
+        en[f"K{i}"] = f"=(G{i}+G{i}*J{i})"
+
+    sa = libro.create_sheet("Salidas")
+    for col, texto in {"A": "Fecha", "B": "Documento", "C": "Razón", "F": "Mza", "G": "Lote",
+                       "H": "Cant.", "J": "Artículo", "L": "Frente", "N": "Entregado"}.items():
+        sa[f"{col}2"] = texto
+    salidas = [
+        # fila 3 en adelante: razón, mza, lote, cantidad, material, entregado
+        ("Programa", 20, 1, 4, "Cemento gris 50 kg", True),             # 3: cuenta en M20-L1
+        ("Programa ", 20, 1, 2, "Cemento gris 50 kg", True),            # 4: razón con espacio
+        ("Programa", 20, "2-3", 2, "Pintura vinílica blanca 19 L", True),  # 5: varios lotes
+        ("Programa", 20, 9, 1, "Varilla 3/8\"", True),                  # 6: M20-L9 no es columna
+        ("Programa", 20, 1, 3, "Lija  220", True),                      # 7: nombre distinto
+        ("Programa", 20, 2, 5, "Cemento gris 50 kg", True),             # 8: el sistema lo pasó a L3
+        ("Programa", 20, 1, 1, "Aerosol negro", True),                  # 9: sin precio en la hoja
+        ("Programa", 20, 1, 6, "Cemento gris 50 kg", False),            # 10: no entregado
+        ("Programa", 20, 3, 2, "Lija 220", True),                       # 11: el sistema no lo tiene
+        ("Programa", 20, 1, "=1/4", "Cemento gris 50 kg", True),        # 12: cantidad fórmula
+    ]
+    for i, (razon, mza, lote, cant, mat, entregado) in enumerate(salidas, start=3):
+        sa[f"A{i}"] = dt.date(2026, 6, 22)
+        sa[f"B{i}"] = "Vale"
+        sa[f"C{i}"] = razon
+        sa[f"F{i}"] = mza
+        sa[f"G{i}"] = lote
+        sa[f"H{i}"] = cant
+        sa[f"J{i}"] = mat
+        sa[f"L{i}"] = "Corceles"
+        sa[f"N{i}"] = entregado
+
+    co = libro.create_sheet("CORCELES")
+    co["D1"] = "CORCELES"
+    for col, texto in {"A": "Clave", "B": "Paquete", "C": "Zona", "D": "Artículo/Material",
+                       "H": "Unidad", "I": "Precio Prom.", "J": "Rescate"}.items():
+        co[f"{col}3"] = texto
+    columnas = [("Q", "R", 20, 1), ("S", "T", 20, 2), ("U", "V", 20, 3), ("W", "X", "X", "X")]
+    for mza, lote, m, l in columnas:
+        co[f"{mza}2"], co[f"{lote}2"] = "Mza", "Lote"
+        co[f"{mza}3"], co[f"{lote}3"] = m, l
+        co[f"{mza}4"], co[f"{lote}4"] = "Cant", "Costo Total"
+    ultima = 4 + len(materiales)
+    for i in range(5, ultima + 1):
+        co[f"A{i}"] = f"{i - 4:03d}"
+        co[f"D{i}"] = f"=Existencias!F{i}"
+        co[f"I{i}"] = f"=Existencias!A{i}"
+        for mza, lote, _, _ in columnas:
+            co[f"{mza}{i}"] = (
+                f"=SUMIFS(Salidas!$H$1:$H$14994,Salidas!$F$1:$F$14994,CORCELES!{mza}$3,"
+                f"Salidas!$G$1:$G$14994,CORCELES!{lote}$3,Salidas!$J$1:$J$14994,CORCELES!$D{i},"
+                f"Salidas!$N$1:$N$14994,TRUE,Salidas!$C$1:$C$14994,\"Programa\","
+                f"Salidas!$L$1:$L$14994,\"Corceles\")")
+            co[f"{lote}{i}"] = (
+                f'=IFERROR(IF(Existencias!$A{i}*CORCELES!{mza}{i} = 0, "", '
+                f'Existencias!$A{i}*CORCELES!{mza}{i}), "")')
+    co[f"D{ultima + 1}"] = "TOTAL"
+    for mza, lote, _, _ in columnas:
+        co[f"{lote}{ultima + 1}"] = f"=SUM({lote}5:{lote}{ultima})"
+    guardar(libro, "muestra-conciliacion.xlsx")
+
+
 if __name__ == "__main__":
+    conciliacion()
     almacen()
     sua()
     destajo()

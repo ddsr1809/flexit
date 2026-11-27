@@ -142,4 +142,28 @@ public class RepositorioUnidades {
         .param("activa", activa)
         .update();
   }
+
+  /**
+   * Fija el presupuesto de material de los lotes del contrato: los de ese prototipo, o los de esa
+   * lista. Devuelve cuántos cambió.
+   */
+  public int fijarPresupuesto(
+      long empresa, long contrato, Long prototipo, Collection<Long> ids, BigDecimal monto) {
+    return jdbc.sql(
+            """
+            UPDATE estructura.unidad_obra
+               SET presupuesto_material = :monto, version = version + 1
+             WHERE empresa_id = :empresa AND contrato_id = :contrato
+               AND (CAST(:prototipo AS bigint) IS NULL OR prototipo_id = :prototipo)
+               AND (:todas OR id IN (:ids))
+               AND presupuesto_material IS DISTINCT FROM :monto
+            """)
+        .param("empresa", empresa)
+        .param("contrato", contrato)
+        .param("prototipo", prototipo)
+        .param("todas", ids == null)
+        .param("ids", ids == null || ids.isEmpty() ? List.of(-1L) : List.copyOf(ids))
+        .param("monto", monto)
+        .update();
+  }
 }

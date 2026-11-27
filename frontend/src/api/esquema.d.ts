@@ -1406,6 +1406,452 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/requisiciones/por-autorizar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Bandeja: requisiciones pendientes que el usuario puede autorizar */
+        get: operations["requisicionesPorAutorizar"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/requisiciones/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Una requisición con el avance de cada renglón (ETag) */
+        get: operations["obtenerRequisicion"];
+        /** Corregir un borrador (If-Match) */
+        put: operations["reemplazarRequisicion"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/requisiciones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Requisiciones filtradas, más recientes primero (el residente, solo sus contratos) */
+        get: operations["listarRequisiciones"];
+        put?: never;
+        /** Capturar una requisición en borrador */
+        post: operations["crearRequisicion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/requisiciones/{id}/enviar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Enviar a autorizar */
+        post: operations["enviarRequisicion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/requisiciones/{id}/autorizar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Autorizar (nunca lo propio) y apartar lo que haya en el almacén */
+        post: operations["autorizarRequisicion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/requisiciones/{id}/rechazar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Regresar a borrador con una nota */
+        post: operations["rechazarRequisicion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/requisiciones/{id}/reservar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Volver a apartar lo que haya en el almacén para lo pendiente */
+        post: operations["reservarRequisicion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/requisiciones/{id}/surtir": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Crear el vale que surte la requisición; queda enviado a autorizar */
+        post: operations["surtirRequisicion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/requisiciones/{id}/cerrar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Dar por terminada una requisición autorizada; libera lo apartado */
+        post: operations["cerrarRequisicion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/requisiciones/{id}/cancelar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancelar (autorizada, solo sin vales); libera lo apartado */
+        post: operations["cancelarRequisicion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/pedidos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Pedidos filtrados, más recientes primero */
+        get: operations["listarPedidos"];
+        put?: never;
+        /** Capturar un pedido; lo pedido se asigna a las requisiciones más urgentes */
+        post: operations["crearPedido"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/pedidos/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Un pedido con lo recibido y las requisiciones que cubre (ETag) */
+        get: operations["obtenerPedido"];
+        /** Corregir un borrador (If-Match) */
+        put: operations["reemplazarPedido"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/pedidos/{id}/enviar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Marcar como enviado al proveedor */
+        post: operations["enviarPedido"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/pedidos/{id}/cerrar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Dar por terminado un pedido enviado; lo que no llegó vuelve a ser faltante */
+        post: operations["cerrarPedido"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/pedidos/{id}/cancelar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancelar un borrador o un pedido enviado sin nada recibido */
+        post: operations["cancelarPedido"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/faltantes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lo que falta comprar de las requisiciones autorizadas, por proveedor sugerido (el último que surtió cada material) */
+        get: operations["faltantesPorProveedor"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/pedidos/{id}/recibir": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Recibir contra el pedido: crea y aplica la recepción y aparta lo recibido para las requisiciones que cubre */
+        post: operations["recibirPedido"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reportes/contratos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Costo por contrato: material (histórico + sistema), destajo y presupuesto */
+        get: operations["reporteContratos"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reportes/contratos/{id}/lotes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Costo de cada lote por clasificación, destajo y presupuesto (reemplaza la hoja del frente) */
+        get: operations["reporteCostoPorLote"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reportes/costo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Costo de obra agrupado por contrato, frente, unidad, paquete, clasificación, material o mes */
+        get: operations["reporteCosto"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reportes/presupuesto": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Presupuesto de material por lote con semáforo (aviso al 80% y al 100%); solo Programa consume */
+        get: operations["reportePresupuesto"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reportes/valor-inventario": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Existencia valorizada por almacén y material (costo promedio sin IVA) */
+        get: operations["reporteValorInventario"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reportes/requisicion-vs-surtido": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Cada renglón de requisición contra lo surtido, apartado, por recibir y faltante */
+        get: operations["reporteRequisicionVsSurtido"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/conciliacion/contratos/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** El costo de Programa de cada lote contra la hoja del frente recalculada, con cada diferencia explicada */
+        get: operations["conciliarContrato"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/importaciones/{id}/conciliacion.xlsx": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** La conciliación de totales de una carga del histórico, completa, en Excel */
+        get: operations["conciliacionDeCargaExcel"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/contratos/{id}/presupuesto": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Presupuesto de material para los lotes de un prototipo o una lista de lotes */
+        put: operations["asignarPresupuesto"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2148,6 +2594,16 @@ export interface components {
             clasificacion?: string;
             /** Format: int64 */
             lineaOrigenId?: number;
+            /**
+             * Format: int64
+             * @description Vale surtido desde una requisición: el renglón que surte
+             */
+            requisicionLineaId?: number;
+            /**
+             * Format: int64
+             * @description Recepción contra pedido: el renglón del pedido que recibe
+             */
+            pedidoLineaId?: number;
         };
         Acciones: {
             editar: boolean;
@@ -2523,6 +2979,604 @@ export interface components {
             destajo?: number;
             veCostos: boolean;
             vePersonas: boolean;
+        };
+        AccionesPedido: {
+            editar: boolean;
+            enviar: boolean;
+            recibir: boolean;
+            cerrar: boolean;
+            cancelar: boolean;
+        };
+        AccionesRequisicion: {
+            editar: boolean;
+            enviar: boolean;
+            autorizar: boolean;
+            cancelar: boolean;
+            cerrar: boolean;
+            reservar: boolean;
+            surtir: boolean;
+        };
+        Apartado: {
+            /** Format: int64 */
+            requisicionId: number;
+            folio: string;
+            unidadObra: string;
+            material: string;
+            cantidad: number;
+        };
+        Cobertura: {
+            /** Format: int64 */
+            requisicionLineaId: number;
+            /** Format: int64 */
+            requisicionId: number;
+            folio: string;
+            unidadObra: string;
+            cantidad: number;
+            recibido: number;
+        };
+        ColumnaClasificacion: {
+            /** Format: int32 */
+            id: number;
+            clave: string;
+            nombre: string;
+        };
+        ConciliacionContrato: {
+            /** Format: int64 */
+            contratoId: number;
+            contrato: string;
+            /** Format: int64 */
+            cargaId: number;
+            archivo: string;
+            hoja: string;
+            razon: string;
+            /** Format: int32 */
+            columnasDeLote: number;
+            sistema: number;
+            hojaTotal: number;
+            /** @description Por motivo, del mayor al menor */
+            efectos: components["schemas"]["Efecto"][];
+            lotes: components["schemas"]["LoteConciliado"][];
+            /** @description Los renglones que más pesan, hasta 500 */
+            renglones: components["schemas"]["RenglonDiferencia"][];
+            recortada: boolean;
+            avisos: string[];
+        };
+        CostoContrato: {
+            /** Format: int64 */
+            contratoId: number;
+            contrato: string;
+            clasificaciones: components["schemas"]["ColumnaClasificacion"][];
+            lotes: components["schemas"]["LoteCosto"][];
+            totales: components["schemas"]["LoteCosto"];
+        };
+        DatosPedido: {
+            /** Format: int64 */
+            proveedorId: number;
+            /** Format: int64 */
+            almacenId: number;
+            /** Format: date */
+            fechaEntrega?: string;
+            observaciones?: string;
+            renglones: components["schemas"]["RenglonPedidoCaptura"][];
+            /** @description Crear y enviar en un paso */
+            enviar?: boolean;
+        };
+        DatosPresupuesto: {
+            /** Format: int64 */
+            prototipoId?: number;
+            unidadIds?: number[];
+            monto?: number;
+        };
+        DatosRecepcion: {
+            /** Format: date */
+            fecha: string;
+            folioFactura?: string;
+            flete?: number;
+            observaciones?: string;
+            renglones: components["schemas"]["RenglonRecibido"][];
+        };
+        DatosRequisicion: {
+            /** Format: int64 */
+            contratoId: number;
+            /** Format: date */
+            fechaRequerida: string;
+            urgente?: boolean;
+            observaciones?: string;
+            renglones: components["schemas"]["RenglonCaptura"][];
+            /** @description Crear y enviar a autorizar en un paso */
+            enviar?: boolean;
+        };
+        DatosSurtido: {
+            /** Format: date */
+            fecha: string;
+            /**
+             * Format: int64
+             * @description Persona que recibe en obra
+             */
+            solicitanteId?: number;
+            observaciones?: string;
+            renglones: components["schemas"]["RenglonSurtido"][];
+        };
+        Efecto: {
+            /** @enum {string} */
+            motivo: "SIN_COLUMNA" | "REPARTO" | "LOTE_CORREGIDO" | "MATERIAL" | "RAZON" | "FRENTE" | "NO_ENTREGADO" | "CANTIDAD" | "SOLO_EN_HOJA" | "SIN_PRECIO" | "PONDERACION" | "IVA";
+            descripcion: string;
+            /** @description Con signo: lo que suma o resta al sistema */
+            importe: number;
+        };
+        ExistenciaValorizada: {
+            /** Format: int64 */
+            almacenId: number;
+            almacen: string;
+            /** Format: int64 */
+            materialId: number;
+            clave: string;
+            material: string;
+            unidad: string;
+            existencia: number;
+            reservado: number;
+            prestado: number;
+            disponible: number;
+            costoPromedio: number;
+            valor: number;
+        };
+        Faltante: {
+            /** Format: int64 */
+            requisicionLineaId: number;
+            /** Format: int64 */
+            requisicionId: number;
+            folio: string;
+            /** Format: int32 */
+            renglon: number;
+            /** Format: int64 */
+            contratoId: number;
+            contrato: string;
+            unidadObra: string;
+            /** Format: date */
+            fechaRequerida: string;
+            urgente: boolean;
+            /** Format: int64 */
+            almacenId: number;
+            /** Format: int64 */
+            materialId: number;
+            materialClave: string;
+            material: string;
+            /** Format: int64 */
+            unidadControlId: number;
+            unidadControl: string;
+            faltante: number;
+            /** @description Sin IVA; vacío sin permiso de precios */
+            precioReferencia?: number;
+            /**
+             * @description De dónde sale el proveedor sugerido
+             * @enum {string}
+             */
+            origenSugerencia?: "sistema" | "excel";
+        };
+        FilaReporteCosto: {
+            /** @description Id del contrato, lote, paquete…; o el mes (2026-07). Vacío: sin dato */
+            llave?: string;
+            clave: string;
+            nombre: string;
+            /** @description Del Excel (junio a la fecha del corte) */
+            historico: number;
+            /** @description De los vales del sistema */
+            sistema: number;
+            total: number;
+            /** @description Solo al agrupar por material */
+            cantidad?: number;
+            unidad?: string;
+            /** @description Incluye renglones con costo estimado */
+            estimado: boolean;
+            /** Format: int32 */
+            movimientos: number;
+        };
+        GrupoFaltantes: {
+            /**
+             * Format: int64
+             * @description Vacío si ningún proveedor ha surtido estos materiales
+             */
+            proveedorId?: number;
+            proveedor: string;
+            faltantes: components["schemas"]["Faltante"][];
+        };
+        LoteConciliado: {
+            clave: string;
+            /** Format: int64 */
+            unidadObraId?: number;
+            /** @description El lote es columna de la hoja del frente */
+            columnaEnHoja: boolean;
+            /** @description Programa del histórico, sin IVA, ponderado */
+            sistema: number;
+            efectos: components["schemas"]["Efecto"][];
+            /** @description Lo que diría la hoja recalculada */
+            hoja: number;
+            /** @description Centavos por redondear cada efecto */
+            redondeo: number;
+        };
+        LoteCosto: {
+            /**
+             * Format: int64
+             * @description Vacío: salidas sin lote ("Sin asignar") o el renglón de totales
+             */
+            unidadObraId?: number;
+            clave: string;
+            prototipo?: string;
+            /** @description Material, en el orden de las clasificaciones */
+            porClasificacion: number[];
+            historico: number;
+            sistema: number;
+            material: number;
+            destajo: number;
+            /** @description Material + destajo */
+            total: number;
+            presupuesto?: number;
+            /** @description Material de Programa */
+            consumido: number;
+            porcentaje?: number;
+            /** @enum {string} */
+            semaforo: "sin" | "verde" | "amarillo" | "rojo";
+            estimado: boolean;
+        };
+        LotePresupuesto: {
+            /** Format: int64 */
+            contratoId: number;
+            contrato: string;
+            /** Format: int64 */
+            unidadObraId: number;
+            clave: string;
+            prototipo?: string;
+            presupuesto?: number;
+            consumido: number;
+            /** @description Presupuesto − consumido (negativo si se rebasó) */
+            restante?: number;
+            porcentaje?: number;
+            /** @enum {string} */
+            semaforo: "sin" | "verde" | "amarillo" | "rojo";
+        };
+        Pedido: {
+            /** Format: int64 */
+            id: number;
+            folio: string;
+            /** @enum {string} */
+            estado: "borrador" | "enviado" | "recibido" | "cerrado" | "cancelado";
+            /** Format: int64 */
+            proveedorId: number;
+            proveedor: string;
+            /** Format: int64 */
+            almacenId: number;
+            almacen: string;
+            /** Format: date */
+            fecha: string;
+            /** Format: date */
+            fechaEntrega?: string;
+            observaciones?: string;
+            motivoCierre?: string;
+            capturo: string;
+            envio?: string;
+            /** Format: date-time */
+            enviadoEn?: string;
+            /** Format: date-time */
+            cerradoEn?: string;
+            /** Format: date-time */
+            creado: string;
+            /** @description Sin IVA; vacío sin permiso de precios */
+            subtotal?: number;
+            iva?: number;
+            total?: number;
+            /** @description Porcentaje recibido (0 a 100) */
+            avance: number;
+            /** Format: int32 */
+            version: number;
+            renglones: components["schemas"]["RenglonPedido"][];
+            recepciones: components["schemas"]["RecepcionDePedido"][];
+            acciones: components["schemas"]["AccionesPedido"];
+        };
+        PedidoDeRequisicion: {
+            /** Format: int64 */
+            id: number;
+            folio: string;
+            estado: string;
+            cantidad: number;
+            recibido: number;
+        };
+        RecepcionDePedido: {
+            /** Format: int64 */
+            id: number;
+            folio: string;
+            estado: string;
+            /** Format: date */
+            fecha: string;
+        };
+        RenglonCaptura: {
+            /** Format: int64 */
+            materialId: number;
+            /** @description En la unidad capturada; con varios lotes, el total que se reparte */
+            cantidad: number;
+            /**
+             * Format: int64
+             * @description Unidad capturada; vacía: la unidad de control del material
+             */
+            unidadId?: number;
+            unidadObraIds: number[];
+            /** Format: int64 */
+            paqueteId: number;
+            /** Format: int32 */
+            clasificacionId: number;
+            observaciones?: string;
+        };
+        RenglonDiferencia: {
+            /** Format: int32 */
+            filaExcel: number;
+            lote: string;
+            material?: string;
+            motivo: string;
+            cantidad?: number;
+            importe: number;
+            nota?: string;
+        };
+        RenglonPedido: {
+            /** Format: int64 */
+            id: number;
+            /** Format: int32 */
+            renglon: number;
+            /** Format: int64 */
+            materialId: number;
+            materialClave: string;
+            material: string;
+            unidadControl: string;
+            cantidad: number;
+            cantidadCaptura: number;
+            /** Format: int64 */
+            unidadCapturaId: number;
+            unidadCaptura: string;
+            /** @description Vacío sin permiso de precios */
+            precio?: number;
+            tasaIva: number;
+            /** @description Cantidad capturada × precio, sin IVA */
+            importe?: number;
+            /** @description En unidad de control, neto de devoluciones */
+            recibido: number;
+            pendiente: number;
+            observaciones?: string;
+            requisiciones: components["schemas"]["Cobertura"][];
+        };
+        RenglonPedidoCaptura: {
+            /** Format: int64 */
+            materialId: number;
+            /** @description En la unidad capturada */
+            cantidad: number;
+            /**
+             * Format: int64
+             * @description Unidad capturada; vacía: la unidad de control
+             */
+            unidadId?: number;
+            /** @description Sin IVA, por unidad capturada */
+            precio: number;
+            /** @description Vacía: la del proveedor (o 8%) */
+            tasaIva?: number;
+            /** @description Renglones de requisición que cubre, el más urgente primero */
+            requisicionLineaIds?: number[];
+            observaciones?: string;
+        };
+        RenglonRecibido: {
+            /** Format: int64 */
+            pedidoLineaId: number;
+            cantidad: number;
+        };
+        RenglonRequisicion: {
+            /** Format: int64 */
+            id: number;
+            /** Format: int32 */
+            renglon: number;
+            /** Format: int64 */
+            materialId: number;
+            materialClave: string;
+            material: string;
+            unidadControl: string;
+            cantidad: number;
+            cantidadCaptura: number;
+            /** Format: int64 */
+            unidadCapturaId: number;
+            unidadCaptura: string;
+            /** Format: int64 */
+            unidadObraId: number;
+            unidadObra: string;
+            /** Format: int64 */
+            paqueteId: number;
+            paquete: string;
+            /** Format: int32 */
+            clasificacionId: number;
+            clasificacion: string;
+            observaciones?: string;
+            /** @description Salió en vales aplicados, neto de devoluciones */
+            surtido: number;
+            /** @description En vales que todavía no se aplican */
+            enVale: number;
+            /** @description Apartado en el almacén */
+            reservado: number;
+            /** @description Pedido al proveedor, sin llegar */
+            porRecibir: number;
+            /** @description Lo que puede ir en un vale nuevo */
+            porSurtir: number;
+            /** @description Pendiente sin cubrir ni pedir: hay que comprar */
+            faltante: number;
+            /** @description Libre en el almacén para cualquier vale */
+            disponible: number;
+        };
+        RenglonSurtido: {
+            /** Format: int64 */
+            requisicionLineaId: number;
+            cantidad: number;
+        };
+        ReporteCosto: {
+            agrupar: string;
+            filas: components["schemas"]["FilaReporteCosto"][];
+            historico: number;
+            sistema: number;
+            total: number;
+        };
+        Requisicion: {
+            /** Format: int64 */
+            id: number;
+            folio: string;
+            /** @enum {string} */
+            estado: "borrador" | "pendiente" | "autorizada" | "cerrada" | "cancelada";
+            /** Format: int64 */
+            contratoId: number;
+            contrato: string;
+            /** Format: int64 */
+            almacenId: number;
+            almacen: string;
+            /** Format: date */
+            fecha: string;
+            /** Format: date */
+            fechaRequerida: string;
+            urgente: boolean;
+            observaciones?: string;
+            notaRechazo?: string;
+            motivoCierre?: string;
+            capturo: string;
+            autorizo?: string;
+            /** Format: date-time */
+            autorizadaEn?: string;
+            /** Format: date-time */
+            cerradaEn?: string;
+            /** Format: date-time */
+            creado: string;
+            /** @description Porcentaje surtido (0 a 100) */
+            avance: number;
+            /** Format: int32 */
+            version: number;
+            renglones: components["schemas"]["RenglonRequisicion"][];
+            vales: components["schemas"]["ValeDeRequisicion"][];
+            pedidos: components["schemas"]["PedidoDeRequisicion"][];
+            acciones: components["schemas"]["AccionesRequisicion"];
+        };
+        ResultadoRecepcion: {
+            /** Format: int64 */
+            movimientoId: number;
+            folio: string;
+            apartados: components["schemas"]["Apartado"][];
+            pedido: components["schemas"]["Pedido"];
+        };
+        ResumenContrato: {
+            /** Format: int64 */
+            contratoId: number;
+            contrato: string;
+            frente?: string;
+            estado: string;
+            historico: number;
+            sistema: number;
+            material: number;
+            destajo: number;
+            total: number;
+            /** @description Suma de los lotes con presupuesto */
+            presupuesto?: number;
+            /** @description Programa de los lotes con presupuesto */
+            consumido: number;
+            porcentaje?: number;
+            /** @enum {string} */
+            semaforo: "sin" | "verde" | "amarillo" | "rojo";
+            /** Format: int32 */
+            lotes: number;
+            /**
+             * Format: int32
+             * @description Lotes del 80% al 100%
+             */
+            lotesEnAviso: number;
+            /**
+             * Format: int32
+             * @description Lotes en o arriba del 100%
+             */
+            lotesRebasados: number;
+        };
+        ResumenPedido: {
+            /** Format: int64 */
+            id: number;
+            folio: string;
+            estado: string;
+            proveedor: string;
+            almacen: string;
+            /** Format: date */
+            fecha: string;
+            /** Format: date */
+            fechaEntrega?: string;
+            /** Format: int32 */
+            renglones: number;
+            /** @description Sin IVA; vacío sin permiso de precios */
+            subtotal?: number;
+            /** Format: date-time */
+            creado: string;
+        };
+        ResumenRequisicion: {
+            /** Format: int64 */
+            id: number;
+            folio: string;
+            estado: string;
+            /** Format: int64 */
+            contratoId: number;
+            contrato: string;
+            almacen: string;
+            /** Format: date */
+            fecha: string;
+            /** Format: date */
+            fechaRequerida: string;
+            urgente: boolean;
+            capturo: string;
+            autorizo?: string;
+            /** Format: int32 */
+            renglones: number;
+            avance: number;
+            /** @description Algún renglón tiene faltante por comprar */
+            conFaltante: boolean;
+            /** Format: date-time */
+            creado: string;
+        };
+        SurtidoRequisicion: {
+            /** Format: int64 */
+            requisicionId?: number;
+            folio?: string;
+            estado?: string;
+            /** Format: date */
+            fecha?: string;
+            /** Format: date */
+            fechaRequerida?: string;
+            /** Format: int64 */
+            contratoId?: number;
+            contrato?: string;
+            /** Format: int64 */
+            unidadObraId?: number;
+            unidadObra?: string;
+            materialClave?: string;
+            material?: string;
+            unidad?: string;
+            pedido?: number;
+            surtido?: number;
+            enVale?: number;
+            reservado?: number;
+            porRecibir?: number;
+            faltante?: number;
+            porcentaje?: number;
+        };
+        ValeCreado: {
+            /** Format: int64 */
+            movimientoId: number;
+            folio: string;
+        };
+        ValeDeRequisicion: {
+            /** Format: int64 */
+            id: number;
+            folio: string;
+            estado: string;
+            /** Format: date */
+            fecha: string;
+            /** Format: int32 */
+            renglones: number;
+        };
+        ValorInventario: {
+            materiales: components["schemas"]["ExistenciaValorizada"][];
+            valor: number;
         };
     };
     responses: never;
@@ -5044,6 +6098,754 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HistoriaUnidad"];
+                };
+            };
+        };
+    };
+    requisicionesPorAutorizar: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResumenRequisicion"][];
+                };
+            };
+        };
+    };
+    obtenerRequisicion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Requisicion"];
+                };
+            };
+        };
+    };
+    reemplazarRequisicion: {
+        parameters: {
+            query?: never;
+            header?: {
+                "If-Match"?: string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosRequisicion"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Requisicion"];
+                };
+            };
+        };
+    };
+    listarRequisiciones: {
+        parameters: {
+            query?: {
+                estados?: string;
+                contratoId?: number;
+                desde?: string;
+                hasta?: string;
+                folio?: string;
+                pagina?: number;
+                tamano?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResumenRequisicion"][];
+                };
+            };
+        };
+    };
+    crearRequisicion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosRequisicion"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Requisicion"];
+                };
+            };
+        };
+    };
+    enviarRequisicion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Requisicion"];
+                };
+            };
+        };
+    };
+    autorizarRequisicion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Requisicion"];
+                };
+            };
+        };
+    };
+    rechazarRequisicion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Nota"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Requisicion"];
+                };
+            };
+        };
+    };
+    reservarRequisicion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Requisicion"];
+                };
+            };
+        };
+    };
+    surtirRequisicion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosSurtido"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ValeCreado"];
+                };
+            };
+        };
+    };
+    cerrarRequisicion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Motivo"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Requisicion"];
+                };
+            };
+        };
+    };
+    cancelarRequisicion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Motivo"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Requisicion"];
+                };
+            };
+        };
+    };
+    listarPedidos: {
+        parameters: {
+            query?: {
+                estados?: string;
+                proveedorId?: number;
+                almacenId?: number;
+                desde?: string;
+                hasta?: string;
+                folio?: string;
+                pagina?: number;
+                tamano?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResumenPedido"][];
+                };
+            };
+        };
+    };
+    crearPedido: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosPedido"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Pedido"];
+                };
+            };
+        };
+    };
+    obtenerPedido: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Pedido"];
+                };
+            };
+        };
+    };
+    reemplazarPedido: {
+        parameters: {
+            query?: never;
+            header?: {
+                "If-Match"?: string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosPedido"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Pedido"];
+                };
+            };
+        };
+    };
+    enviarPedido: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Pedido"];
+                };
+            };
+        };
+    };
+    cerrarPedido: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Motivo"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Pedido"];
+                };
+            };
+        };
+    };
+    cancelarPedido: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Motivo"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Pedido"];
+                };
+            };
+        };
+    };
+    faltantesPorProveedor: {
+        parameters: {
+            query?: {
+                proveedorId?: number;
+                almacenId?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GrupoFaltantes"][];
+                };
+            };
+        };
+    };
+    recibirPedido: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosRecepcion"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultadoRecepcion"];
+                };
+            };
+        };
+    };
+    reporteContratos: {
+        parameters: {
+            query?: {
+                formato?: "json" | "xlsx";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResumenContrato"][];
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
+                };
+            };
+        };
+    };
+    reporteCostoPorLote: {
+        parameters: {
+            query?: {
+                formato?: "json" | "xlsx";
+            };
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CostoContrato"];
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
+                };
+            };
+        };
+    };
+    reporteCosto: {
+        parameters: {
+            query?: {
+                agrupar?: "contrato" | "frente" | "unidad" | "paquete" | "clasificacion" | "material" | "mes";
+                contratoId?: number;
+                frenteId?: number;
+                unidadObraId?: number;
+                paqueteId?: number;
+                clasificacionId?: number;
+                materialId?: number;
+                desde?: string;
+                hasta?: string;
+                fuente?: "historico" | "sistema";
+                formato?: "json" | "xlsx";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReporteCosto"];
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
+                };
+            };
+        };
+    };
+    reportePresupuesto: {
+        parameters: {
+            query?: {
+                contratoId?: number;
+                unidadIds?: number[];
+                avisos?: boolean;
+                formato?: "json" | "xlsx";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LotePresupuesto"][];
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
+                };
+            };
+        };
+    };
+    reporteValorInventario: {
+        parameters: {
+            query?: {
+                almacenId?: number;
+                formato?: "json" | "xlsx";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ValorInventario"];
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
+                };
+            };
+        };
+    };
+    reporteRequisicionVsSurtido: {
+        parameters: {
+            query?: {
+                contratoId?: number;
+                desde?: string;
+                hasta?: string;
+                formato?: "json" | "xlsx";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SurtidoRequisicion"][];
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
+                };
+            };
+        };
+    };
+    conciliarContrato: {
+        parameters: {
+            query?: {
+                formato?: "json" | "xlsx";
+            };
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConciliacionContrato"];
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
+                };
+            };
+        };
+    };
+    conciliacionDeCargaExcel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
+                };
+            };
+        };
+    };
+    asignarPresupuesto: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosPresupuesto"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnidadObra"][];
                 };
             };
         };

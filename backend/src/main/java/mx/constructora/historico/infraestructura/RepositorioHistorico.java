@@ -491,4 +491,62 @@ public class RepositorioHistorico {
         .query(FilaAlta.class)
         .list();
   }
+
+  // ------------------------------------------------------------------------------ Consultas de H6
+
+  /** Último proveedor de cada material en la hoja Entradas. */
+  public record FilaProveedor(long materialId, long proveedorId, java.time.LocalDate fecha) {}
+
+  public List<FilaProveedor> ultimosProveedores(
+      long empresa, java.util.Collection<Long> materiales) {
+    if (materiales.isEmpty()) {
+      return List.of();
+    }
+    return jdbc.sql(
+            """
+            SELECT DISTINCT ON (material_id) material_id, proveedor_id, fecha
+              FROM historico.entrada
+             WHERE empresa_id = :empresa AND proveedor_id IS NOT NULL
+               AND material_id IN (:materiales)
+             ORDER BY material_id, fecha DESC, id DESC
+            """)
+        .param("empresa", empresa)
+        .param("materiales", List.copyOf(materiales))
+        .query(FilaProveedor.class)
+        .list();
+  }
+
+  /** Salida del histórico con su renglón del Excel, para conciliar contra la hoja del frente. */
+  public record FilaSalidaCarga(
+      long id,
+      int filaExcel,
+      String tipo,
+      long materialId,
+      java.math.BigDecimal cantidad,
+      Long frenteId,
+      Long contratoId,
+      Long unidadObraId,
+      String lotesTexto,
+      Integer clasificacionId,
+      boolean entregado,
+      java.math.BigDecimal importe,
+      boolean costoEstimado) {}
+
+  /** Las salidas de una carga en un frente, en el orden de la hoja. */
+  public List<FilaSalidaCarga> salidasDeCarga(long empresa, long carga, long frente) {
+    return jdbc.sql(
+            """
+            SELECT id, fila_excel, tipo, material_id, cantidad, frente_id, contrato_id,
+                   unidad_obra_id, lotes_texto, clasificacion_id, entregado, importe, costo_estimado
+              FROM historico.salida
+             WHERE empresa_id = :empresa AND carga_id = :carga AND frente_id = :frente
+               AND fila_excel IS NOT NULL
+             ORDER BY fila_excel, id
+            """)
+        .param("empresa", empresa)
+        .param("carga", carga)
+        .param("frente", frente)
+        .query(FilaSalidaCarga.class)
+        .list();
+  }
 }

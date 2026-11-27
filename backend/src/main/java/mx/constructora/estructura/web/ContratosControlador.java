@@ -12,6 +12,7 @@ import mx.constructora.estructura.aplicacion.ServicioContratos.DatosPrecio;
 import mx.constructora.estructura.aplicacion.ServicioContratos.PrecioPaquete;
 import mx.constructora.estructura.aplicacion.ServicioContratos.Residentes;
 import mx.constructora.estructura.aplicacion.ServicioUnidades;
+import mx.constructora.estructura.aplicacion.ServicioUnidades.DatosPresupuesto;
 import mx.constructora.estructura.aplicacion.ServicioUnidades.DatosUnidad;
 import mx.constructora.estructura.aplicacion.ServicioUnidades.NuevasUnidades;
 import mx.constructora.estructura.aplicacion.ServicioUnidades.UnidadObra;
@@ -101,6 +102,15 @@ class ContratosControlador {
       @RequestHeader(name = HttpHeaders.IF_MATCH, required = false) String siCoincide,
       @Valid @RequestBody DatosUnidad datos) {
     return unidades.cambiarUnidad(id, Versiones.deEncabezado(siCoincide), datos);
+  }
+
+  @PutMapping("/contratos/{id}/presupuesto")
+  @Operation(
+      operationId = "asignarPresupuesto",
+      summary = "Presupuesto de material para los lotes de un prototipo o una lista de lotes")
+  List<UnidadObra> asignarPresupuesto(
+      @PathVariable long id, @Valid @RequestBody DatosPresupuesto datos) {
+    return unidades.asignarPresupuesto(id, datos);
   }
 
   @GetMapping("/contratos/{id}/residentes")

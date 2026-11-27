@@ -762,6 +762,17 @@ public class ServicioImportacion {
   @PreAuthorize(ADMINISTRAR)
   @Transactional(readOnly = true)
   public ConciliacionCarga conciliacion(long id, boolean todas) {
+    return conciliar(id, todas, LINEAS_MAXIMAS);
+  }
+
+  /** La conciliación con todas sus líneas, para exportarla a Excel (issue 52). */
+  @PreAuthorize(ADMINISTRAR)
+  @Transactional(readOnly = true)
+  public ConciliacionCarga conciliacionCompleta(long id) {
+    return conciliar(id, true, Integer.MAX_VALUE);
+  }
+
+  private ConciliacionCarga conciliar(long id, boolean todas, int maximo) {
     FilaCarga carga = existente(id);
     TipoCarga tipo = TipoCarga.valueOf(carga.tipo());
     exigirPermiso(tipo);
@@ -802,7 +813,7 @@ public class ServicioImportacion {
       boolean interesa =
           todas || conDiferencia || t.pendiente().signum() != 0 || t.descartado().signum() != 0;
       if (interesa) {
-        if (lineas.size() < LINEAS_MAXIMAS) {
+        if (lineas.size() < maximo) {
           lineas.add(
               new TotalConciliado(
                   t.concepto(),

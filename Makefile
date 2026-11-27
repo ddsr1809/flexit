@@ -1,5 +1,5 @@
 # Atajos del día a día. Requiere Docker, Java 25 y Node LTS.
-.PHONY: ayuda db dev back front test test-back test-front lint fmt api sql e2e imagen limpiar
+.PHONY: ayuda db dev back front test test-back test-front lint fmt api sql e2e carga imagen limpiar
 
 COMPOSE_DEV = MIGRADOR_LOCAL=migrador-local APP_LOCAL=app-local docker compose -f infra/compose/compose.dev.yml
 COMPOSE_E2E = MIGRADOR_E2E=migrador-e2e APP_E2E=app-e2e docker compose -f infra/compose/compose.e2e.yml
@@ -54,6 +54,17 @@ e2e: ## La app completa en Docker + Playwright (igual que CI)
 	$(COMPOSE_E2E) run --rm migrar
 	$(COMPOSE_E2E) up -d --wait app
 	cd frontend && npx playwright test; status=$$?; cd .. && $(COMPOSE_E2E) down -v; exit $$status
+
+# Con k6 instalado usa el de la máquina; si no, la imagen de Grafana. BASE, USUARIO y CONTRASENA
+# cambian el destino (por omisión, make dev con admin).
+carga: ## Prueba de carga de reportes y bandejas contra make dev (p95 < 500 ms)
+	@if command -v k6 >/dev/null 2>&1; then \
+	  k6 run tools/carga/reportes.js; \
+	else \
+	  docker run --rm --network host -v "$$PWD/tools/carga":/carga \
+	    -e BASE -e USUARIO -e CONTRASENA -e VUS -e DURACION \
+	    grafana/k6:1.4.2 run /carga/reportes.js; \
+	fi
 
 imagen: ## Construye la imagen de producción localmente
 	docker build -t constructora:local --build-arg APP_VERSION=$$(git rev-parse --short HEAD) .

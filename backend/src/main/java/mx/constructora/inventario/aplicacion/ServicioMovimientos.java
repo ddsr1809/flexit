@@ -153,7 +153,11 @@ public class ServicioMovimientos {
       String paquete,
       Integer clasificacionId,
       String clasificacion,
-      Long lineaOrigenId) {}
+      Long lineaOrigenId,
+      @Schema(description = "Vale surtido desde una requisición: el renglón que surte")
+          Long requisicionLineaId,
+      @Schema(description = "Recepción contra pedido: el renglón del pedido que recibe")
+          Long pedidoLineaId) {}
 
   /** Qué puede hacer el usuario en curso con el documento. */
   public record Acciones(
@@ -272,6 +276,63 @@ public class ServicioMovimientos {
     return movimiento(id);
   }
 
+  /**
+   * Vínculo de una línea capturada con el abastecimiento: el renglón con que se guarda (las líneas
+   * del mismo renglón salen juntas y su importe suma exacto) y el renglón de requisición que surte
+   * o el de pedido que recibe.
+   */
+  public record Vinculo(int renglon, Long requisicionLineaId, Long pedidoLineaId) {}
+
+  /**
+   * Crea un documento ligado al abastecimiento: un vale que surte renglones de requisición (queda
+   * enviado a autorizar) o una recepción contra pedido (queda en borrador para aplicarse). Lo llama
+   * solo {@code InventarioApi}. Cada línea capturada va a un solo lote, así que produce una sola
+   * línea y {@code vinculos} va en el mismo orden que {@code datos.lineas()}.
+   */
+  @PreAuthorize(CAPTURAR)
+  @Transactional
+  public long crearLigado(DatosMovimiento datos, List<Vinculo> vinculos) {
+    TipoMovimiento tipo = tipoCapturable(datos.tipo());
+    if (tipo != TipoMovimiento.SALIDA && tipo != TipoMovimiento.ENTRADA) {
+      throw new IllegalArgumentException("Solo vales y recepciones se ligan al abastecimiento");
+    }
+    Preparado preparado = captura.preparar(tipo, datos);
+    if (preparado.lineas().size() != vinculos.size()) {
+      throw new IllegalArgumentException("Cada línea ligada va a un solo lote");
+    }
+    String folio = folios.siguiente(tipo.prefijoFolio());
+    long id = repositorio.insertar(empresa(), folio, preparado.cabecera(), usuario(), null);
+    for (int i = 0; i < vinculos.size(); i++) {
+      NuevaLinea l = preparado.lineas().get(i);
+      Vinculo v = vinculos.get(i);
+      repositorio.insertarLinea(
+          empresa(),
+          id,
+          tipo.clave(),
+          new NuevaLinea(
+              v.renglon(),
+              l.materialId(),
+              l.cantidad(),
+              l.cantidadCaptura(),
+              l.unidadCapturaId(),
+              l.precioCaptura(),
+              l.descuento(),
+              l.tasaIva(),
+              l.costoNuevo(),
+              l.contratoId(),
+              l.unidadObraId(),
+              l.paqueteId(),
+              l.clasificacionId(),
+              l.lineaOrigenId(),
+              tipo == TipoMovimiento.SALIDA ? v.requisicionLineaId() : null,
+              tipo == TipoMovimiento.ENTRADA ? v.pedidoLineaId() : null));
+    }
+    if (tipo.requiereAutorizacion()) {
+      repositorio.enviar(empresa(), id);
+    }
+    return id;
+  }
+
   /** Reemplaza un borrador completo (cabecera y líneas). El tipo no cambia. */
   @PreAuthorize(CAPTURAR)
   @Transactional
@@ -279,6 +340,12 @@ public class ServicioMovimientos {
     FilaMovimiento actual = bloquear(id);
     if (!actual.estado().equals("borrador")) {
       throw ErrorNegocio.conflicto("NO_ES_BORRADOR", "Solo se corrige un documento en borrador");
+    }
+    if (repositorio.lineas(empresa(), id).stream()
+        .anyMatch(l -> l.requisicionLineaId() != null || l.pedidoLineaId() != null)) {
+      throw ErrorNegocio.conflicto(
+          "DOCUMENTO_LIGADO",
+          "Este vale surte una requisición: cancélalo y vuelve a surtir desde la requisición");
     }
     TipoMovimiento tipo = tipoCapturable(datos.tipo());
     if (!tipo.clave().equals(actual.tipo())) {

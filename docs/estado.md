@@ -263,7 +263,69 @@ porque Spring 7 ya no lo copia en la excepción traducida.
   pagos del destajo, y un renglón de subtotales `=SUM(…)` en el destajo no es un pago.
 - La carga sigue en la misma petición: Salidas valida en 1.8 s y confirma en 1.9 s.
 
-## Siguiente: H6 · Abastecimiento y reportes (issues 32 a 38 y 52)
+## H6 · issues 32 a 38 y 52
 
-Requisición, pedido y recepción contra pedido; reportes de costo por contrato, lote, paquete y
-clasificación sobre `reportes.v_costo_unidad` (histórico + vivo).
+| # | Issue | Estado | Dónde se comprueba |
+| --- | --- | --- | --- |
+| 32 | Requisición por contrato y lote, con autorización (quien pide no autoriza) | Hecho | V009, `CriterioH6Test`, `tools/pruebas-sql/abastecimiento.sql` |
+| 33 | Reserva al autorizar; el vale ligado la consume y el vale suelto no la toma | Hecho | `CriterioH6Test`, `abastecimiento.sql` |
+| 34 | Faltantes por proveedor sugerido y pedido a proveedor | Hecho | `CriterioH6Test`, `AvanceTest` |
+| 35 | Recepción contra pedido que aparta para la requisición más urgente | Hecho | `CriterioH6Test` |
+| 36 | Presupuesto por lote con aviso al 80% y al 100% | Hecho | `CriterioH6Test`, `SemaforoTest` |
+| 37 | Reportes de costo por contrato, lote, paquete, razón y mes (histórico + vivo) | Hecho | `CriterioH6Test`, `reportes.spec.ts` |
+| 38 | Exportación a Excel de cada reporte | Hecho | `LibroExcelTest`, `reportes.spec.ts` |
+| 52 | Conciliación de un contrato contra la hoja de su frente, con cada diferencia explicada | Hecho | `ConciliacionHojaTest`, runbook |
+| — | Prueba de carga p95 < 500 ms | Script listo; falta correrla en preproducción | `make carga` |
+| — | La junta del miércoles con el reporte del sistema | Pendiente: dirección | `docs/runbooks/abastecimiento-y-reportes.md` |
+
+### Qué ya se verificó y qué no
+
+- **Verificado:**
+  - V009 y 29 pruebas SQL nuevas contra PostgreSQL 16: reservado = suma de reservas, la app no
+    borra reservas, ligas de vale y recepción con el mismo material, lo recibido no pasa de lo
+    pedido, documentos cerrados que no cambian, vistas con el RLS de quien consulta.
+  - **El ciclo completo por los servicios reales contra PostgreSQL** como rol `app` con RLS, sin
+    Spring: recepción, requisición de 12 sacos para dos lotes y pintura, reserva de 10, vale suelto
+    rechazado, faltantes, pedido, recepción parcial que aparta, vale ligado que consume lo
+    apartado, avance 88.24%, cierre de pedido que regresa el faltante, alcance del residente,
+    conteo que recorta reservas, y al final existencia = Σ kardex y reservado = Σ reservas.
+  - **La conciliación con el Excel real de almacén**: CORCELES, PALERMO y GRANADA, sistema +
+    efectos = hoja en cada lote (0.5–2.2 s); el recálculo de la hoja coincide con los valores
+    guardados en sus 225 columnas de lote. Resultados en el runbook.
+  - Reportes sobre el histórico sembrado desde el Excel real: 28–97 ms cada uno con un usuario;
+    los .xlsx abren en LibreOffice y openpyxl.
+  - El código compilado contra firmas de las APIs de Spring y con google-java-format 1.28.
+  - Frontend: tipos, lint, 51 pruebas (11 nuevas) y build.
+- **Se verifica por primera vez en CI:** `CriterioH6Test` por HTTP real con Spring,
+  `ModularidadTest` con los módulos `abastecimiento` y `reportes` usando `InventarioApi` y
+  `AbastecimientoApi`, spotless y el e2e `reportes.spec.ts`. `frontend/openapi.json` se generó
+  desde las clases compiladas imitando a springdoc (verificado contra los endpoints existentes):
+  correr `make api` y revisar el diff.
+- **Criterio de aceptación de H6 pendiente de demostrar en preproducción:** el ciclo con usuarios
+  reales sin tocar Excel, la conciliación de un contrato con dirección y `make carga` contra
+  preproducción.
+
+### Decisiones de esta etapa
+
+- **La reserva es de inventario** (`inventario.reserva`, un renglón por renglón de requisición) y
+  `saldo.reservado` es su suma por trigger. Abastecimiento aparta y libera por `InventarioApi`
+  (ADR-012).
+- **Lo surtido y lo recibido se calculan** de los documentos aplicados ligados por renglón, netos
+  de devoluciones. Un documento ligado no se corrige: se cancela.
+- **Faltante = pendiente − (apartado o en vale) − por recibir.** Compras lo ve agrupado por el
+  último proveedor del material (sistema; si no, histórico del Excel).
+- **Recibir contra pedido crea y aplica la recepción** con el precio del pedido y aparta lo
+  recibido por urgencia y fecha requerida.
+- **Presupuesto por lote** en `unidad_obra.presupuesto_material`, asignado por prototipo o lista
+  (permiso nuevo `presupuesto:editar`); solo cuenta Programa; aviso al 80%, rebasado al 100%.
+- **Reportes sobre vistas `security_invoker`**, sin vistas materializadas (no llevan RLS), y
+  Excel propio sin fórmulas.
+- **Conciliación**: recalcula la hoja del frente desde las celdas capturadas del archivo de la
+  carga confirmada y explica cada diferencia por motivo. Hallazgo: seis cantidades de Salidas son
+  copias de `=2/8` sin texto de fórmula; el importador de H5 las deja en cuarentena.
+- IVA del pedido: el del renglón, el del proveedor o 8%.
+
+## Siguiente: H7 · Producción lista y ensayo general (issues 39, 40 y 53)
+
+Servidor de producción con Terraform, despliegue por release, respaldos con prueba de
+restauración, monitoreo y el ensayo general de la migración completa.

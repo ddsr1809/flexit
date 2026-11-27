@@ -1,5 +1,6 @@
 package mx.constructora.estructura;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +37,18 @@ public class EstructuraApi {
   /** Paquete; {@code clienteId} nulo si es del catálogo propio. */
   public record PaqueteInfo(long id, Long clienteId, String clave, String nombre, boolean activo) {}
 
+  /** Unidad de obra con su prototipo y su presupuesto de material (pesos sin IVA). */
+  public record UnidadDetalle(
+      long id,
+      long contratoId,
+      String clave,
+      String manzana,
+      String lote,
+      Long prototipoId,
+      String prototipo,
+      BigDecimal presupuesto,
+      boolean activa) {}
+
   /** Frente (fraccionamiento u obra). */
   public record FrenteInfo(long id, String clave, String nombre, boolean activo) {}
 
@@ -65,6 +78,31 @@ public class EstructuraApi {
   @Transactional(readOnly = true)
   public List<UnidadInfo> unidades(Collection<Long> ids) {
     return ids.isEmpty() ? List.of() : unidades.infos(empresa(), ids);
+  }
+
+  /** Las unidades de obra del contrato en orden natural (M2 antes que M10), sin revisar alcance. */
+  @Transactional(readOnly = true)
+  public List<UnidadDetalle> unidadesDeContrato(long contratoId) {
+    return unidades.unidades(empresa(), contratoId).stream()
+        .map(
+            u ->
+                new UnidadDetalle(
+                    u.id(),
+                    u.contratoId(),
+                    u.clave(),
+                    u.manzana(),
+                    u.lote(),
+                    u.prototipoId(),
+                    u.prototipo(),
+                    u.presupuestoMaterial(),
+                    u.activa()))
+        .toList();
+  }
+
+  /** Contratos de la empresa en curso (todos los estados), sin revisar alcance. */
+  @Transactional(readOnly = true)
+  public List<ContratoInfo> todosLosContratos() {
+    return contratos.infosTodos(empresa());
   }
 
   @Transactional(readOnly = true)

@@ -40,6 +40,12 @@ public final class Permisos {
   public static final String COSTO_VER_TODO = "costo:ver-todo";
 
   /**
+   * Asignar el presupuesto de material de los lotes (en pesos, por lote o por prototipo):
+   * coordinación, dirección y administración.
+   */
+  public static final String PRESUPUESTO_EDITAR = "presupuesto:editar";
+
+  /**
    * Cerrar mes, cerrar conteos físicos, dar de alta almacenes y administrar la estructura:
    * clientes, frentes, contratos, lotes y paquetes.
    */

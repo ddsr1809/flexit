@@ -9,6 +9,7 @@ import {
   useNavigate,
 } from '@tanstack/react-router'
 import { Marco } from '@/components/Marco'
+import { VER_PEDIDOS, VER_REPORTES, VER_REQUISICIONES } from '@/components/menu'
 import { PantallaInicio } from '@/features/inicio/PantallaInicio'
 import { PantallaLogin } from '@/features/sesion/PantallaLogin'
 import { consultaSesion, PERMISOS, puede, puedeAlguno, type Permiso } from '@/sesion/sesion'
@@ -102,6 +103,35 @@ const PantallaConteo = lazyRouteComponent(
 const PantallaCierre = lazyRouteComponent(
   () => import('@/features/inventario/PantallaCierre'),
   'PantallaCierre',
+)
+
+const PantallaRequisiciones = lazyRouteComponent(
+  () => import('@/features/abastecimiento/PantallaRequisiciones'),
+  'PantallaRequisiciones',
+)
+const PantallaRequisicion = lazyRouteComponent(
+  () => import('@/features/abastecimiento/PantallaRequisicion'),
+  'PantallaRequisicion',
+)
+const PantallaCapturaRequisicion = lazyRouteComponent(
+  () => import('@/features/abastecimiento/PantallaCapturaRequisicion'),
+  'PantallaCapturaRequisicion',
+)
+const PantallaPedidos = lazyRouteComponent(
+  () => import('@/features/abastecimiento/PantallaPedidos'),
+  'PantallaPedidos',
+)
+const PantallaPedido = lazyRouteComponent(
+  () => import('@/features/abastecimiento/PantallaPedido'),
+  'PantallaPedido',
+)
+const PantallaReportes = lazyRouteComponent(
+  () => import('@/features/reportes/PantallaReportes'),
+  'PantallaReportes',
+)
+const PantallaCostoContrato = lazyRouteComponent(
+  () => import('@/features/reportes/PantallaCostoContrato'),
+  'PantallaCostoContrato',
 )
 
 interface Contexto {
@@ -392,6 +422,82 @@ const cierre = createRoute({
   component: PantallaCierre,
 })
 
+const requisiciones = createRoute({
+  getParentRoute: () => privado,
+  path: '/requisiciones',
+  beforeLoad: conAlguno(...VER_REQUISICIONES),
+  component: PantallaRequisiciones,
+})
+
+const nuevaRequisicion = createRoute({
+  getParentRoute: () => privado,
+  path: '/requisiciones/nueva',
+  beforeLoad: conPermiso(PERMISOS.requisicionCrear),
+  component: () => <PantallaCapturaRequisicion />,
+})
+
+function RutaRequisicion() {
+  const { id } = requisicion.useParams()
+  return <PantallaRequisicion key={id} id={Number(id)} />
+}
+
+const requisicion = createRoute({
+  getParentRoute: () => privado,
+  path: '/requisiciones/$id',
+  beforeLoad: conAlguno(...VER_REQUISICIONES),
+  component: RutaRequisicion,
+})
+
+function RutaEditarRequisicion() {
+  const { id } = editarRequisicion.useParams()
+  return <PantallaCapturaRequisicion key={id} id={Number(id)} />
+}
+
+const editarRequisicion = createRoute({
+  getParentRoute: () => privado,
+  path: '/requisiciones/$id/editar',
+  beforeLoad: conPermiso(PERMISOS.requisicionCrear),
+  component: RutaEditarRequisicion,
+})
+
+const pedidos = createRoute({
+  getParentRoute: () => privado,
+  path: '/pedidos',
+  beforeLoad: conAlguno(...VER_PEDIDOS),
+  component: PantallaPedidos,
+})
+
+function RutaPedido() {
+  const { id } = pedido.useParams()
+  return <PantallaPedido key={id} id={Number(id)} />
+}
+
+const pedido = createRoute({
+  getParentRoute: () => privado,
+  path: '/pedidos/$id',
+  beforeLoad: conAlguno(...VER_PEDIDOS),
+  component: RutaPedido,
+})
+
+const reportes = createRoute({
+  getParentRoute: () => privado,
+  path: '/reportes',
+  beforeLoad: conAlguno(...VER_REPORTES),
+  component: PantallaReportes,
+})
+
+function RutaCostoContrato() {
+  const { id } = costoContrato.useParams()
+  return <PantallaCostoContrato key={id} id={Number(id)} />
+}
+
+const costoContrato = createRoute({
+  getParentRoute: () => privado,
+  path: '/reportes/contratos/$id',
+  beforeLoad: conAlguno(PERMISOS.costoVerPropio, PERMISOS.costoVerTodo),
+  component: RutaCostoContrato,
+})
+
 const arbol = raiz.addChildren([
   login,
   privado.addChildren([
@@ -419,6 +525,14 @@ const arbol = raiz.addChildren([
     conteos,
     conteo,
     cierre,
+    requisiciones,
+    nuevaRequisicion,
+    requisicion,
+    editarRequisicion,
+    pedidos,
+    pedido,
+    reportes,
+    costoContrato,
   ]),
 ])
 

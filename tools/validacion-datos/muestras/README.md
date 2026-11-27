@@ -16,3 +16,4 @@ varias formas, códigos con "/", lotes ilegibles, apodos, conceptos repetidos), 
 | `muestra-historico-almacen.xlsx` | Entradas, Salidas, Semanal, Faltantes y Préstamos | histórico de almacén (H5) |
 | `muestra-historico-sua.xlsx` | IMSS, ASISTENCIA, SUA ANTERIOR y BD de un mes | histórico del SUA (H5) |
 | `muestra-historico-destajo.xlsx` | Una hoja de pagos del destajo | histórico de destajo (H5) |
+| `muestra-conciliacion.xlsx` | Existencias, Entradas, Salidas y la hoja de un frente con sus `SUMIFS` | conciliación del contrato contra la hoja del frente (H6) |

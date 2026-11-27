@@ -100,7 +100,9 @@ class Presentador {
               paquete == null ? null : paquete.clave() + " " + paquete.nombre(),
               l.clasificacionId(),
               l.clasificacionId() == null ? null : clasificaciones.get(l.clasificacionId()),
-              l.lineaOrigenId()));
+              l.lineaOrigenId(),
+              l.requisicionLineaId(),
+              l.pedidoLineaId()));
       if (costos && l.importe() != null) {
         total = (total == null ? BigDecimal.ZERO : total).add(l.importe());
       }

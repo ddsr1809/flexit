@@ -1,5 +1,6 @@
 import {
   ArrowLeftRight,
+  ChartColumn,
   Boxes,
   CalendarCheck,
   ClipboardCheck,
@@ -31,6 +32,32 @@ interface Entrada {
   hito?: string
 }
 
+/** Quien ve requisiciones (mx.constructora.abastecimiento.aplicacion.Acceso). */
+const VER_REQUISICIONES = [
+  PERMISOS.requisicionCrear,
+  PERMISOS.documentoAutorizar,
+  PERMISOS.valeAutorizar,
+  PERMISOS.movimientoCapturar,
+  PERMISOS.pedidoCrear,
+]
+
+const VER_PEDIDOS = [
+  PERMISOS.pedidoCrear,
+  PERMISOS.movimientoCapturar,
+  PERMISOS.documentoAutorizar,
+  PERMISOS.costoVerTodo,
+]
+
+/** Quien ve algún reporte: costos, inventario valorizado o requisición contra surtido. */
+const VER_REPORTES = [
+  PERMISOS.costoVerPropio,
+  PERMISOS.costoVerTodo,
+  PERMISOS.precioVer,
+  PERMISOS.requisicionCrear,
+  PERMISOS.documentoAutorizar,
+  PERMISOS.pedidoCrear,
+]
+
 const CONSULTA_INVENTARIO = [
   PERMISOS.existenciasVer,
   PERMISOS.movimientoCapturar,
@@ -61,16 +88,10 @@ export const MENU: Entrada[] = [
     ruta: '/requisiciones',
     texto: 'Requisiciones',
     icono: ClipboardList,
-    permiso: PERMISOS.requisicionCrear,
-    hito: 'H6',
+    alguno: VER_REQUISICIONES,
   },
-  {
-    ruta: '/pedidos',
-    texto: 'Pedidos',
-    icono: ShoppingCart,
-    permiso: PERMISOS.pedidoCrear,
-    hito: 'H6',
-  },
+  { ruta: '/pedidos', texto: 'Pedidos', icono: ShoppingCart, alguno: VER_PEDIDOS },
+  { ruta: '/reportes', texto: 'Reportes', icono: ChartColumn, alguno: VER_REPORTES },
   { ruta: '/paquetes', texto: 'Paquetes', icono: Layers, permiso: PERMISOS.estructuraVerTodo },
   { ruta: '/catalogos', texto: 'Catálogos', icono: Library, permiso: PERMISOS.estructuraVerTodo },
   { ruta: '/proveedores', texto: 'Proveedores', icono: Truck, permiso: PERMISOS.catalogoEditar },
@@ -89,6 +110,8 @@ export const MENU: Entrada[] = [
   },
   { ruta: '/usuarios', texto: 'Usuarios', icono: Users, permiso: PERMISOS.usuariosAdministrar },
 ]
+
+export { VER_PEDIDOS, VER_REPORTES, VER_REQUISICIONES }
 
 export const menuPara = (sesion: Sesion) =>
   MENU.filter((entrada) =>
