@@ -66,11 +66,60 @@ export function useSesion() {
   return useSuspenseQuery(consultaSesion).data
 }
 
+/** Qué falta después de la contraseña: nada, el código de la app o darla de alta. */
+export type PasoSegundoFactor = 'codigo' | 'alta'
+
+export type ResultadoLogin =
+  { tipo: 'sesion'; sesion: Sesion } | { tipo: 'segundo-factor'; paso: PasoSegundoFactor }
+
+export type AltaSegundoFactor = components['schemas']['AltaSegundoFactorDto']
+
+/**
+ * Contraseña. El servidor responde 200 con la sesión, o 202 si falta el segundo factor
+ * (administración y dirección): en ese caso todavía no hay sesión.
+ */
 export function useIniciarSesion() {
   const cliente = useQueryClient()
   return useMutation({
-    mutationFn: async (datos: { usuario: string; contrasena: string }) =>
-      exigir(await api.POST('/api/v1/auth/login', { body: datos })),
+    mutationFn: async (datos: { usuario: string; contrasena: string }): Promise<ResultadoLogin> => {
+      const resultado = await api.POST('/api/v1/auth/login', { body: datos })
+      const cuerpo = exigir(resultado)
+      if (resultado.response.status === 202 && cuerpo && 'paso' in cuerpo) {
+        return { tipo: 'segundo-factor', paso: cuerpo.paso as PasoSegundoFactor }
+      }
+      return { tipo: 'sesion', sesion: cuerpo as Sesion }
+    },
+    onSuccess: (resultado) => {
+      if (resultado.tipo === 'sesion') {
+        cliente.setQueryData(consultaSesion.queryKey, resultado.sesion)
+      }
+    },
+  })
+}
+
+/** Código de la app del teléfono (paso 'codigo'). */
+export function useVerificarSegundoFactor() {
+  const cliente = useQueryClient()
+  return useMutation({
+    mutationFn: async (codigo: string) =>
+      exigir(await api.POST('/api/v1/auth/segundo-factor', { body: { codigo } })),
+    onSuccess: (sesion) => cliente.setQueryData(consultaSesion.queryKey, sesion),
+  })
+}
+
+/** Secreto nuevo para dar de alta el segundo factor (paso 'alta'). */
+export function useAltaSegundoFactor() {
+  return useMutation({
+    mutationFn: async () => exigir(await api.POST('/api/v1/auth/segundo-factor/alta')),
+  })
+}
+
+/** Primer código: confirma el alta e inicia la sesión. */
+export function useConfirmarAltaSegundoFactor() {
+  const cliente = useQueryClient()
+  return useMutation({
+    mutationFn: async (codigo: string) =>
+      exigir(await api.POST('/api/v1/auth/segundo-factor/alta/confirmar', { body: { codigo } })),
     onSuccess: (sesion) => cliente.setQueryData(consultaSesion.queryKey, sesion),
   })
 }

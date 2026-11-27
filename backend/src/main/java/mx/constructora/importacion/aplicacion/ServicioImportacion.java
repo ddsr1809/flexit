@@ -906,6 +906,40 @@ public class ServicioImportacion {
   }
 
   /**
+   * Cómo se muestra un registro (el mismo texto que {@link #destinos}). Lo usa el ensayo general
+   * (H7) para llevar las decisiones de la cuarentena de preproducción a producción por nombre, no
+   * por id, que cambia de una base a otra.
+   */
+  @PreAuthorize(ADMINISTRAR)
+  @Transactional(readOnly = true)
+  public DestinoPosible destino(String entidad, long id) {
+    if (!ENTIDADES.contains(entidad)) {
+      throw ErrorNegocio.invalido("ENTIDAD_DESCONOCIDA", "No hay registros de " + entidad);
+    }
+    if (entidad.equals("persona") && !Autorizacion.tiene(Permisos.PERSONAS_ADMINISTRAR)) {
+      throw new AccessDeniedException("personas");
+    }
+    ContextoBd contexto = contexto(Map.of());
+    String texto;
+    if (entidad.equals("unidad_obra")) {
+      Map<Long, String> frentes = new LinkedHashMap<>();
+      contexto.frentes().forEach(f -> frentes.put(f.id(), f.nombre()));
+      texto =
+          contexto.unidades().stream()
+              .filter(u -> u.id() == id)
+              .findFirst()
+              .map(u -> u.clave() + " · " + frentes.getOrDefault(u.frenteId(), "—"))
+              .orElse(null);
+    } else {
+      texto = contexto.nombre(entidad, id);
+    }
+    if (texto == null) {
+      throw ErrorNegocio.noEncontrado("DESTINO_NO_ENCONTRADO", "No existe el registro");
+    }
+    return new DestinoPosible(id, texto);
+  }
+
+  /**
    * Registros a los que se puede ligar un nombre: para el selector de "elegir otro" en la
    * cuarentena. Busca por palabras sueltas, sin acentos.
    */

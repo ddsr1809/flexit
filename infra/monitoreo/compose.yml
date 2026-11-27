@@ -1,0 +1,23 @@
+# Uptime Kuma: corre en PREPRODUCCIÓN y vigila producción desde otro servidor, así avisa aunque se
+# caiga el servidor de producción completo (ADR-013). No se publica a internet: escucha en
+# 127.0.0.1 y se entra por Tailscale con `tailscale serve` (docs/runbooks/monitoreo.md).
+# Vive en /opt/monitoreo; release.yml lo deja al día con cada despliegue a preproducción.
+name: monitoreo
+
+services:
+  kuma:
+    image: louislam/uptime-kuma:2
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3001:3001"
+    volumes:
+      - kuma_datos:/app/data
+    deploy:
+      resources:
+        limits: { memory: 512m }
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+volumes:
+  kuma_datos: {}

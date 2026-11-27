@@ -1,6 +1,8 @@
 #cloud-config
 # Primer arranque del servidor. Deja: usuario deploy con llave, SSH solo por Tailscale,
-# firewall, parches automáticos, Docker y /mnt/datos para PostgreSQL.
+# firewall, parches automáticos, Docker, restic y /mnt/datos para PostgreSQL y respaldos.
+# Los timers de respaldo y vigilancia los instala infra/scripts/instalar-operacion.sh (H7), que
+# viaja con cada despliegue: así un servidor ya creado también los recibe.
 # Es una plantilla de Terraform: $${…} lo interpreta Terraform. En bash se usa $VAR, sin llaves.
 
 hostname: ${nombre}
@@ -15,6 +17,8 @@ packages:
   - fail2ban
   - unattended-upgrades
   - jq
+  - restic
+  - python3
 
 users:
   - name: deploy
@@ -58,10 +62,13 @@ write_files:
       grep -q 'LABEL=datos' /etc/fstab || echo 'LABEL=datos /mnt/datos ext4 defaults,nofail,noatime 0 2' >> /etc/fstab
       mount -a
 %{ endif ~}
-      mkdir -p /mnt/datos/postgres
+      mkdir -p /mnt/datos/postgres /mnt/datos/respaldos
       # El contenedor de PostgreSQL corre con el usuario 999.
       chown 999:999 /mnt/datos/postgres
       chmod 700 /mnt/datos/postgres
+      # Trabajo de respaldo y restauración (se vacía al terminar cada uno).
+      chown deploy:deploy /mnt/datos/respaldos
+      chmod 700 /mnt/datos/respaldos
 
 runcmd:
   # Docker desde el repositorio oficial

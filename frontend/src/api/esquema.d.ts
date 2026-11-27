@@ -13,7 +13,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Iniciar sesión */
+        /** Iniciar sesión. 200 con la sesión; 202 si falta el segundo factor: con paso=codigo se sigue en /auth/segundo-factor y con paso=alta en /auth/segundo-factor/alta */
         post: operations["iniciarSesion"];
         delete?: never;
         options?: never;
@@ -50,6 +50,74 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/segundo-factor": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Código del segundo factor después de la contraseña (login respondió 202 codigo) */
+        post: operations["verificarSegundoFactor"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/segundo-factor/alta": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Secreto nuevo para dar de alta el segundo factor (login respondió 202 alta) */
+        post: operations["iniciarAltaSegundoFactor"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/segundo-factor/alta/confirmar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Primer código: confirma el alta e inicia la sesión */
+        post: operations["confirmarAltaSegundoFactor"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/usuarios/{id}/segundo-factor": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Borrar el segundo factor de otro usuario (perdió el teléfono) */
+        delete: operations["restablecerSegundoFactor"];
         options?: never;
         head?: never;
         patch?: never;
@@ -812,6 +880,23 @@ export interface paths {
         };
         /** Registros a los que se puede ligar un nombre del Excel (50 como máximo) */
         get: operations["destinosPosibles"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/importaciones/destinos/{entidad}/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Cómo se muestra un registro, con el mismo texto que destinosPosibles (el ensayo general lleva así las decisiones de un entorno a otro) */
+        get: operations["destinoPorId"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1860,6 +1945,19 @@ export interface components {
             usuario: string;
             contrasena: string;
         };
+        PasoSegundoFactorDto: {
+            /** @description codigo o alta */
+            paso: string;
+        };
+        SolicitudCodigo: {
+            codigo: string;
+        };
+        AltaSegundoFactorDto: {
+            /** @description Base32, para capturarlo a mano */
+            secreto: string;
+            /** @description otpauth://… para el código QR */
+            uri: string;
+        };
         RolDto: {
             clave: string;
             nombre: string;
@@ -1895,6 +1993,8 @@ export interface components {
             correo?: string;
             activo: boolean;
             roles: components["schemas"]["RolDto"][];
+            /** @description Tiene segundo factor confirmado */
+            segundoFactor: boolean;
         };
         CatalogoRolDto: {
             clave: string;
@@ -3600,13 +3700,22 @@ export interface operations {
             };
         };
         responses: {
-            /** @description OK */
+            /** @description Sesión iniciada */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": components["schemas"]["SesionDto"];
+                };
+            };
+            /** @description Contraseña correcta; falta el segundo factor */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PasoSegundoFactorDto"];
                 };
             };
         };
@@ -3648,6 +3757,94 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["CsrfDto"];
                 };
+            };
+        };
+    };
+    verificarSegundoFactor: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SolicitudCodigo"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SesionDto"];
+                };
+            };
+        };
+    };
+    iniciarAltaSegundoFactor: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AltaSegundoFactorDto"];
+                };
+            };
+        };
+    };
+    confirmarAltaSegundoFactor: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SolicitudCodigo"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SesionDto"];
+                };
+            };
+        };
+    };
+    restablecerSegundoFactor: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -5100,6 +5297,29 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DestinoPosible"][];
+                };
+            };
+        };
+    };
+    destinoPorId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entidad: string;
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DestinoPosible"];
                 };
             };
         };

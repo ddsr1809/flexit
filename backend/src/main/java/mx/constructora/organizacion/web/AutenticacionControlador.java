@@ -1,7 +1,9 @@
 package mx.constructora.organizacion.web;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,9 +13,12 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 import mx.constructora.compartido.ErrorNegocio;
 import mx.constructora.organizacion.Rol;
+import mx.constructora.organizacion.aplicacion.ServicioSegundoFactor;
+import mx.constructora.organizacion.aplicacion.ServicioSegundoFactor.Paso;
 import mx.constructora.organizacion.aplicacion.ServicioUsuarios;
 import mx.constructora.organizacion.aplicacion.UsuarioSesion;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
@@ -21,10 +26,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextHolderStrategy;
-import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -76,29 +77,49 @@ class AutenticacionControlador {
     }
   }
 
+  /**
+   * Falta el segundo factor: {@code codigo} (ya lo tiene) o {@code alta} (tiene que darlo de alta).
+   */
+  record PasoSegundoFactorDto(
+      @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "codigo o alta")
+          String paso) {}
+
   /** Token CSRF y el encabezado en que se devuelve. */
   record CsrfDto(
       @Schema(requiredMode = Schema.RequiredMode.REQUIRED) String token,
       @Schema(requiredMode = Schema.RequiredMode.REQUIRED) String encabezado) {}
 
   private final AuthenticationManager autenticacion;
-  private final SecurityContextRepository repositorioContexto;
   private final ServicioUsuarios usuarios;
-  private final SecurityContextHolderStrategy estrategia =
-      SecurityContextHolder.getContextHolderStrategy();
+  private final ServicioSegundoFactor segundoFactor;
+  private final Sesiones sesiones;
 
   AutenticacionControlador(
       AuthenticationManager autenticacion,
-      SecurityContextRepository repositorioContexto,
-      ServicioUsuarios usuarios) {
+      ServicioUsuarios usuarios,
+      ServicioSegundoFactor segundoFactor,
+      Sesiones sesiones) {
     this.autenticacion = autenticacion;
-    this.repositorioContexto = repositorioContexto;
     this.usuarios = usuarios;
+    this.segundoFactor = segundoFactor;
+    this.sesiones = sesiones;
   }
 
   @PostMapping("/login")
-  @Operation(operationId = "iniciarSesion", summary = "Iniciar sesión")
-  SesionDto login(
+  @Operation(
+      operationId = "iniciarSesion",
+      summary =
+          "Iniciar sesión. 200 con la sesión; 202 si falta el segundo factor: con paso=codigo se"
+              + " sigue en /auth/segundo-factor y con paso=alta en /auth/segundo-factor/alta")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Sesión iniciada",
+      content = @Content(schema = @Schema(implementation = SesionDto.class)))
+  @ApiResponse(
+      responseCode = "202",
+      description = "Contraseña correcta; falta el segundo factor",
+      content = @Content(schema = @Schema(implementation = PasoSegundoFactorDto.class)))
+  ResponseEntity<?> login(
       @Valid @RequestBody SolicitudLogin solicitud,
       HttpServletRequest peticion,
       HttpServletResponse respuesta) {
@@ -121,17 +142,16 @@ class AutenticacionControlador {
       throw new ErrorNegocio(
           HttpStatus.UNAUTHORIZED, "CREDENCIALES_INVALIDAS", "Usuario o contraseña incorrectos.");
     }
-    usuarios.registrarIntento(solicitud.usuario(), true);
-
-    // Identificador de sesión nuevo al autenticarse (fijación de sesión).
-    if (peticion.getSession(false) != null) {
-      peticion.changeSessionId();
+    UsuarioSesion usuario = (UsuarioSesion) resultado.getPrincipal();
+    Paso paso = segundoFactor.pasoPara(usuario);
+    if (paso != Paso.NINGUNO) {
+      // Los intentos fallidos no se reinician hasta que el código también sea correcto.
+      sesiones.dejarPendiente(usuario, paso, peticion, respuesta);
+      return ResponseEntity.accepted().body(new PasoSegundoFactorDto(paso.clave()));
     }
-    SecurityContext contexto = estrategia.createEmptyContext();
-    contexto.setAuthentication(resultado);
-    estrategia.setContext(contexto);
-    repositorioContexto.saveContext(contexto, peticion, respuesta);
-    return SesionDto.de((UsuarioSesion) resultado.getPrincipal());
+    usuarios.registrarIntento(solicitud.usuario(), true);
+    sesiones.iniciar(resultado, peticion, respuesta);
+    return ResponseEntity.ok(SesionDto.de(usuario));
   }
 
   @GetMapping("/yo")

@@ -1,0 +1,166 @@
+name: deploy-prod
+# Producción recibe solo lo que una persona aprobó: publicar un release con etiqueta vX.Y.Z sobre
+# un commit de main es la aprobación, y solo cuenta si quien lo publica está en la variable
+# APROBADORES del repositorio (lista JSON de usuarios de GitHub).
+# La imagen es la misma que ya quedó sana en preproducción (etiqueta preproduccion-<sha>, release.yml).
+# Antes de migrar se saca un respaldo "antes-de-desplegar"; si la versión nueva no queda sana en
+# 2 minutos, desplegar.sh regresa sola a la anterior. Ver docs/runbooks/desplegar.md.
+#
+# Para revertir o volver a desplegar una versión: Actions › deploy-prod › Run workflow con su SHA.
+# (La reversión más rápida, en segundos, es revertir.sh en el servidor: docs/runbooks/revertir.md.)
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: SHA completo (40 caracteres) de una versión que ya quedó sana en preproducción
+        required: true
+        type: string
+
+concurrency:
+  group: produccion
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  IMAGEN: ghcr.io/${{ github.repository }}
+
+jobs:
+  aprobacion:
+    name: Aprobación y versión
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      packages: read
+    outputs:
+      version: ${{ steps.version.outputs.sha }}
+      etiqueta: ${{ steps.version.outputs.etiqueta }}
+    steps:
+      - name: Quien lo pide está en APROBADORES
+        env:
+          APROBADORES: ${{ vars.APROBADORES }}
+          ACTOR: ${{ github.actor }}
+        run: |
+          if ! jq -e --arg a "$ACTOR" 'type == "array" and index($a) != null' <<<"${APROBADORES:-[]}" >/dev/null; then
+            echo "::error::$ACTOR no está en la variable APROBADORES: producción no se despliega."
+            exit 1
+          fi
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - id: version
+        env:
+          EVENTO: ${{ github.event_name }}
+          ETIQUETA: ${{ github.event.release.tag_name }}
+          ENTRADA: ${{ inputs.version }}
+        run: |
+          if [[ $EVENTO == release ]]; then
+            if [[ ! $ETIQUETA =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              echo "::error::La etiqueta $ETIQUETA no tiene la forma vX.Y.Z"; exit 1
+            fi
+            sha=$(git rev-list -n 1 "$ETIQUETA")
+            if ! git merge-base --is-ancestor "$sha" origin/main; then
+              echo "::error::$ETIQUETA no apunta a un commit de main"; exit 1
+            fi
+          else
+            sha=$ENTRADA
+            ETIQUETA=
+          fi
+          if [[ ! $sha =~ ^[0-9a-f]{40}$ ]]; then
+            echo "::error::La versión tiene que ser un SHA completo de 40 caracteres"; exit 1
+          fi
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          echo "etiqueta=$ETIQUETA" >> "$GITHUB_OUTPUT"
+          echo "Versión $sha ${ETIQUETA:+($ETIQUETA)}"
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: La imagen ya quedó sana en preproducción
+        env:
+          SHA: ${{ steps.version.outputs.sha }}
+        run: |
+          if ! docker buildx imagetools inspect "${IMAGEN,,}:preproduccion-$SHA" >/dev/null 2>&1; then
+            echo "::error::La versión $SHA no pasó por preproducción (falta la etiqueta preproduccion-$SHA)."
+            exit 1
+          fi
+
+  produccion:
+    name: Desplegar en producción
+    needs: aprobacion
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: produccion
+      url: ${{ vars.PROD_URL }}
+    permissions:
+      contents: read
+      packages: write # para etiquetar la imagen con la versión publicada
+    env:
+      VERSION: ${{ needs.aprobacion.outputs.version }}
+      ETIQUETA: ${{ needs.aprobacion.outputs.etiqueta }}
+      HOST: ${{ vars.PROD_HOST }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.aprobacion.outputs.version }}
+      - uses: tailscale/github-action@064b10558093f38325e838ddea35486bdc6b1d5c # v4.4.0
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+      - name: Llave SSH
+        run: |
+          install -m 700 -d ~/.ssh
+          echo "${{ secrets.PROD_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
+      - name: Copiar la definición del entorno y la operación
+        run: infra/scripts/copiar-entorno.sh "$HOST"
+      - name: Respaldo antes de desplegar y despliegue
+        run: |
+          # shellcheck disable=SC2029  # VERSION se expande aquí a propósito
+          echo "${{ secrets.GITHUB_TOKEN }}" | ssh "deploy@$HOST" "
+            set -e
+            cd /opt/constructora
+            test -f respaldo.env || { echo '::error::Producción no tiene respaldo.env: no se despliega sin respaldos'; exit 1; }
+            if [ -s .version ]; then ./respaldo.sh antes-de-desplegar </dev/null; else echo 'Primer despliegue: no hay base que respaldar'; fi
+            docker login ghcr.io -u '${{ github.actor }}' --password-stdin >/dev/null
+            s=0; ./desplegar.sh '$VERSION' || s=\$?
+            docker logout ghcr.io >/dev/null
+            exit \$s"
+      - name: Comprobar desde internet que responde la versión nueva
+        run: |
+          for _ in $(seq 1 20); do
+            if curl -fsS "${{ vars.PROD_URL }}/api/v1/version" | jq -e --arg v "$VERSION" '.version == $v' >/dev/null; then
+              echo "Producción sirve $VERSION"; exit 0
+            fi
+            sleep 3
+          done
+          echo "::error::Producción no responde con la versión $VERSION"; exit 1
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Etiquetar la imagen (produccion y la versión publicada)
+        run: |
+          imagen="${IMAGEN,,}"
+          docker buildx imagetools create -t "$imagen:produccion" "$imagen:$VERSION"
+          if [[ -n $ETIQUETA ]]; then
+            docker buildx imagetools create -t "$imagen:$ETIQUETA" "$imagen:$VERSION"
+          fi
+      - name: Resumen
+        if: always()
+        run: |
+          {
+            echo "### Producción"
+            echo "- Versión: \`$VERSION\` ${ETIQUETA:+($ETIQUETA)}"
+            echo "- Aprobó: ${{ github.actor }}"
+            echo "- Estado del job: ${{ job.status }}"
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -18,6 +18,12 @@ const MENSAJES: Record<string, string> = {
   USUARIO_DUPLICADO: 'Ya existe un usuario con ese nombre.',
   ROL_DESCONOCIDO: 'Uno de los roles elegidos no existe.',
   CONTRASENA_CORTA: 'La contraseña debe tener al menos 10 caracteres.',
+  // Segundo factor (H7)
+  CODIGO_INVALIDO: 'El código no es válido o ya se usó. Escribe el que muestra ahora la app.',
+  SEGUNDO_FACTOR_VENCIDO: 'Pasaron más de 5 minutos. Vuelve a escribir tu usuario y contraseña.',
+  SEGUNDO_FACTOR_ACTIVO: 'Ya tienes el segundo factor activo: escribe el código de la app.',
+  SEGUNDO_FACTOR_PROPIO: 'Tu propio segundo factor lo restablece otra persona de administración.',
+  SIN_SEGUNDO_FACTOR: 'Ese usuario no tiene segundo factor dado de alta.',
   VALIDACION: 'Revisa los campos marcados.',
   VERSION_DESACTUALIZADA:
     'Alguien más guardó un cambio en este registro. Se recargó: revisa y vuelve a guardar.',

@@ -17,7 +17,7 @@
         "tags": [
           "Sesión"
         ],
-        "summary": "Iniciar sesión",
+        "summary": "Iniciar sesión. 200 con la sesión; 202 si falta el segundo factor: con paso=codigo se sigue en /auth/segundo-factor y con paso=alta en /auth/segundo-factor/alta",
         "operationId": "iniciarSesion",
         "requestBody": {
           "content": {
@@ -31,11 +31,21 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Sesión iniciada",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SesionDto"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Contraseña correcta; falta el segundo factor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PasoSegundoFactorDto"
                 }
               }
             }
@@ -81,6 +91,114 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/segundo-factor": {
+      "post": {
+        "tags": [
+          "Sesión"
+        ],
+        "summary": "Código del segundo factor después de la contraseña (login respondió 202 codigo)",
+        "operationId": "verificarSegundoFactor",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SolicitudCodigo"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SesionDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/segundo-factor/alta": {
+      "post": {
+        "tags": [
+          "Sesión"
+        ],
+        "summary": "Secreto nuevo para dar de alta el segundo factor (login respondió 202 alta)",
+        "operationId": "iniciarAltaSegundoFactor",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AltaSegundoFactorDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/segundo-factor/alta/confirmar": {
+      "post": {
+        "tags": [
+          "Sesión"
+        ],
+        "summary": "Primer código: confirma el alta e inicia la sesión",
+        "operationId": "confirmarAltaSegundoFactor",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SolicitudCodigo"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SesionDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/usuarios/{id}/segundo-factor": {
+      "delete": {
+        "tags": [
+          "Sesión"
+        ],
+        "summary": "Borrar el segundo factor de otro usuario (perdió el teléfono)",
+        "operationId": "restablecerSegundoFactor",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
           }
         }
       }
@@ -2355,6 +2473,46 @@
                   "items": {
                     "$ref": "#/components/schemas/DestinoPosible"
                   }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/importaciones/destinos/{entidad}/{id}": {
+      "get": {
+        "tags": [
+          "Migración"
+        ],
+        "summary": "Cómo se muestra un registro, con el mismo texto que destinosPosibles (el ensayo general lleva así las decisiones de un entorno a otro)",
+        "operationId": "destinoPorId",
+        "parameters": [
+          {
+            "name": "entidad",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DestinoPosible"
                 }
               }
             }
@@ -5418,6 +5576,48 @@
           "usuario"
         ]
       },
+      "PasoSegundoFactorDto": {
+        "type": "object",
+        "properties": {
+          "paso": {
+            "type": "string",
+            "description": "codigo o alta"
+          }
+        },
+        "required": [
+          "paso"
+        ]
+      },
+      "SolicitudCodigo": {
+        "type": "object",
+        "properties": {
+          "codigo": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 0
+          }
+        },
+        "required": [
+          "codigo"
+        ]
+      },
+      "AltaSegundoFactorDto": {
+        "type": "object",
+        "properties": {
+          "secreto": {
+            "type": "string",
+            "description": "Base32, para capturarlo a mano"
+          },
+          "uri": {
+            "type": "string",
+            "description": "otpauth://… para el código QR"
+          }
+        },
+        "required": [
+          "secreto",
+          "uri"
+        ]
+      },
       "RolDto": {
         "type": "object",
         "properties": {
@@ -5555,6 +5755,10 @@
             "items": {
               "$ref": "#/components/schemas/RolDto"
             }
+          },
+          "segundoFactor": {
+            "type": "boolean",
+            "description": "Tiene segundo factor confirmado"
           }
         },
         "required": [
@@ -5562,6 +5766,7 @@
           "id",
           "nombre",
           "roles",
+          "segundoFactor",
           "usuario"
         ]
       },

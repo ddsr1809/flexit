@@ -9,3 +9,6 @@ springdoc:
     enabled: true
 app:
   entorno: pruebas
+  # Las pruebas entran como administración sin código; SegundoFactorTest lo prende.
+  segundo-factor:
+    exigir: false

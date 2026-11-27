@@ -12,6 +12,7 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 import java.util.Set;
 import mx.constructora.organizacion.Rol;
+import mx.constructora.organizacion.aplicacion.ServicioSegundoFactor;
 import mx.constructora.organizacion.aplicacion.ServicioUsuarios;
 import mx.constructora.organizacion.aplicacion.ServicioUsuarios.NuevoUsuario;
 import mx.constructora.organizacion.infraestructura.RepositorioUsuarios.FilaUsuario;
@@ -37,16 +38,21 @@ class UsuariosControlador {
       String correo,
       @Schema(requiredMode = Schema.RequiredMode.REQUIRED) boolean activo,
       @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-          List<AutenticacionControlador.RolDto> roles) {
+          List<AutenticacionControlador.RolDto> roles,
+      @Schema(
+              requiredMode = Schema.RequiredMode.REQUIRED,
+              description = "Tiene segundo factor confirmado")
+          boolean segundoFactor) {
 
-    static UsuarioDto de(FilaUsuario fila) {
+    static UsuarioDto de(FilaUsuario fila, boolean segundoFactor) {
       return new UsuarioDto(
           fila.id(),
           fila.usuario(),
           fila.nombre(),
           fila.correo(),
           fila.activo(),
-          fila.roles().stream().map(AutenticacionControlador.RolDto::de).toList());
+          fila.roles().stream().map(AutenticacionControlador.RolDto::de).toList(),
+          segundoFactor);
     }
   }
 
@@ -69,15 +75,19 @@ class UsuariosControlador {
       @Schema(requiredMode = Schema.RequiredMode.REQUIRED) List<String> permisos) {}
 
   private final ServicioUsuarios servicio;
+  private final ServicioSegundoFactor segundoFactor;
 
-  UsuariosControlador(ServicioUsuarios servicio) {
+  UsuariosControlador(ServicioUsuarios servicio, ServicioSegundoFactor segundoFactor) {
     this.servicio = servicio;
+    this.segundoFactor = segundoFactor;
   }
 
   @GetMapping
   @Operation(operationId = "listarUsuarios", summary = "Usuarios de la empresa")
   List<UsuarioDto> listar() {
-    return servicio.listar().stream().map(UsuarioDto::de).toList();
+    List<FilaUsuario> filas = servicio.listar();
+    Set<Long> conSegundoFactor = segundoFactor.conSegundoFactor();
+    return filas.stream().map(f -> UsuarioDto.de(f, conSegundoFactor.contains(f.id()))).toList();
   }
 
   @PostMapping
@@ -92,7 +102,7 @@ class UsuariosControlador {
                 solicitud.correo(),
                 solicitud.contrasena(),
                 solicitud.roles()));
-    return UsuarioDto.de(creado);
+    return UsuarioDto.de(creado, false);
   }
 
   @GetMapping("/roles")

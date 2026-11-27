@@ -70,3 +70,10 @@ cambió la API, `docs/estado.md` actualizado, PR que cierra el issue.
   existencias, permisos, RLS o migraciones.
 - Si una decisión no está en los docs, pregunta; no inventes reglas de negocio.
 - Muestras de datos: solo `tools/validacion-datos/muestras/` (anonimizadas).
+
+## Producción (H7)
+- Nada se despliega a producción sin un release aprobado (`APROBADORES`) de una imagen que ya quedó
+  sana en preproducción; antes de migrar se respalda (ADR-013, `docs/runbooks/desplegar.md`).
+- Un cambio en `infra/scripts/` o `infra/systemd/` llega a los servidores con el siguiente
+  despliegue (`copiar-entorno.sh`); se prueba primero en preproducción.
+- Datos reales (Excel, `decisiones.json`, volcados) nunca en el repositorio ni en preproducción.

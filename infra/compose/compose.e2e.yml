@@ -42,6 +42,8 @@ services:
       APP_INICIAL_EMPRESA: Constructora de prueba
       APP_INICIAL_USUARIO: admin
       APP_INICIAL_CONTRASENA: admin-e2e-2026
+      # El e2e entra como admin sin código; el segundo factor se prueba en SegundoFactorTest.
+      APP_SEGUNDO_FACTOR_EXIGIR: "false"
     ports: ["8080:8080"]
     # CI corre primero `run --rm migrar` y después levanta la app (ver ci.yml).
     depends_on:

@@ -1,0 +1,11 @@
+[Unit]
+Description=Constructora · latido a Uptime Kuma (disco, memoria, contenedores, respaldo)
+After=docker.service
+
+[Service]
+Type=oneshot
+User=deploy
+Group=deploy
+WorkingDirectory=/opt/constructora
+ExecStart=/opt/constructora/vigilar.sh
+TimeoutStartSec=2min

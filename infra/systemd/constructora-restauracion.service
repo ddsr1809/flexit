@@ -1,0 +1,13 @@
+[Unit]
+Description=Constructora · prueba mensual de restauración en una base temporal
+Wants=network-online.target docker.service
+After=network-online.target docker.service
+
+[Service]
+Type=oneshot
+User=deploy
+Group=deploy
+WorkingDirectory=/opt/constructora
+ExecStart=/opt/constructora/restaurar.sh prueba latest
+Nice=10
+TimeoutStartSec=3h

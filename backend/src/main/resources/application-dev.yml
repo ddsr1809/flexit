@@ -13,6 +13,10 @@ app:
     modo: migrar
     usuario: ${DB_MIGRADOR_USUARIO:migrador}
     contrasena: ${DB_MIGRADOR_CONTRASENA:migrador-local}
+  # Segundo factor opcional en local; la llave solo sirve en la laptop (H7).
+  segundo-factor:
+    exigir: false
+    llave: ZGVzYXJyb2xsby1sb2NhbC1uby1zZS11c2EtZnVlcmE=
   inicial:
     empresa: RM Alemán (desarrollo)
     usuario: admin

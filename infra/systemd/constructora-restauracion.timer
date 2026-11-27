@@ -1,0 +1,9 @@
+[Unit]
+Description=Constructora · prueba de restauración el primer domingo de cada mes a las 04:00
+
+[Timer]
+OnCalendar=Sun *-*-01..07 04:00:00 America/Mexico_City
+Persistent=true
+
+[Install]
+WantedBy=timers.target

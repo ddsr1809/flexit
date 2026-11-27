@@ -1,0 +1,6 @@
+# Copiar a terraform.tfvars (ignorado por Git) y llenar.
+# La llave de producción es otra: quien tiene la de preproducción no entra a producción.
+llave_ssh_publica  = "ssh-ed25519 AAAA... deploy@constructora-prod"
+cloudflare_zona_id = "0123456789abcdef0123456789abcdef"
+dominio            = "sistema.constructora.mx"
+# tailscale_clave se pasa por TF_VAR_tailscale_clave para que no quede en disco.

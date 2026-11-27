@@ -166,6 +166,16 @@ class ImportacionesControlador {
     return servicio.destinos(entidad, q, frenteId);
   }
 
+  @GetMapping("/importaciones/destinos/{entidad}/{id}")
+  @Operation(
+      operationId = "destinoPorId",
+      summary =
+          "Cómo se muestra un registro, con el mismo texto que destinosPosibles (el ensayo general"
+              + " lleva así las decisiones de un entorno a otro)")
+  DestinoPosible destino(@PathVariable String entidad, @PathVariable long id) {
+    return servicio.destino(entidad, id);
+  }
+
   @GetMapping("/alias")
   @Operation(operationId = "listarAlias", summary = "Cómo se tradujo cada nombre del Excel")
   List<AliasCarga> alias(

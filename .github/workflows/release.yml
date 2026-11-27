@@ -1,6 +1,7 @@
 name: release
 # Cada fusión a main con CI en verde: imagen en GHCR etiquetada con el SHA, escaneo con Trivy y
-# despliegue automático a preproducción. Producción recibe la misma imagen en H7 (deploy-prod.yml).
+# despliegue automático a preproducción. Producción recibe la misma imagen al publicar un release
+# (deploy-prod.yml), y solo si esa imagen ya quedó sana aquí.
 on:
   workflow_run:
     workflows: [ci]
@@ -76,7 +77,7 @@ jobs:
       url: ${{ vars.PREPROD_URL }}
     permissions:
       contents: read
-      packages: read
+      packages: write # para marcar la imagen como sana en preproducción
     env:
       VERSION: ${{ needs.imagen.outputs.version }}
       HOST: ${{ vars.PREPROD_HOST }}
@@ -96,12 +97,9 @@ jobs:
           echo "${{ secrets.PREPROD_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
-      - name: Copiar la definición del entorno (viaja con el código)
-        run: |
-          chmod +x infra/scripts/*.sh infra/db/init/*.sh
-          scp -p infra/compose/compose.yml infra/compose/Caddyfile infra/scripts/desplegar.sh \
-            infra/scripts/revertir.sh "deploy@$HOST:/opt/constructora/"
-          scp -p infra/db/init/*.sh "deploy@$HOST:/opt/constructora/db-init/"
+      - name: Copiar la definición del entorno (viaja con el código) y la operación
+        # Scripts, timers de respaldo y latido, y Uptime Kuma, que vigila producción desde aquí.
+        run: infra/scripts/copiar-entorno.sh "$HOST" --monitoreo
       - name: Desplegar
         run: |
           # shellcheck disable=SC2029  # VERSION se expande aquí a propósito
@@ -117,3 +115,14 @@ jobs:
             sleep 3
           done
           echo "::error::Preproducción no responde con la versión $VERSION"; exit 1
+      # deploy-prod.yml solo despliega imágenes con esta etiqueta: lo que llega a producción es
+      # exactamente lo que ya quedó sano aquí.
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Marcar la imagen como sana en preproducción
+        run: |
+          imagen="${IMAGEN,,}"
+          docker buildx imagetools create -t "$imagen:preproduccion-$VERSION" "$imagen:$VERSION"

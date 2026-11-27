@@ -9,6 +9,8 @@ import { Aviso } from '@/components/ui/aviso'
 import { Boton } from '@/components/ui/boton'
 import { Campo } from '@/components/ui/campo'
 import { Tarjeta } from '@/components/ui/tarjeta'
+import type { components } from '@/api/esquema'
+import { useSesion } from '@/sesion/sesion'
 
 const esquema = z.object({
   usuario: z
@@ -86,6 +88,7 @@ export function PantallaUsuarios() {
               <th className="px-4 py-3 font-medium">Nombre</th>
               <th className="px-4 py-3 font-medium">Roles</th>
               <th className="px-4 py-3 font-medium">Estado</th>
+              <th className="px-4 py-3 font-medium">Segundo factor</th>
             </tr>
           </thead>
           <tbody>
@@ -95,6 +98,9 @@ export function PantallaUsuarios() {
                 <td className="px-4 py-3">{u.nombre}</td>
                 <td className="px-4 py-3">{u.roles.map((r) => r.nombre).join(', ')}</td>
                 <td className="px-4 py-3">{u.activo ? 'Activo' : 'Inactivo'}</td>
+                <td className="px-4 py-3">
+                  <SegundoFactor usuario={u} />
+                </td>
               </tr>
             ))}
           </tbody>
@@ -158,6 +164,67 @@ export function PantallaUsuarios() {
           </div>
         </form>
       </Tarjeta>
+    </div>
+  )
+}
+
+type Usuario = components['schemas']['UsuarioDto']
+
+/**
+ * Si el usuario tiene segundo factor y, si perdió el teléfono, el botón para restablecerlo: en su
+ * siguiente inicio de sesión lo vuelve a dar de alta. El propio lo restablece otra persona.
+ */
+function SegundoFactor({ usuario }: { usuario: Usuario }) {
+  const sesion = useSesion()
+  const cliente = useQueryClient()
+  const [confirmando, setConfirmando] = useState(false)
+  const restablecer = useMutation({
+    mutationFn: async () =>
+      exigir(
+        await api.DELETE('/api/v1/usuarios/{id}/segundo-factor', {
+          params: { path: { id: usuario.id } },
+        }),
+      ),
+    onSuccess: () => {
+      setConfirmando(false)
+      void cliente.invalidateQueries({ queryKey: consultaUsuarios })
+    },
+  })
+
+  if (!usuario.segundoFactor) {
+    return (
+      <span className="text-tenue">
+        {restablecer.isSuccess ? 'Restablecido: lo da de alta al entrar' : 'Sin dar de alta'}
+      </span>
+    )
+  }
+  if (sesion?.usuarioId === usuario.id) return <span>Activo</span>
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <span>Activo</span>
+      {confirmando ? (
+        <>
+          <Boton
+            variante="secundario"
+            disabled={restablecer.isPending}
+            onClick={() => restablecer.mutate()}
+          >
+            Sí, restablecer
+          </Boton>
+          <Boton variante="fantasma" onClick={() => setConfirmando(false)}>
+            No
+          </Boton>
+        </>
+      ) : (
+        <Boton
+          variante="fantasma"
+          onClick={() => setConfirmando(true)}
+          aria-label={`Restablecer el segundo factor de ${usuario.usuario}`}
+        >
+          Restablecer
+        </Boton>
+      )}
+      {restablecer.isError && <Aviso>{mensajeDe(restablecer.error)}</Aviso>}
     </div>
   )
 }

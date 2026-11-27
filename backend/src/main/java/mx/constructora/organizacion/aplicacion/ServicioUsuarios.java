@@ -69,6 +69,14 @@ public class ServicioUsuarios {
     repositorio.registrarIntento(usuario, exito);
   }
 
+  /** {@code true} si la cuenta ya no puede entrar: bloqueada por intentos o desactivada. */
+  public boolean sinAcceso(String usuario) {
+    return repositorio
+        .paraLogin(usuario)
+        .map(u -> !u.isAccountNonLocked() || !u.isEnabled())
+        .orElse(true);
+  }
+
   private long insertar(long empresa, String usuario, NuevoUsuario nuevo) {
     try {
       return repositorio.insertar(

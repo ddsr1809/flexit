@@ -37,6 +37,14 @@ class ConfiguracionSeguridad {
                 reglas
                     .requestMatchers(HttpMethod.POST, "/api/v1/auth/login")
                     .permitAll()
+                    // Segundo paso del login: sin sesión autenticada todavía. El controlador exige
+                    // el inicio de sesión pendiente que dejó la contraseña correcta.
+                    .requestMatchers(
+                        HttpMethod.POST,
+                        "/api/v1/auth/segundo-factor",
+                        "/api/v1/auth/segundo-factor/alta",
+                        "/api/v1/auth/segundo-factor/alta/confirmar")
+                    .permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/auth/csrf", "/api/v1/version")
                     .permitAll()
                     .requestMatchers("/actuator/health", "/actuator/health/**")

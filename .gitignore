@@ -5,6 +5,7 @@ frontend/dist/
 frontend/test-results/
 frontend/playwright-report/
 frontend/node_modules/.tmp/
+__pycache__/
 
 # Secretos y estado: nunca en Git
 .env
