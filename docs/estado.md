@@ -325,7 +325,63 @@ porque Spring 7 ya no lo copia en la excepción traducida.
   copias de `=2/8` sin texto de fórmula; el importador de H5 las deja en cuarentena.
 - IVA del pedido: el del renglón, el del proveedor o 8%.
 
-## Siguiente: H7 · Producción lista y ensayo general (issues 39, 40 y 53)
+## H7 · issues 39, 40 y 53
 
-Servidor de producción con Terraform, despliegue por release, respaldos con prueba de
-restauración, monitoreo y el ensayo general de la migración completa.
+| # | Issue | Estado | Dónde se comprueba |
+| --- | --- | --- | --- |
+| 39 | Producción con Terraform, despliegue con aprobación, respaldos y prueba de restauración | Hecho en el código; falta el primer `apply` y el primer release | `infra/terraform/produccion`, `deploy-prod.yml`, `respaldo.sh`, `restaurar.sh`, runbook `produccion.md` |
+| 40 | Monitoreo (Uptime Kuma), runbooks y acceso de emergencia | Hecho en el código; falta configurar los monitores y Telegram | `infra/monitoreo`, `vigilar.sh`, runbooks `monitoreo.md`, `incidente.md`, `acceso-emergencia.md` |
+| 53 | Ensayo general: migración completa en producción, conciliación y borrado | Herramienta lista; falta correrlo en producción | `tools/ensayo`, runbook `ensayo-general.md` |
+| — | Segundo factor (TOTP) para administración y dirección, pendiente desde H1 | Hecho | V010, `SegundoFactorTest`, `TotpTest`, `PantallaLogin.test.tsx` |
+
+### Qué ya se verificó y qué no
+
+- **Verificado:**
+  - Respaldo y restauración con los scripts reales contra PostgreSQL 16 (con las migraciones V001
+    a V010 y los datos de las pruebas SQL) y restic 0.16.4, la versión de Ubuntu 24.04: respaldo
+    con conteo en la misma instantánea mientras otro proceso insertaba sin parar, prueba de
+    restauración en una segunda base y restauración en sitio con conteos idénticos, retención por
+    etiqueta (un respaldo del mismo día ya no borra otro) y `--confirmo` obligatorio.
+  - V010 contra PostgreSQL 16 como rol `app`: RLS, un código no se reusa (`ultimo_paso`), un alta
+    confirmada no se sobrescribe, la bitácora no guarda el secreto ni cada uso.
+  - TOTP con los vectores del RFC 6238 y Base32 con los del RFC 4648; el cifrado AES-GCM ligado al
+    usuario. El código de organización (login en dos pasos, alta, restablecer) compilado contra
+    firmas de Spring; formato con google-java-format 1.35 (deja igual todo el código existente).
+  - La herramienta del ensayo contra una API simulada: exporta por nombre, repite en otro entorno
+    con otros ids, se detiene si un renglón cambió, no empieza sobre un entorno con cargas, revierte
+    todo y maneja el segundo factor (6 pruebas, también en CI).
+  - Frontend: tipos, lint, pruebas (2 nuevas del login en dos pasos y el alta con QR) y build; el
+    generador de QR se carga aparte (+4 kB al inicio).
+  - shellcheck, actionlint y el HCL de Terraform sin errores; calendarios de los timers con
+    `systemd-analyze`.
+- **Se verifica por primera vez en CI:** `SegundoFactorTest` y `TotpTest` con Spring,
+  `terraform validate` de `produccion/`, el endpoint `destinos/{entidad}/{id}` y spotless.
+  `frontend/openapi.json` se escribió a mano: correr `make api` y revisar el diff.
+- **No se pudo probar aquí** (no hay Docker ni nube): la prueba de restauración con la app
+  arrancando contra la base temporal, `vigilar.sh` contra contenedores reales, los workflows y
+  Uptime Kuma. Se prueban en preproducción y producción siguiendo los runbooks.
+- **Criterios de aceptación de H7 pendientes de demostrar:** restauración desde restic en menos de
+  2 h; ensayo de punta a punta en menos de 1 h con conciliación limpia; Uptime Kuma avisa al
+  apagar la app; revertir una versión en 2 minutos.
+
+### Decisiones de esta etapa
+
+- **Producción solo por release aprobado** (`APROBADORES`) de una imagen que ya quedó sana en
+  preproducción (`preproduccion-<sha>`), con respaldo antes de migrar (ADR-013).
+- **Respaldos con restic a B2**, con el conteo de renglones en la misma instantánea del volcado y
+  la configuración del servidor; retención por etiqueta.
+- **Prueba mensual de restauración en una base temporal de producción**, no en preproducción: los
+  datos personales del SUA no salen del servidor. Corre con un timer, no con un workflow.
+- **Uptime Kuma en preproducción**, solo por Tailscale; producción le manda un latido cada 5
+  minutos y el resultado de cada respaldo. Sentry y métricas quedan para la etapa 2.
+- **Fotos y evidencias siguen en la base**, no en S3 (se revisa con la app de campo o a los 5 GB).
+- **Segundo factor TOTP** obligatorio para `admin` y `direccion` en producción y preproducción
+  (`APP_LLAVE_SEGUNDO_FACTOR` en el `.env`; sin ella la app no arranca). Lo restablece otra persona
+  de administración. V010 cierra las sesiones abiertas.
+- **Ensayo general** con `tools/ensayo/ensayo.py`: lleva las decisiones de la cuarentena por nombre
+  y no por id; el borrado es restaurar el respaldo `ensayo`.
+
+## Siguiente: H8 · Corte y arranque del piloto (issues 41 y 54)
+
+Excel congelado, carga final con el mismo motor y las decisiones del ensayo, préstamos abiertos
+como vivos, conteo físico, saldo de apertura valuado y firmado, capacitación y arranque.
