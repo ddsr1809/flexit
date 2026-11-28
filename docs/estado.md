@@ -1,6 +1,6 @@
 # Estado del proyecto
 
-Última actualización: 26 nov 2026 · Hito en curso: **H5 · Histórico del Excel migrado** (semanas 8 a 11)
+Última actualización: 27 nov 2026 · Hito en curso: **H8 · Corte y arranque del piloto** (semanas 14 y 15)
 
 ## H1 · issues 1 a 11
 
@@ -381,7 +381,64 @@ porque Spring 7 ya no lo copia en la excepción traducida.
 - **Ensayo general** con `tools/ensayo/ensayo.py`: lleva las decisiones de la cuarentena por nombre
   y no por id; el borrado es restaurar el respaldo `ensayo`.
 
-## Siguiente: H8 · Corte y arranque del piloto (issues 41 y 54)
+## H8 · issues 41 y 54
 
-Excel congelado, carga final con el mismo motor y las decisiones del ensayo, préstamos abiertos
-como vivos, conteo físico, saldo de apertura valuado y firmado, capacitación y arranque.
+| # | Issue | Estado | Dónde se comprueba |
+| --- | --- | --- | --- |
+| 41 | Saldo de apertura desde el conteo físico, valuado y firmado; arranque del frente piloto | Hecho en el código; falta el corte real | V011, `CriterioH8Test`, `SaldoAperturaTest`, `tools/pruebas-sql/apertura.sql`, pantallas *Apertura*, runbooks `corte.md` y `capacitacion.md` |
+| 54 | Carga final, préstamos abiertos como vivos y saldo de apertura desde el conteo | Hecho en el código; falta correrlo en producción | `ensayo.py congelar` y `corte`, carga *Histórico: foto de Existencias*, `ImportadoresHistoricoTest` |
+| — | Plan de reversa: lo capturado en el sistema con las columnas de la hoja Salidas | Hecho | `GET /almacenes/{id}/salidas.xlsx`, `LibroExcelTest` |
+| — | Capacitación por rol | Guía lista; falta darla | `docs/runbooks/capacitacion.md` |
+
+### Qué ya se verificó y qué no
+
+- **Verificado:**
+  - V011 y 27 pruebas SQL nuevas contra PostgreSQL 16 (`apertura.sql`): un almacén con kardex no
+    se abre, una apertura vigente por almacén, el conteo de la apertura no genera ajustes ni se
+    cierra o cancela por fuera, el almacén no aplica nada antes de su apertura, quien contó no
+    firma, dos firmas distintas, lo firmado no cambia, el saldo de apertura necesita las dos firmas,
+    aplicada ya no cambia, la existencia del Excel recalculada, la foto de Existencias inmutable y
+    revertible, y RLS. Las pruebas SQL de H1 a H7 siguen en verde.
+  - **El corte de punta a punta por los servicios reales contra PostgreSQL** como rol `app` con RLS,
+    sin Spring (un JdbcClient mínimo sobre JDBC, fuera del repositorio): 56 verificaciones, de
+    abrir la apertura a la segunda firma, el acta, el primer vale al costo de apertura, el préstamo
+    vivo que regresa, el plan de reversa y cancelar otra apertura. Ahí salieron y se corrigieron el
+    orden de las revisiones al firmar y los textos en singular.
+  - **La foto de Existencias con el Excel real de almacén**: 299 renglones, 0 en cuarentena, 9
+    inventarios iniciales con fórmula simple evaluados, conciliación en 0.
+  - El dominio y los importadores (Java puro, JUnit 5): 115 pruebas en verde, 6 nuevas
+    (`SaldoAperturaTest`, la foto de Existencias, el valor lógico de Excel).
+  - El código compilado con javac contra firmas de las APIs de Spring; `CriterioH8Test` compilado.
+  - `tools/ensayo`: 10 pruebas (4 nuevas: orden de 16 cargas, congelar, el corte no carga un Excel
+    que cambió, el informe con los sha256).
+  - Frontend: tipos, lint, 57 pruebas (4 nuevas) y build; *Apertura* se carga aparte (19 kB).
+- **Se verifica por primera vez en CI:** `CriterioH8Test` por HTTP real con Spring, `ModularidadTest`
+  con la dependencia nueva `inventario → historico`, spotless (aquí no se pudo correr
+  google-java-format: correr `make fmt`) y el e2e `apertura.spec.ts`. `frontend/openapi.json` se
+  escribió a mano con las convenciones de springdoc: correr `make api` y revisar el diff.
+- **Criterios de aceptación de H8 pendientes de demostrar:** saldo de apertura firmado por
+  coordinación y administración; los préstamos sin devolver del frente piloto como abiertos con su
+  responsable; el primer día todas las salidas en el sistema; el primer vale real impreso y firmado.
+
+### Decisiones de esta etapa
+
+- **Cada frente tiene su bodega**: se cuenta solo la del piloto. La existencia del Excel es de todo
+  el almacén del Excel y se muestra como referencia (ADR-014).
+- **La apertura es un documento** (`APE`) con su conteo a ciegas, los préstamos abiertos, los costos
+  y dos firmas; el saldo entra con el movimiento nuevo **`apertura`** (`SAP`), primero del almacén.
+- **Lo prestado es del almacén**: entra con lo contado y se vuelve préstamo vivo con su
+  responsable. La herramienta que no era material se da de alta con la categoría Herramienta.
+- **Costo de apertura**: capturado por administración, o ponderado sin IVA de las entradas del Excel
+  hasta el corte, o precio de referencia. Sin ninguno, no se firma lo que entra.
+- **Firmas**: coordinación y administración, personas distintas que no abrieron el conteo ni
+  contaron. La primera congela, la segunda aplica; se firma la huella de lo revisado.
+- **Carga nueva *Histórico: foto de Existencias*** (16 cargas en total) para comparar contra el
+  Excel; solo celdas capturadas.
+- **Excel congelado por sha256** y carga final con `ensayo.py corte`, que no se borra.
+- Plan de reversa con el formato de la hoja Salidas; la columna Entregado va como VERDADERO de Excel.
+
+## Siguiente: H9 · Estabilización (semanas 16 y 17)
+
+Acompañamiento diario, correcciones del milestone `Estabilización`, primer cierre de mes e informe
+de cierre con indicadores. Criterio: dos semanas seguidas sin capturar en Excel, cero incidentes
+críticos abiertos y el primer cierre de mes hecho.
