@@ -80,8 +80,7 @@ public class ActividadAlmacen {
         repositorio.tardios(empresa, almacenId, desde, hasta, tolerancia).stream()
             .map(
                 t ->
-                    new Tardio(
-                        t.folio(), t.tipo(), t.estado(), t.fecha(), t.capturado(), t.dias()))
+                    new Tardio(t.folio(), t.tipo(), t.estado(), t.fecha(), t.capturado(), t.dias()))
             .toList(),
         repositorio.pendientes(empresa, almacenId, hoy).stream()
             .map(p -> new Pendiente(p.folio(), p.tipo(), p.estado(), p.fecha(), p.dias()))

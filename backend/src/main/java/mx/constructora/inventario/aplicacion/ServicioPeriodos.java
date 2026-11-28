@@ -253,8 +253,7 @@ public class ServicioPeriodos {
         .hoja("Cierre", List.of(Columna.texto("Dato", 22), Columna.texto("Valor", 40)))
         .fila("Mes", periodo.toString())
         .fila("Cerró", cerro)
-        .fila(
-            "Cerrado el", FECHA_HORA.format(cierre.cerradoEn().atZoneSameInstant(Folios.ZONA)))
+        .fila("Cerrado el", FECHA_HORA.format(cierre.cerradoEn().atZoneSameInstant(Folios.ZONA)))
         .fila("Costos", costos ? "Ponderados, sin IVA" : "Sin permiso para ver costos");
 
     // Valor por almacén: inicial + movimientos del mes = al cierre (la diferencia debe ser 0).

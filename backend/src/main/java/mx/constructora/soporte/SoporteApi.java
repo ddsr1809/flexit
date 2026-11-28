@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Lo que otros módulos (reportes) leen de los incidentes: cuántos hay abiertos por severidad y
- * qué pasó en un periodo. Son de toda la empresa: un incidente crítico cuenta aunque no sea de un
+ * Lo que otros módulos (reportes) leen de los incidentes: cuántos hay abiertos por severidad y qué
+ * pasó en un periodo. Son de toda la empresa: un incidente crítico cuenta aunque no sea de un
  * almacén (por ejemplo, si nadie puede iniciar sesión). Los permisos los revisa quien llama.
  */
 @Service

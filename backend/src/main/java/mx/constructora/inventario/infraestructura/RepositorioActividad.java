@@ -11,8 +11,8 @@ import org.springframework.stereotype.Repository;
  * Cómo se está usando un almacén (H9): documentos por día, capturas tardías, pendientes viejos,
  * tiempo de autorización de los vales, préstamos y conteos. Los días se cuentan en hora de México.
  *
- * <p>Captura tardía: el documento se capturó más de {@code tolerancia} días después de su fecha.
- * No cuentan los que genera el sistema con la fecha de otro documento: el saldo de apertura y los
+ * <p>Captura tardía: el documento se capturó más de {@code tolerancia} días después de su fecha. No
+ * cuentan los que genera el sistema con la fecha de otro documento: el saldo de apertura y los
  * ajustes de un conteo.
  */
 @Repository

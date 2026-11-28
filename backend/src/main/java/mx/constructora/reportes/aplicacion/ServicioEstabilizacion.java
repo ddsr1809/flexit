@@ -73,12 +73,10 @@ public class ServicioEstabilizacion {
       @Schema(requiredMode = REQUIRED) int tardios,
       @Schema(requiredMode = REQUIRED, description = "De 0 a 100") BigDecimal porcentajeTardios,
       @Schema(requiredMode = REQUIRED) int cancelados,
-      @Schema(requiredMode = REQUIRED, description = "De 0 a 100")
-          BigDecimal porcentajeCancelados,
+      @Schema(requiredMode = REQUIRED, description = "De 0 a 100") BigDecimal porcentajeCancelados,
       @Schema(requiredMode = REQUIRED, description = "Días sin ningún documento")
           int diasSinCaptura,
-      @Schema(requiredMode = REQUIRED, description = "Sin aplicar ni cancelar, hoy")
-          int pendientes,
+      @Schema(requiredMode = REQUIRED, description = "Sin aplicar ni cancelar, hoy") int pendientes,
       @Schema(requiredMode = REQUIRED, description = "Pendientes de más de 2 días")
           int pendientesViejos,
       @Schema(description = "Mediana de horas de captura a aplicación de los vales")

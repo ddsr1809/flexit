@@ -67,8 +67,7 @@ class ContratoApiTest extends PruebaIntegracion {
     assertThat(csrf)
         .as("el token CSRF lo pone Spring Security: el cliente no manda parámetros")
         .doesNotContainKey("parameters");
-    Integer minimo =
-        contrato.json("$.components.schemas.CapturaConteo.properties.lineas.minItems");
+    Integer minimo = contrato.json("$.components.schemas.CapturaConteo.properties.lineas.minItems");
     assertThat(minimo).as("una lista que no puede ir vacía se publica con minItems 1").isEqualTo(1);
 
     Path destino = Path.of("target", "openapi.json");

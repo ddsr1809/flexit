@@ -41,8 +41,8 @@ import org.springframework.transaction.annotation.Transactional;
  * pasando. Cada cambio deja una nota que no se borra.
  *
  * <p>Severidad: <b>crítica</b> si el almacén no puede registrar entradas o salidas, o el sistema
- * dejó mal una existencia, un costo o un permiso; <b>mayor</b> si se puede seguir con un rodeo o
- * un dato importante se ve mal; <b>menor</b> para lo demás.
+ * dejó mal una existencia, un costo o un permiso; <b>mayor</b> si se puede seguir con un rodeo o un
+ * dato importante se ve mal; <b>menor</b> para lo demás.
  */
 @Service
 public class ServicioIncidentes {

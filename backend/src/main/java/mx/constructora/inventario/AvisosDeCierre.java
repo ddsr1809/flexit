@@ -11,9 +11,7 @@ import java.util.List;
  */
 public interface AvisosDeCierre {
 
-  /**
-   * Un aviso: código estable, mensaje para la persona, cuántos casos hay y los primeros folios.
-   */
+  /** Un aviso: código estable, mensaje para la persona, cuántos casos hay y los primeros folios. */
   record Aviso(String codigo, String mensaje, int cuantos, List<String> folios) {}
 
   /** Los avisos del mes que va de {@code desde} a {@code hasta}; vacío si no hay nada. */
