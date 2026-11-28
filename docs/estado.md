@@ -1,6 +1,6 @@
 # Estado del proyecto
 
-Última actualización: 27 nov 2026 · Hito en curso: **H8 · Corte y arranque del piloto** (semanas 14 y 15)
+Última actualización: 28 nov 2026 · Hito en curso: **H9 · Estabilización** (semanas 16 y 17)
 
 ## H1 · issues 1 a 11
 
@@ -444,8 +444,61 @@ porque Spring 7 ya no lo copia en la excepción traducida.
   contrato que deja `make test-back`) y no vacía el archivo si falla; CI ahora falla si el archivo
   no coincide.
 
-## Siguiente: H9 · Estabilización (semanas 16 y 17)
+## H9 · Estabilización (semanas 16 y 17)
 
-Acompañamiento diario, correcciones del milestone `Estabilización`, primer cierre de mes e informe
-de cierre con indicadores. Criterio: dos semanas seguidas sin capturar en Excel, cero incidentes
-críticos abiertos y el primer cierre de mes hecho.
+H9 no tiene issues propios: sus correcciones salen del piloto (milestone *H9 · Estabilización*). Lo
+que se construyó es lo que hace falta para medir el criterio y para que el primer cierre salga bien.
+
+| Tema | Estado | Dónde se comprueba |
+| --- | --- | --- |
+| Incidentes del piloto: reportar desde cualquier pantalla (con la pantalla y el `X-Request-Id`), clasificar, ligar a GitHub, resolver, descartar, reabrir y notas | Hecho | V012, módulo `soporte`, `CriterioH9Test`, `tools/pruebas-sql/estabilizacion.sql`, pantallas *Reportar un problema* e *Incidentes*, e2e `incidentes.spec.ts` |
+| Reporte de estabilización: uso del almacén por día, capturas tardías, pendientes y el criterio de H9 | Hecho | `GET /reportes/estabilizacion`, `CriterioEstabilizacionTest`, `CriterioH9Test`, pantalla *Estabilización* |
+| Cierre de mes: revisión previa (bloqueos y avisos), defensa en la base y acta en Excel | Hecho | V012, `GET /periodos/{a}/{m}/revision` y `acta.xlsx`, `CriterioH9Test`, `estabilizacion.sql`, pantalla *Cierre de mes* |
+| Que nadie volvió a capturar en el Excel congelado | Hecho | `ensayo.py verificar`, `test_ensayo.py` |
+| Acompañamiento diario, primer cierre de mes e informe de cierre | Guía lista; falta el piloto | Runbooks `estabilizacion.md` y `cierre-de-mes.md` |
+
+### Qué ya se verificó y qué no
+
+- **Verificado:**
+  - V012 y 18 pruebas SQL nuevas contra PostgreSQL 16 (`estabilizacion.sql`): un incidente nace
+    abierto, severidad y `X-Request-Id` válidos, lo reportado no cambia, resolver lleva quién,
+    cuándo y cómo, un incidente cerrado no cambia y se reabre sumando la reapertura, no se borra,
+    las notas no se editan, bitácora y RLS; el cierre de mes rechazado con un borrador, con un
+    conteo abierto y con una apertura sin aplicar, y aceptado con un conteo del mes siguiente. Las
+    pruebas SQL de H1 a H8 siguen en verde.
+  - Cada consulta nueva de los repositorios (`RepositorioActividad`, `RepositorioIncidentes`,
+    `RepositorioPeriodos`, `RepositorioRequisiciones`) corrida contra la base de las pruebas SQL
+    como rol `app` con RLS (33 consultas).
+  - El código nuevo compilado con javac contra firmas de las APIs de Spring;
+    `CriterioEstabilizacionTest` (7) y la prueba nueva de `RolTest` en verde.
+  - `tools/ensayo`: 11 pruebas (1 nueva: `verificar` detecta un Excel guardado después del corte).
+  - Frontend: tipos, lint, 68 pruebas (11 nuevas: reportar un problema, la última petición
+    fallida, Incidentes, Estabilización y el menú) y build; *Incidentes* y *Estabilización* se
+    cargan aparte (7 kB cada una).
+- **Se verifica por primera vez en CI:** `CriterioH9Test` por HTTP real con Spring,
+  `ModularidadTest` con el módulo nuevo `soporte` (depende de inventario y organización) y la
+  interfaz `AvisosDeCierre` (inventario la define, abastecimiento la implementa), `RolTest`,
+  spotless (correr `make fmt`) y el e2e `incidentes.spec.ts`. `frontend/openapi.json` se escribió
+  a mano con las convenciones de springdoc: correr `make test-back` y `make api` y revisar el diff.
+- **Criterio de aceptación de H9 pendiente de demostrar:** dos semanas seguidas sin capturar en
+  Excel, cero incidentes críticos abiertos y el primer cierre de mes. Demo: el reporte de costo del
+  frente piloto con histórico y sistema, sin una celda de Excel.
+
+### Decisiones de esta etapa
+
+- **Los incidentes viven en el sistema** (el almacén no tiene GitHub); el responsable técnico pasa
+  a GitHub lo que es un error y anota el número. Permiso nuevo `incidente:atender`
+  (administración). Severidades crítica, mayor y menor (ADR-015).
+- **Captura tardía: más de 1 día** después de la fecha del documento. La racha de 14 días se
+  cuenta hacia atrás desde hoy; un día sin documentos no la rompe; necesita vales aplicados.
+- **Al cerrar el mes, los préstamos vencidos y las requisiciones sin surtir solo avisan.** Lo que
+  impide cerrar: documentos sin aplicar, conteos y aperturas abiertos con fecha hasta el fin del
+  mes (antes de H9 un conteo abierto dejaba el mes cerrado con un conteo que ya no se podía cerrar).
+- El acta del cierre comprueba por almacén que valor inicial + movimientos = valor al cierre.
+- `ensayo.py verificar` cada lunes del piloto contra la copia congelada.
+
+## Siguiente: el segundo frente
+
+Después de H9 se repiten H8 y H9 por cada frente restante (`corte.md` y `estabilizacion.md`): la
+migración ya cubre los tres frentes, así que solo hacen falta la carga final, el conteo físico, la
+apertura y las dos semanas de estabilización.
