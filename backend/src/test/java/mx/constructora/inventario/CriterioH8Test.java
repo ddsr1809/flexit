@@ -162,9 +162,9 @@ class CriterioH8Test extends PruebaIntegracion {
     long conteo = numero(abierta, "$.apertura.conteoId");
     assertThat(abierta.<String>json("$.apertura.estado")).isEqualTo("abierta");
     assertThat(abierta.<List<Object>>json("$.lineas")).hasSize(2);
-    assertThat(abierta.<List<Object>>json("$.lineas[?(@.costoUnitario)]"))
+    assertThat(abierta.<List<Object>>json("$.lineas[*].costoUnitario"))
         .as("a ciegas: el almacén no ve costos")
-        .isEmpty();
+        .containsOnlyNulls();
     assertThat(abierta.<String>json("$.prestamos[0].articulo"))
         .isEqualTo("Compresor grande naranja");
     assertThat(numero(abierta, "$.prestamos[0].responsableId")).isEqualTo(daniel);
