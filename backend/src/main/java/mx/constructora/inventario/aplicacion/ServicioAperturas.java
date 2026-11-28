@@ -75,8 +75,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Apertura de un almacén en el corte (H8, issues 41 y 54): el saldo con que arranca el sistema
- * sale del conteo físico, valuado sin IVA y firmado por coordinación y administración.
+ * Apertura de un almacén en el corte (H8, issues 41 y 54): el saldo con que arranca el sistema sale
+ * del conteo físico, valuado sin IVA y firmado por coordinación y administración.
  *
  * <ol>
  *   <li><b>Abrir</b> (almacén): crea el conteo a ciegas con todos los materiales activos y trae los
@@ -84,8 +84,8 @@ import org.springframework.transaction.annotation.Transactional;
  *   <li><b>Contar</b> (almacén, en el conteo): lo que no se encuentre se marca en 0 de forma
  *       explícita.
  *   <li><b>Préstamos</b> (administración): cada préstamo abierto queda listo (material y
- *       responsable; la herramienta que no es material se da de alta) o descartado con motivo.
- *       Lo prestado no está en el anaquel pero sí es del almacén: entra con lo contado y queda
+ *       responsable; la herramienta que no es material se da de alta) o descartado con motivo. Lo
+ *       prestado no está en el anaquel pero sí es del almacén: entra con lo contado y queda
  *       apartado como préstamo vivo.
  *   <li><b>Costos</b> (administración): el sistema propone el ponderado del Excel o el precio de
  *       referencia; administración captura los que falten o corrige los que quiera.
@@ -593,9 +593,7 @@ public class ServicioAperturas {
         && !Objects.equals(a.firmaCoordinacion(), usuario())
         && !Objects.equals(a.firmaAdministracion(), usuario())) {
       throw new ErrorNegocio(
-          HttpStatus.FORBIDDEN,
-          "NO_ES_TU_FIRMA",
-          "Retira las firmas quien firmó o administración");
+          HttpStatus.FORBIDDEN, "NO_ES_TU_FIRMA", "Retira las firmas quien firmó o administración");
     }
     repositorio.retirarFirmas(empresa(), a.id());
     return apertura(id);

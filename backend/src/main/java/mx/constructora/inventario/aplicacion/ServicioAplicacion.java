@@ -457,9 +457,7 @@ public class ServicioAplicacion {
             importe));
   }
 
-  /**
-   * Sobrante de conteo o saldo de apertura: entra al costo indicado, o al promedio del almacén.
-   */
+  /** Sobrante de conteo o saldo de apertura: entra al costo indicado, o al promedio del almacén. */
   private void sobrante(Corrida c, Map<Long, BigDecimal> costos) {
     c.bloquear(c.m.almacenId());
     for (int i : ordenPorMaterial(c.lineas)) {

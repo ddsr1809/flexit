@@ -64,9 +64,9 @@ public final class LibroExcel {
   }
 
   /**
-   * Un valor lógico de Excel (VERDADERO/FALSO), no el texto "Sí"/"No" que se escribe con un
-   * {@code Boolean}: lo usa la exportación con el formato de la hoja Salidas, cuya columna
-   * Entregado suman las fórmulas del Excel.
+   * Un valor lógico de Excel (VERDADERO/FALSO), no el texto "Sí"/"No" que se escribe con un {@code
+   * Boolean}: lo usa la exportación con el formato de la hoja Salidas, cuya columna Entregado suman
+   * las fórmulas del Excel.
    */
   public record Logico(boolean valor) {}
 

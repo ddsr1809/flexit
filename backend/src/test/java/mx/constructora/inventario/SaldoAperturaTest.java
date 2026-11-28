@@ -82,9 +82,7 @@ class SaldoAperturaTest {
         .isEqualTo(huella);
     assertThat(
             SaldoApertura.huella(
-                CORTE,
-                List.of(new Linea(1, new BigDecimal("13"), null, a.costo()), b),
-                List.of(p)))
+                CORTE, List.of(new Linea(1, new BigDecimal("13"), null, a.costo()), b), List.of(p)))
         .as("otro conteo")
         .isNotEqualTo(huella);
     Linea referencia =
