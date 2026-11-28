@@ -4,7 +4,24 @@
  */
 
 export interface paths {
-    "/api/v1/auth/login": {
+    "/api/v1/alias": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Cómo se tradujo cada nombre del Excel */
+        get: operations["listarAlias"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alias/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -13,23 +30,316 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Iniciar sesión. 200 con la sesión; 202 si falta el segundo factor: con paso=codigo se sigue en /auth/segundo-factor y con paso=alta en /auth/segundo-factor/alta */
-        post: operations["iniciarSesion"];
-        delete?: never;
+        post?: never;
+        /** Olvidar un alias: la siguiente carga vuelve a preguntar */
+        delete: operations["borrarAlias"];
         options?: never;
         head?: never;
-        patch?: never;
+        /** Ligar el nombre a otro registro */
+        patch: operations["cambiarAlias"];
         trace?: never;
     };
-    "/api/v1/auth/yo": {
+    "/api/v1/almacenes": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Usuario en sesión */
-        get: operations["sesionActual"];
+        /** Almacenes (uno por frente) */
+        get: operations["listarAlmacenes"];
+        put?: never;
+        /** Dar de alta el almacén de un frente */
+        post: operations["crearAlmacen"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/almacenes/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Un almacén (ETag con su versión) */
+        get: operations["obtenerAlmacen"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Cambiar clave, nombre o si está activo */
+        patch: operations["cambiarAlmacen"];
+        trace?: never;
+    };
+    "/api/v1/almacenes/{id}/existencias": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Existencia, apartado y disponible por material (costo solo con permiso) */
+        get: operations["existenciasDeAlmacen"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/almacenes/{id}/salidas.xlsx": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Plan de reversa: vales, devoluciones y reasignaciones con las columnas de la hoja Salidas del Excel */
+        get: operations["salidasDeAlmacenComoExcel"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/aperturas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Aperturas de almacén, en curso primero */
+        get: operations["listarAperturas"];
+        put?: never;
+        /** Abrir la apertura de un almacén sin movimientos: conteo a ciegas y préstamos abiertos del Excel */
+        post: operations["abrirApertura"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/aperturas/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Una apertura: materiales, préstamos, lo que falta y la huella para firmar */
+        get: operations["obtenerApertura"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/aperturas/{id}/acta.xlsx": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Acta de apertura en Excel: firmas, materiales valuados y préstamos */
+        get: operations["actaApertura"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/aperturas/{id}/cancelar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancelar la apertura y su conteo */
+        post: operations["cancelarApertura"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/aperturas/{id}/costos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Capturar o quitar costos sin IVA (administración) */
+        put: operations["capturarCostosApertura"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/aperturas/{id}/firmar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Firmar como coordinación o administración; la segunda firma aplica el saldo de apertura */
+        post: operations["firmarApertura"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/aperturas/{id}/prestamos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Agregar un préstamo abierto que no estaba en el Excel */
+        post: operations["agregarPrestamoApertura"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/aperturas/{id}/prestamos/traer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Volver a traer los préstamos abiertos del Excel (después de la carga final) */
+        post: operations["traerPrestamosApertura"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/aperturas/{id}/prestamos/{prestamoId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Resolver un préstamo: listo (material y responsable), pendiente o descartado */
+        patch: operations["cambiarPrestamoApertura"];
+        trace?: never;
+    };
+    "/api/v1/aperturas/{id}/prestamos/{prestamoId}/herramienta": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Dar de alta la herramienta del préstamo como material (categoría Herramienta) */
+        post: operations["altaHerramientaApertura"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/aperturas/{id}/retirar-firmas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Retirar las firmas para corregir (antes de la segunda firma) */
+        post: operations["retirarFirmasApertura"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/aperturas/{id}/sin-contar-en-cero": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Marcar en 0 lo que no se encontró al contar (almacén) */
+        post: operations["aperturaSinContarEnCero"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/archivos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Subir una foto (JPEG, PNG, WebP) o PDF de hasta 10 MB */
+        post: operations["subirArchivo"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/archivos/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Contenido de un archivo */
+        get: operations["verArchivo"];
         put?: never;
         post?: never;
         delete?: never;
@@ -49,6 +359,23 @@ export interface paths {
         get: operations["tokenCsrf"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Iniciar sesión. 200 con la sesión; 202 si falta el segundo factor: con paso=codigo se sigue en /auth/segundo-factor y con paso=alta en /auth/segundo-factor/alta */
+        post: operations["iniciarSesion"];
         delete?: never;
         options?: never;
         head?: never;
@@ -106,7 +433,42 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/usuarios/{id}/segundo-factor": {
+    "/api/v1/auth/yo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Usuario en sesión */
+        get: operations["sesionActual"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/categorias": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Categorías de material */
+        get: operations["listarCategorias"];
+        put?: never;
+        /** Dar de alta una categoría */
+        post: operations["crearCategoria"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/categorias/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -116,57 +478,22 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        /** Borrar el segundo factor de otro usuario (perdió el teléfono) */
-        delete: operations["restablecerSegundoFactor"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/usuarios": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Usuarios de la empresa */
-        get: operations["listarUsuarios"];
-        put?: never;
-        /** Dar de alta un usuario */
-        post: operations["crearUsuario"];
         delete?: never;
         options?: never;
         head?: never;
-        patch?: never;
+        /** Cambiar una categoría */
+        patch: operations["cambiarCategoria"];
         trace?: never;
     };
-    "/api/v1/usuarios/roles": {
+    "/api/v1/clasificaciones-costo": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Roles disponibles y sus permisos */
-        get: operations["listarRoles"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/version": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Versión y entorno */
-        get: operations["version"];
+        /** Razones de salida */
+        get: operations["listarClasificaciones"];
         put?: never;
         post?: never;
         delete?: never;
@@ -185,7 +512,7 @@ export interface paths {
         /** Clientes */
         get: operations["listarClientes"];
         put?: never;
-        /** Dar de alta */
+        /** Dar de alta un cliente */
         post: operations["crearCliente"];
         delete?: never;
         options?: never;
@@ -206,29 +533,63 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        /** Cambiar */
+        /** Cambiar un cliente */
         patch: operations["cambiarCliente"];
         trace?: never;
     };
-    "/api/v1/frentes": {
+    "/api/v1/conciliacion/contratos/{id}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Frentes */
-        get: operations["listarFrentes"];
+        /** El costo de Programa de cada lote contra la hoja del frente recalculada, con cada diferencia explicada */
+        get: operations["conciliarContrato"];
         put?: never;
-        /** Dar de alta */
-        post: operations["crearFrente"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/v1/frentes/{id}": {
+    "/api/v1/conteos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Conteos físicos, abiertos primero */
+        get: operations["listarConteos"];
+        put?: never;
+        /** Abrir un conteo (el almacén deja de aplicar movimientos) */
+        post: operations["abrirConteo"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/conteos/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Un conteo con sus líneas */
+        get: operations["obtenerConteo"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/conteos/{id}/cancelar": {
         parameters: {
             query?: never;
             header?: never;
@@ -237,33 +598,15 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Cambiar */
-        patch: operations["cambiarFrente"];
-        trace?: never;
-    };
-    "/api/v1/prototipos": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Prototipos */
-        get: operations["listarPrototipos"];
-        put?: never;
-        /** Dar de alta */
-        post: operations["crearPrototipo"];
+        /** Cancelar sin ajustes */
+        post: operations["cancelarConteo"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/v1/prototipos/{id}": {
+    "/api/v1/conteos/{id}/cerrar": {
         parameters: {
             query?: never;
             header?: never;
@@ -272,24 +615,24 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post?: never;
+        /** Cerrar y aplicar los ajustes (administración) */
+        post: operations["cerrarConteo"];
         delete?: never;
         options?: never;
         head?: never;
-        /** Cambiar */
-        patch: operations["cambiarPrototipo"];
+        patch?: never;
         trace?: never;
     };
-    "/api/v1/tipos-unidad": {
+    "/api/v1/conteos/{id}/lineas": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Tipos de unidad de obra */
-        get: operations["listarTiposUnidad"];
-        put?: never;
+        get?: never;
+        /** Capturar lo contado (agrega materiales si faltan) */
+        put: operations["capturarConteo"];
         post?: never;
         delete?: never;
         options?: never;
@@ -333,25 +676,25 @@ export interface paths {
         patch: operations["cambiarContrato"];
         trace?: never;
     };
-    "/api/v1/contratos/{id}/unidades": {
+    "/api/v1/contratos/{id}/precios": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Unidades de obra del contrato */
-        get: operations["listarUnidades"];
-        put?: never;
-        /** Dar de alta lotes (manzana y lista de lotes) u otra unidad (clave) */
-        post: operations["crearUnidades"];
+        /** Precio de cobro y destajo por paquete */
+        get: operations["listarPrecios"];
+        /** Fijar el precio de un paquete */
+        put: operations["fijarPrecio"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/v1/unidades/{id}": {
+    "/api/v1/contratos/{id}/presupuesto": {
         parameters: {
             query?: never;
             header?: never;
@@ -359,13 +702,13 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        put?: never;
+        /** Presupuesto de material para los lotes de un prototipo o una lista de lotes */
+        put: operations["asignarPresupuesto"];
         post?: never;
         delete?: never;
         options?: never;
         head?: never;
-        /** Cambiar prototipo, presupuesto o estado */
-        patch: operations["cambiarUnidad"];
+        patch?: never;
         trace?: never;
     };
     "/api/v1/contratos/{id}/residentes": {
@@ -386,143 +729,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/residentes": {
+    "/api/v1/contratos/{id}/unidades": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Usuarios con rol residente */
-        get: operations["candidatosResidente"];
+        /** Unidades de obra del contrato */
+        get: operations["listarUnidades"];
         put?: never;
-        post?: never;
+        /** Dar de alta lotes (manzana y lista de lotes) u otra unidad (clave) */
+        post: operations["crearUnidades"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
-        trace?: never;
-    };
-    "/api/v1/contratos/{id}/precios": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Precio de cobro y destajo por paquete */
-        get: operations["listarPrecios"];
-        /** Fijar el precio de un paquete */
-        put: operations["fijarPrecio"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/paquetes": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Paquetes en orden de árbol; filtra por cliente o solo los propios */
-        get: operations["listarPaquetes"];
-        put?: never;
-        /** Dar de alta un paquete */
-        post: operations["crearPaquete"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/paquetes/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Cambiar un paquete */
-        patch: operations["cambiarPaquete"];
-        trace?: never;
-    };
-    "/api/v1/paquetes/equivalencias": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Equivalencias cliente ↔ propio */
-        get: operations["listarEquivalencias"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/paquetes/{id}/equivalencias": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Reemplazar los paquetes propios equivalentes a un paquete del cliente */
-        put: operations["fijarEquivalencias"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/unidades-medida": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** UnidadesMedida */
-        get: operations["listarUnidadesMedida"];
-        put?: never;
-        /** Dar de alta */
-        post: operations["crearUnidadMedida"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/unidades-medida/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Cambiar */
-        patch: operations["cambiarUnidadMedida"];
         trace?: never;
     };
     "/api/v1/conversiones": {
@@ -560,25 +782,42 @@ export interface paths {
         patch: operations["cambiarConversion"];
         trace?: never;
     };
-    "/api/v1/categorias": {
+    "/api/v1/faltantes": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Categorias */
-        get: operations["listarCategorias"];
+        /** Lo que falta comprar de las requisiciones autorizadas, por proveedor sugerido (el último que surtió cada material) */
+        get: operations["faltantesPorProveedor"];
         put?: never;
-        /** Dar de alta */
-        post: operations["crearCategoria"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/v1/categorias/{id}": {
+    "/api/v1/frentes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Frentes */
+        get: operations["listarFrentes"];
+        put?: never;
+        /** Dar de alta un frente */
+        post: operations["crearFrente"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/frentes/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -591,21 +830,243 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        /** Cambiar */
-        patch: operations["cambiarCategoria"];
+        /** Cambiar un frente */
+        patch: operations["cambiarFrente"];
         trace?: never;
     };
-    "/api/v1/clasificaciones-costo": {
+    "/api/v1/historico/unidades/{id}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Razones de salida */
-        get: operations["listarClasificaciones"];
+        /** Lo que dice el Excel de un lote: sus vales, sus pagos de destajo y las altas del IMSS de su contrato */
+        get: operations["historiaDeUnidad"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/importaciones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Bitácora de cargas, la más reciente primero */
+        get: operations["listarCargas"];
+        put?: never;
+        /** Subir un Excel y validarlo. 201 si es una carga nueva; 200 con repetida=true si el mismo archivo ya estaba cargado */
+        post: operations["subirCarga"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/importaciones/destinos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Registros a los que se puede ligar un nombre del Excel (50 como máximo) */
+        get: operations["destinosPosibles"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/importaciones/destinos/{entidad}/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Cómo se muestra un registro, con el mismo texto que destinosPosibles (el ensayo general lleva así las decisiones de un entorno a otro) */
+        get: operations["destinoPorId"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/importaciones/tipos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Tipos de carga en su orden, con lo que ya está confirmado */
+        get: operations["ordenDeCarga"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/importaciones/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Una carga con su conciliación */
+        get: operations["obtenerCarga"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/importaciones/{id}/conciliacion": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Totales del Excel contra lo que se carga (solo histórico). Sin todas=true, solo las líneas con diferencia, cuarentena o descartes */
+        get: operations["conciliacionDeCarga"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/importaciones/{id}/conciliacion.xlsx": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** La conciliación de totales de una carga del histórico, completa, en Excel */
+        get: operations["conciliacionDeCargaExcel"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/importaciones/{id}/confirmar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Confirmar: escribe todo en una transacción si no queda nada en cuarentena */
+        post: operations["confirmarCarga"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/importaciones/{id}/decisiones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Resolver incidencias (una o en grupo) y volver a validar */
+        post: operations["decidirCarga"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/importaciones/{id}/decisiones/{numero}/{regla}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Quitar una decisión y volver a validar */
+        delete: operations["quitarDecision"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/importaciones/{id}/filas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Renglones de la carga con sus incidencias, filtrados y paginados */
+        get: operations["filasDeCarga"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/importaciones/{id}/revalidar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Volver a validar con los catálogos y alias de ahora */
+        post: operations["revalidarCarga"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/importaciones/{id}/revertir": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Revertir: borra lo que creó la carga si nada lo usa */
+        post: operations["revertirCarga"];
         delete?: never;
         options?: never;
         head?: never;
@@ -665,369 +1126,6 @@ export interface paths {
         patch: operations["cambiarMaterial"];
         trace?: never;
     };
-    "/api/v1/proveedores": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Proveedores, con búsqueda opcional */
-        get: operations["listarProveedores"];
-        put?: never;
-        /** Dar de alta un proveedor */
-        post: operations["crearProveedor"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/proveedores/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Cambiar un proveedor */
-        patch: operations["cambiarProveedor"];
-        trace?: never;
-    };
-    "/api/v1/importaciones/tipos": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Tipos de carga en su orden, con lo que ya está confirmado */
-        get: operations["ordenDeCarga"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/importaciones": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Bitácora de cargas, la más reciente primero */
-        get: operations["listarCargas"];
-        put?: never;
-        /** Subir un Excel y validarlo. 201 si es una carga nueva; 200 con repetida=true si el mismo archivo ya estaba cargado */
-        post: operations["subirCarga"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/importaciones/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Una carga con su conciliación */
-        get: operations["obtenerCarga"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/importaciones/{id}/filas": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Renglones de la carga con sus incidencias, filtrados y paginados */
-        get: operations["filasDeCarga"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/importaciones/{id}/conciliacion": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Totales del Excel contra lo que se carga (solo histórico). Sin todas=true, solo las líneas con diferencia, cuarentena o descartes */
-        get: operations["conciliacionDeCarga"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/importaciones/{id}/decisiones": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Resolver incidencias (una o en grupo) y volver a validar */
-        post: operations["decidirCarga"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/importaciones/{id}/decisiones/{numero}/{regla}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /** Quitar una decisión y volver a validar */
-        delete: operations["quitarDecision"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/importaciones/{id}/revalidar": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Volver a validar con los catálogos y alias de ahora */
-        post: operations["revalidarCarga"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/importaciones/{id}/confirmar": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Confirmar: escribe todo en una transacción si no queda nada en cuarentena */
-        post: operations["confirmarCarga"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/importaciones/{id}/revertir": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Revertir: borra lo que creó la carga si nada lo usa */
-        post: operations["revertirCarga"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/importaciones/destinos": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Registros a los que se puede ligar un nombre del Excel (50 como máximo) */
-        get: operations["destinosPosibles"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/importaciones/destinos/{entidad}/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Cómo se muestra un registro, con el mismo texto que destinosPosibles (el ensayo general lleva así las decisiones de un entorno a otro) */
-        get: operations["destinoPorId"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/alias": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Cómo se tradujo cada nombre del Excel */
-        get: operations["listarAlias"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/alias/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /** Olvidar un alias: la siguiente carga vuelve a preguntar */
-        delete: operations["borrarAlias"];
-        options?: never;
-        head?: never;
-        /** Ligar el nombre a otro registro */
-        patch: operations["cambiarAlias"];
-        trace?: never;
-    };
-    "/api/v1/personas": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Personas por nombre, NSS o CURP (200 como máximo) */
-        get: operations["buscarPersonas"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/personas/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Una persona (ETag con su versión) */
-        get: operations["obtenerPersona"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Corregir nombre, NSS, CURP o notas */
-        patch: operations["cambiarPersona"];
-        trace?: never;
-    };
-    "/api/v1/almacenes": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Almacenes (uno por frente) */
-        get: operations["listarAlmacenes"];
-        put?: never;
-        /** Dar de alta el almacén de un frente */
-        post: operations["crearAlmacen"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/almacenes/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Un almacén (ETag con su versión) */
-        get: operations["obtenerAlmacen"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Cambiar clave, nombre o si está activo */
-        patch: operations["cambiarAlmacen"];
-        trace?: never;
-    };
-    "/api/v1/almacenes/{id}/existencias": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Existencia, apartado y disponible por material (costo solo con permiso) */
-        get: operations["existenciasDeAlmacen"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/materiales/{id}/kardex": {
         parameters: {
             query?: never;
@@ -1057,6 +1155,40 @@ export interface paths {
         put?: never;
         /** Capturar un documento en borrador (Idempotency-Key evita duplicarlo al reintentar) */
         post: operations["crearMovimiento"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/movimientos/aplicar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Aplicar varios; cada uno en su propia transacción */
+        post: operations["aplicarMovimientos"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/movimientos/autorizar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Autorizar varios; cada uno en su propia transacción */
+        post: operations["autorizarMovimientos"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1098,24 +1230,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/movimientos/{id}/restantes": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Lo que queda en obra de cada línea (para devolver o reasignar) */
-        get: operations["restantesDeMovimiento"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/movimientos/{id}/enviar": {
+    "/api/v1/movimientos/{id}/aplicar": {
         parameters: {
             query?: never;
             header?: never;
@@ -1124,8 +1239,8 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Enviar a autorizar */
-        post: operations["enviarMovimiento"];
+        /** Aplicar: mueve existencia y costo */
+        post: operations["aplicarMovimiento"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1149,40 +1264,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/movimientos/{id}/rechazar": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Regresar a borrador con una nota */
-        post: operations["rechazarMovimiento"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/movimientos/{id}/aplicar": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Aplicar: mueve existencia y costo */
-        post: operations["aplicarMovimiento"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/movimientos/{id}/cancelar": {
         parameters: {
             query?: never;
@@ -1200,7 +1281,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/movimientos/autorizar": {
+    "/api/v1/movimientos/{id}/enviar": {
         parameters: {
             query?: never;
             header?: never;
@@ -1209,15 +1290,15 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Autorizar varios; cada uno en su propia transacción */
-        post: operations["autorizarMovimientos"];
+        /** Enviar a autorizar */
+        post: operations["enviarMovimiento"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/v1/movimientos/aplicar": {
+    "/api/v1/movimientos/{id}/rechazar": {
         parameters: {
             query?: never;
             header?: never;
@@ -1226,12 +1307,288 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Aplicar varios; cada uno en su propia transacción */
-        post: operations["aplicarMovimientos"];
+        /** Regresar a borrador con una nota */
+        post: operations["rechazarMovimiento"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/v1/movimientos/{id}/restantes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lo que queda en obra de cada línea (para devolver o reasignar) */
+        get: operations["restantesDeMovimiento"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/paquetes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Paquetes en orden de árbol; filtra por cliente o solo los propios */
+        get: operations["listarPaquetes"];
+        put?: never;
+        /** Dar de alta un paquete */
+        post: operations["crearPaquete"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/paquetes/equivalencias": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Equivalencias cliente ↔ propio */
+        get: operations["listarEquivalencias"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/paquetes/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Cambiar un paquete */
+        patch: operations["cambiarPaquete"];
+        trace?: never;
+    };
+    "/api/v1/paquetes/{id}/equivalencias": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Reemplazar los paquetes propios equivalentes a un paquete del cliente */
+        put: operations["fijarEquivalencias"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/pedidos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Pedidos filtrados, más recientes primero */
+        get: operations["listarPedidos"];
+        put?: never;
+        /** Capturar un pedido; lo pedido se asigna a las requisiciones más urgentes */
+        post: operations["crearPedido"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/pedidos/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Un pedido con lo recibido y las requisiciones que cubre (ETag) */
+        get: operations["obtenerPedido"];
+        /** Corregir un borrador (If-Match) */
+        put: operations["reemplazarPedido"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/pedidos/{id}/cancelar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancelar un borrador o un pedido enviado sin nada recibido */
+        post: operations["cancelarPedido"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/pedidos/{id}/cerrar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Dar por terminado un pedido enviado; lo que no llegó vuelve a ser faltante */
+        post: operations["cerrarPedido"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/pedidos/{id}/enviar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Marcar como enviado al proveedor */
+        post: operations["enviarPedido"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/pedidos/{id}/recibir": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Recibir contra el pedido: crea y aplica la recepción y aparta lo recibido para las requisiciones que cubre */
+        post: operations["recibirPedido"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/periodos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Meses cerrados y el siguiente por cerrar */
+        get: operations["listarPeriodos"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/periodos/{anio}/{mes}/cerrar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cerrar el mes (administración) */
+        post: operations["cerrarPeriodo"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Personas por nombre, NSS o CURP (200 como máximo) */
+        get: operations["buscarPersonas"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personas/nombres": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Nombres de personas activas para elegir solicitante o responsable (20) */
+        get: operations["buscarNombresPersonas"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personas/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Una persona (ETag con su versión) */
+        get: operations["obtenerPersona"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Corregir nombre, NSS, CURP o notas */
+        patch: operations["cambiarPersona"];
         trace?: never;
     };
     "/api/v1/prestamos": {
@@ -1303,76 +1660,60 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/conteos": {
+    "/api/v1/prototipos": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Conteos físicos, abiertos primero */
-        get: operations["listarConteos"];
+        /** Prototipos de vivienda */
+        get: operations["listarPrototipos"];
         put?: never;
-        /** Abrir un conteo (el almacén deja de aplicar movimientos) */
-        post: operations["abrirConteo"];
+        /** Dar de alta un prototipo */
+        post: operations["crearPrototipo"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/v1/conteos/{id}": {
+    "/api/v1/prototipos/{id}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Un conteo con sus líneas */
-        get: operations["obtenerConteo"];
+        get?: never;
         put?: never;
         post?: never;
         delete?: never;
         options?: never;
         head?: never;
-        patch?: never;
+        /** Cambiar un prototipo */
+        patch: operations["cambiarPrototipo"];
         trace?: never;
     };
-    "/api/v1/conteos/{id}/lineas": {
+    "/api/v1/proveedores": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
-        /** Capturar lo contado (agrega materiales si faltan) */
-        put: operations["capturarConteo"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/conteos/{id}/cerrar": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
+        /** Proveedores, con búsqueda opcional */
+        get: operations["listarProveedores"];
         put?: never;
-        /** Cerrar y aplicar los ajustes (administración) */
-        post: operations["cerrarConteo"];
+        /** Dar de alta un proveedor */
+        post: operations["crearProveedor"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/v1/conteos/{id}/cancelar": {
+    "/api/v1/proveedores/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -1380,408 +1721,13 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        put?: never;
-        /** Cancelar sin ajustes */
-        post: operations["cancelarConteo"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/periodos": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Meses cerrados y el siguiente por cerrar */
-        get: operations["listarPeriodos"];
         put?: never;
         post?: never;
         delete?: never;
         options?: never;
         head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/periodos/{anio}/{mes}/cerrar": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Cerrar el mes (administración) */
-        post: operations["cerrarPeriodo"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/archivos": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Subir una foto (JPEG, PNG, WebP) o PDF de hasta 10 MB */
-        post: operations["subirArchivo"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/archivos/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Contenido de un archivo */
-        get: operations["verArchivo"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/personas/nombres": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Nombres de personas activas para elegir solicitante o responsable (20) */
-        get: operations["buscarNombresPersonas"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/historico/unidades/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Lo que dice el Excel de un lote: sus vales, sus pagos de destajo y las altas del IMSS de su contrato */
-        get: operations["historiaDeUnidad"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/requisiciones/por-autorizar": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Bandeja: requisiciones pendientes que el usuario puede autorizar */
-        get: operations["requisicionesPorAutorizar"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/requisiciones/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Una requisición con el avance de cada renglón (ETag) */
-        get: operations["obtenerRequisicion"];
-        /** Corregir un borrador (If-Match) */
-        put: operations["reemplazarRequisicion"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/requisiciones": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Requisiciones filtradas, más recientes primero (el residente, solo sus contratos) */
-        get: operations["listarRequisiciones"];
-        put?: never;
-        /** Capturar una requisición en borrador */
-        post: operations["crearRequisicion"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/requisiciones/{id}/enviar": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Enviar a autorizar */
-        post: operations["enviarRequisicion"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/requisiciones/{id}/autorizar": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Autorizar (nunca lo propio) y apartar lo que haya en el almacén */
-        post: operations["autorizarRequisicion"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/requisiciones/{id}/rechazar": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Regresar a borrador con una nota */
-        post: operations["rechazarRequisicion"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/requisiciones/{id}/reservar": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Volver a apartar lo que haya en el almacén para lo pendiente */
-        post: operations["reservarRequisicion"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/requisiciones/{id}/surtir": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Crear el vale que surte la requisición; queda enviado a autorizar */
-        post: operations["surtirRequisicion"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/requisiciones/{id}/cerrar": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Dar por terminada una requisición autorizada; libera lo apartado */
-        post: operations["cerrarRequisicion"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/requisiciones/{id}/cancelar": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Cancelar (autorizada, solo sin vales); libera lo apartado */
-        post: operations["cancelarRequisicion"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/pedidos": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Pedidos filtrados, más recientes primero */
-        get: operations["listarPedidos"];
-        put?: never;
-        /** Capturar un pedido; lo pedido se asigna a las requisiciones más urgentes */
-        post: operations["crearPedido"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/pedidos/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Un pedido con lo recibido y las requisiciones que cubre (ETag) */
-        get: operations["obtenerPedido"];
-        /** Corregir un borrador (If-Match) */
-        put: operations["reemplazarPedido"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/pedidos/{id}/enviar": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Marcar como enviado al proveedor */
-        post: operations["enviarPedido"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/pedidos/{id}/cerrar": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Dar por terminado un pedido enviado; lo que no llegó vuelve a ser faltante */
-        post: operations["cerrarPedido"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/pedidos/{id}/cancelar": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Cancelar un borrador o un pedido enviado sin nada recibido */
-        post: operations["cancelarPedido"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/faltantes": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Lo que falta comprar de las requisiciones autorizadas, por proveedor sugerido (el último que surtió cada material) */
-        get: operations["faltantesPorProveedor"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/pedidos/{id}/recibir": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Recibir contra el pedido: crea y aplica la recepción y aparta lo recibido para las requisiciones que cubre */
-        post: operations["recibirPedido"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
+        /** Cambiar un proveedor */
+        patch: operations["cambiarProveedor"];
         trace?: never;
     };
     "/api/v1/reportes/contratos": {
@@ -1852,23 +1798,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/reportes/valor-inventario": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Existencia valorizada por almacén y material (costo promedio sin IVA) */
-        get: operations["reporteValorInventario"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/reportes/requisicion-vs-surtido": {
         parameters: {
             query?: never;
@@ -1886,15 +1815,15 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/conciliacion/contratos/{id}": {
+    "/api/v1/reportes/valor-inventario": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** El costo de Programa de cada lote contra la hoja del frente recalculada, con cada diferencia explicada */
-        get: operations["conciliarContrato"];
+        /** Existencia valorizada por almacén y material (costo promedio sin IVA) */
+        get: operations["reporteValorInventario"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1903,15 +1832,33 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/importaciones/{id}/conciliacion.xlsx": {
+    "/api/v1/requisiciones": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** La conciliación de totales de una carga del histórico, completa, en Excel */
-        get: operations["conciliacionDeCargaExcel"];
+        /** Requisiciones filtradas, más recientes primero (el residente, solo sus contratos) */
+        get: operations["listarRequisiciones"];
+        put?: never;
+        /** Capturar una requisición en borrador */
+        post: operations["crearRequisicion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/requisiciones/por-autorizar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Bandeja: requisiciones pendientes que el usuario puede autorizar */
+        get: operations["requisicionesPorAutorizar"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1920,16 +1867,17 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/contratos/{id}/presupuesto": {
+    "/api/v1/requisiciones/{id}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
-        /** Presupuesto de material para los lotes de un prototipo o una lista de lotes */
-        put: operations["asignarPresupuesto"];
+        /** Una requisición con el avance de cada renglón (ETag) */
+        get: operations["obtenerRequisicion"];
+        /** Corregir un borrador (If-Match) */
+        put: operations["reemplazarRequisicion"];
         post?: never;
         delete?: never;
         options?: never;
@@ -1937,42 +1885,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/aperturas": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Aperturas de almacén, en curso primero */
-        get: operations["listarAperturas"];
-        put?: never;
-        /** Abrir la apertura de un almacén sin movimientos: conteo a ciegas y préstamos abiertos del Excel */
-        post: operations["abrirApertura"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/aperturas/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Una apertura: materiales, préstamos, lo que falta y la huella para firmar */
-        get: operations["obtenerApertura"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/aperturas/{id}/sin-contar-en-cero": {
+    "/api/v1/requisiciones/{id}/autorizar": {
         parameters: {
             query?: never;
             header?: never;
@@ -1981,15 +1894,15 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Marcar en 0 lo que no se encontró al contar (almacén) */
-        post: operations["aperturaSinContarEnCero"];
+        /** Autorizar (nunca lo propio) y apartar lo que haya en el almacén */
+        post: operations["autorizarRequisicion"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/v1/aperturas/{id}/prestamos/traer": {
+    "/api/v1/requisiciones/{id}/cancelar": {
         parameters: {
             query?: never;
             header?: never;
@@ -1998,15 +1911,15 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Volver a traer los préstamos abiertos del Excel (después de la carga final) */
-        post: operations["traerPrestamosApertura"];
+        /** Cancelar (autorizada, solo sin vales); libera lo apartado */
+        post: operations["cancelarRequisicion"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/v1/aperturas/{id}/prestamos": {
+    "/api/v1/requisiciones/{id}/cerrar": {
         parameters: {
             query?: never;
             header?: never;
@@ -2015,15 +1928,15 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Agregar un préstamo abierto que no estaba en el Excel */
-        post: operations["agregarPrestamoApertura"];
+        /** Dar por terminada una requisición autorizada; libera lo apartado */
+        post: operations["cerrarRequisicion"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/v1/aperturas/{id}/prestamos/{prestamoId}": {
+    "/api/v1/requisiciones/{id}/enviar": {
         parameters: {
             query?: never;
             header?: never;
@@ -2032,15 +1945,15 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post?: never;
+        /** Enviar a autorizar */
+        post: operations["enviarRequisicion"];
         delete?: never;
         options?: never;
         head?: never;
-        /** Resolver un préstamo: listo (material y responsable), pendiente o descartado */
-        patch: operations["cambiarPrestamoApertura"];
+        patch?: never;
         trace?: never;
     };
-    "/api/v1/aperturas/{id}/prestamos/{prestamoId}/herramienta": {
+    "/api/v1/requisiciones/{id}/rechazar": {
         parameters: {
             query?: never;
             header?: never;
@@ -2049,32 +1962,15 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Dar de alta la herramienta del préstamo como material (categoría Herramienta) */
-        post: operations["altaHerramientaApertura"];
+        /** Regresar a borrador con una nota */
+        post: operations["rechazarRequisicion"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/v1/aperturas/{id}/costos": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Capturar o quitar costos sin IVA (administración) */
-        put: operations["capturarCostosApertura"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/aperturas/{id}/firmar": {
+    "/api/v1/requisiciones/{id}/reservar": {
         parameters: {
             query?: never;
             header?: never;
@@ -2083,15 +1979,15 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Firmar como coordinación o administración; la segunda firma aplica el saldo de apertura */
-        post: operations["firmarApertura"];
+        /** Volver a apartar lo que haya en el almacén para lo pendiente */
+        post: operations["reservarRequisicion"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/v1/aperturas/{id}/retirar-firmas": {
+    "/api/v1/requisiciones/{id}/surtir": {
         parameters: {
             query?: never;
             header?: never;
@@ -2100,40 +1996,23 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Retirar las firmas para corregir (antes de la segunda firma) */
-        post: operations["retirarFirmasApertura"];
+        /** Crear el vale que surte la requisición; queda enviado a autorizar */
+        post: operations["surtirRequisicion"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/v1/aperturas/{id}/cancelar": {
+    "/api/v1/residentes": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
-        put?: never;
-        /** Cancelar la apertura y su conteo */
-        post: operations["cancelarApertura"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/aperturas/{id}/acta.xlsx": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Acta de apertura en Excel: firmas, materiales valuados y préstamos */
-        get: operations["actaApertura"];
+        /** Usuarios con rol residente */
+        get: operations["candidatosResidente"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2142,15 +2021,136 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/almacenes/{id}/salidas.xlsx": {
+    "/api/v1/tipos-unidad": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Plan de reversa: vales, devoluciones y reasignaciones con las columnas de la hoja Salidas del Excel */
-        get: operations["salidasDeAlmacenComoExcel"];
+        /** Tipos de unidad de obra */
+        get: operations["listarTiposUnidad"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/unidades-medida": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Unidades del sistema y propias */
+        get: operations["listarUnidadesMedida"];
+        put?: never;
+        /** Dar de alta una unidad propia */
+        post: operations["crearUnidadMedida"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/unidades-medida/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Cambiar una unidad propia */
+        patch: operations["cambiarUnidadMedida"];
+        trace?: never;
+    };
+    "/api/v1/unidades/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Cambiar prototipo, presupuesto o estado */
+        patch: operations["cambiarUnidad"];
+        trace?: never;
+    };
+    "/api/v1/usuarios": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Usuarios de la empresa */
+        get: operations["listarUsuarios"];
+        put?: never;
+        /** Dar de alta un usuario */
+        post: operations["crearUsuario"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/usuarios/roles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Roles disponibles y sus permisos */
+        get: operations["listarRoles"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/usuarios/{id}/segundo-factor": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Borrar el segundo factor de otro usuario (perdió el teléfono) */
+        delete: operations["restablecerSegundoFactor"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/version": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Versión y entorno */
+        get: operations["version"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2163,16 +2163,69 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        SolicitudLogin: {
-            usuario: string;
-            contrasena: string;
+        Acciones: {
+            aplicar: boolean;
+            autorizar: boolean;
+            cancelar: boolean;
+            editar: boolean;
+            enviar: boolean;
         };
-        PasoSegundoFactorDto: {
-            /** @description codigo o alta */
-            paso: string;
+        AccionesPedido: {
+            cancelar: boolean;
+            cerrar: boolean;
+            editar: boolean;
+            enviar: boolean;
+            recibir: boolean;
         };
-        SolicitudCodigo: {
-            codigo: string;
+        AccionesRequisicion: {
+            autorizar: boolean;
+            cancelar: boolean;
+            cerrar: boolean;
+            editar: boolean;
+            enviar: boolean;
+            reservar: boolean;
+            surtir: boolean;
+        };
+        AliasCarga: {
+            /** Format: int64 */
+            cargaId?: number;
+            /** Format: date-time */
+            creado: string;
+            /** @description Nombre del registro; vacío si ya no existe */
+            destino?: string;
+            /** Format: int64 */
+            destinoId: number;
+            entidad: string;
+            /** Format: int64 */
+            id: number;
+            /** @description regla, sugerencia_aceptada o manual */
+            origen: string;
+            texto: string;
+            usuario?: string;
+            /** Format: int32 */
+            version: number;
+        };
+        Almacen: {
+            activo: boolean;
+            clave: string;
+            frente: string;
+            /** Format: int64 */
+            frenteId: number;
+            /** Format: int64 */
+            id: number;
+            nombre: string;
+            /** Format: int32 */
+            version: number;
+        };
+        AltaHistorica: {
+            /** Format: int32 */
+            dias?: number;
+            estatus?: string;
+            /** Format: date */
+            mes: string;
+            /** @description mes o anterior */
+            origen: string;
+            persona: string;
         };
         AltaSegundoFactorDto: {
             /** @description Base32, para capturarlo a mano */
@@ -2180,244 +2233,536 @@ export interface components {
             /** @description otpauth://… para el código QR */
             uri: string;
         };
-        RolDto: {
-            clave: string;
-            nombre: string;
-        };
-        SesionDto: {
+        Apartado: {
+            cantidad: number;
+            folio: string;
+            material: string;
             /** Format: int64 */
-            usuarioId: number;
-            usuario: string;
-            nombre: string;
+            requisicionId: number;
+            unidadObra: string;
+        };
+        Apertura: {
+            abrio: string;
+            almacen: string;
             /** Format: int64 */
-            empresaId: number;
-            empresa: string;
-            roles: components["schemas"]["RolDto"][];
-            permisos: string[];
-        };
-        CsrfDto: {
-            token: string;
-            encabezado: string;
-        };
-        SolicitudNuevoUsuario: {
-            usuario: string;
-            nombre: string;
-            /** Format: email */
-            correo?: string;
-            contrasena: string;
-            roles: string[];
-        };
-        UsuarioDto: {
+            almacenId: number;
+            conteoFolio: string;
+            /** Format: int64 */
+            conteoId: number;
+            /** @enum {string} */
+            estado: "abierta" | "en_firma" | "aplicada" | "cancelada";
+            /** Format: date */
+            fecha: string;
+            firmaAdministracion?: string;
+            /** Format: date-time */
+            firmaAdministracionEn?: string;
+            firmaCoordinacion?: string;
+            /** Format: date-time */
+            firmaCoordinacionEn?: string;
+            folio: string;
             /** Format: int64 */
             id: number;
-            usuario: string;
+            /** @description Valor firmado, sin IVA (con permiso de ver costos) */
+            importe?: number;
+            motivoCancelacion?: string;
+            /** Format: int64 */
+            movimientoId?: number;
+            observaciones?: string;
+            /** Format: int32 */
+            version: number;
+        };
+        Archivo: {
+            /** Format: int64 */
+            id: number;
             nombre: string;
-            correo?: string;
-            activo: boolean;
-            roles: components["schemas"]["RolDto"][];
-            /** @description Tiene segundo factor confirmado */
-            segundoFactor: boolean;
+            /** Format: int32 */
+            tamano: number;
+            tipo: string;
+        };
+        CambioAlias: {
+            /** Format: int64 */
+            destinoId: number;
+        };
+        Cancelacion: {
+            motivo: string;
+        };
+        CapturaConteo: {
+            lineas: components["schemas"]["Contado"][];
+        };
+        CapturaCostos: {
+            costos: components["schemas"]["CostoApertura"][];
         };
         CatalogoRolDto: {
             clave: string;
             nombre: string;
             permisos: string[];
         };
-        VersionDto: {
-            version: string;
-            entorno: string;
+        Categoria: {
+            activa: boolean;
+            /** Format: int64 */
+            id: number;
+            nombre: string;
+            /** Format: int32 */
+            version: number;
+        };
+        ClasificacionCosto: {
+            clave: string;
+            consumePrograma: boolean;
+            /** Format: int32 */
+            id: number;
+            nombre: string;
         };
         Cliente: {
+            activo: boolean;
             /** Format: int64 */
             id: number;
             nombre: string;
             rfc?: string;
-            activo: boolean;
             /** Format: int32 */
             version: number;
         };
-        DatosCliente: {
-            nombre: string;
-            rfc?: string;
-            activo?: boolean;
+        Cobertura: {
+            cantidad: number;
+            folio: string;
+            recibido: number;
+            /** Format: int64 */
+            requisicionId: number;
+            /** Format: int64 */
+            requisicionLineaId: number;
+            unidadObra: string;
         };
-        Frente: {
+        ColumnaClasificacion: {
+            clave: string;
+            /** Format: int32 */
+            id: number;
+            nombre: string;
+        };
+        ConceptoConciliado: {
+            cargado: number;
+            /**
+             * Format: int64
+             * @description Líneas con diferencia distinta de 0
+             */
+            conDiferencia: number;
+            concepto: string;
+            descartado: number;
+            diferencia: number;
+            excel: number;
+            /** Format: int64 */
+            lineas: number;
+            pendiente: number;
+        };
+        ConciliacionCarga: {
+            /** Format: int64 */
+            cargaId: number;
+            conceptos: components["schemas"]["ConceptoConciliado"][];
+            /** @description Líneas con diferencia, pendiente o descartado (o todas, si se piden), hasta 500 */
+            lineas: components["schemas"]["TotalConciliado"][];
+            recortada: boolean;
+        };
+        ConciliacionContrato: {
+            archivo: string;
+            avisos: string[];
+            /** Format: int64 */
+            cargaId: number;
+            /** Format: int32 */
+            columnasDeLote: number;
+            contrato: string;
+            /** Format: int64 */
+            contratoId: number;
+            /** @description Por motivo, del mayor al menor */
+            efectos: components["schemas"]["Efecto"][];
+            hoja: string;
+            hojaTotal: number;
+            lotes: components["schemas"]["LoteConciliado"][];
+            razon: string;
+            recortada: boolean;
+            /** @description Los renglones que más pesan, hasta 500 */
+            renglones: components["schemas"]["RenglonDiferencia"][];
+            sistema: number;
+        };
+        Contado: {
+            contado: number;
+            costoUnitario?: number;
+            /** Format: int64 */
+            materialId: number;
+        };
+        Conteo: {
+            abrio: string;
+            almacen: string;
+            /** Format: int64 */
+            almacenId: number;
+            aperturaFolio?: string;
+            /**
+             * Format: int64
+             * @description La apertura del almacén a la que pertenece el conteo (H8)
+             */
+            aperturaId?: number;
+            /** Format: date-time */
+            cerradoEn?: string;
+            cerro?: string;
+            /** Format: int32 */
+            contadas: number;
+            /** @enum {string} */
+            estado: "abierto" | "cerrado" | "cancelado";
+            /** Format: date */
+            fecha: string;
+            folio: string;
             /** Format: int64 */
             id: number;
-            /** Format: int64 */
-            clienteId: number;
-            cliente: string;
-            clave: string;
-            nombre: string;
-            activo: boolean;
+            /** Format: int32 */
+            lineas: number;
+            observaciones?: string;
             /** Format: int32 */
             version: number;
-        };
-        DatosFrente: {
-            /** Format: int64 */
-            clienteId: number;
-            clave: string;
-            nombre: string;
-            activo?: boolean;
-        };
-        Prototipo: {
-            /** Format: int64 */
-            id: number;
-            clave: string;
-            nombre: string;
-            descripcion?: string;
-            activo: boolean;
-            /** Format: int32 */
-            version: number;
-        };
-        DatosPrototipo: {
-            clave: string;
-            nombre: string;
-            descripcion?: string;
-            activo?: boolean;
-        };
-        TipoUnidad: {
-            /** Format: int32 */
-            id: number;
-            clave: string;
-            nombre: string;
-            usaManzanaLote: boolean;
         };
         Contrato: {
-            /** Format: int64 */
-            id: number;
-            /** Format: int64 */
-            clienteId: number;
             cliente: string;
             /** Format: int64 */
-            frenteId?: number;
-            frente?: string;
+            clienteId: number;
             codigo: string;
-            numeroObra?: string;
             descripcion?: string;
-            /** Format: date */
-            inicio?: string;
-            /** Format: date */
-            fin?: string;
-            /** @description Solo para quien ve costos */
-            monto?: number;
             /** @enum {string} */
             estado: "activo" | "terminado" | "cancelado";
+            /** Format: date */
+            fin?: string;
+            frente?: string;
+            /** Format: int64 */
+            frenteId?: number;
+            /** Format: int64 */
+            id: number;
+            /** Format: date */
+            inicio?: string;
+            /** @description Solo para quien ve costos */
+            monto?: number;
+            numeroObra?: string;
             /** Format: int32 */
             unidades: number;
             /** Format: int32 */
             version: number;
         };
-        DatosContrato: {
+        Conversion: {
+            delSistema: boolean;
+            destino: string;
             /** Format: int64 */
-            clienteId: number;
-            /** Format: int64 */
-            frenteId?: number;
-            codigo: string;
-            numeroObra?: string;
-            descripcion?: string;
-            /** Format: date */
-            inicio?: string;
-            /** Format: date */
-            fin?: string;
-            monto?: number;
-            estado?: string;
-        };
-        Residentes: {
-            usuarioIds: number[];
-        };
-        PrecioPaquete: {
+            destinoId: number;
+            factor: number;
             /** Format: int64 */
             id: number;
             /** Format: int64 */
-            paqueteId: number;
-            paqueteClave: string;
-            paquete: string;
-            deCliente: boolean;
+            materialId?: number;
+            origen: string;
             /** Format: int64 */
-            prototipoId?: number;
-            prototipo?: string;
-            precioCobro?: number;
-            precioDestajo?: number;
+            origenId: number;
             /** Format: int32 */
             version: number;
+        };
+        CostoApertura: {
+            costoUnitario?: number;
+            /** Format: int64 */
+            materialId: number;
+            nota?: string;
+        };
+        CostoContrato: {
+            clasificaciones: components["schemas"]["ColumnaClasificacion"][];
+            contrato: string;
+            /** Format: int64 */
+            contratoId: number;
+            lotes: components["schemas"]["LoteCosto"][];
+            totales: components["schemas"]["LoteCosto"];
+        };
+        CsrfDto: {
+            encabezado: string;
+            token: string;
+        };
+        DatosAlmacen: {
+            activo?: boolean;
+            clave: string;
+            /** Format: int64 */
+            frenteId: number;
+            nombre: string;
+        };
+        DatosApertura: {
+            /** Format: int64 */
+            almacenId: number;
+            /** Format: date */
+            fecha: string;
+            observaciones?: string;
+        };
+        DatosCategoria: {
+            activa?: boolean;
+            nombre: string;
+        };
+        DatosCliente: {
+            activo?: boolean;
+            nombre: string;
+            rfc?: string;
+        };
+        DatosConteo: {
+            /** Format: int64 */
+            almacenId: number;
+            /** Format: date */
+            fecha: string;
+            materialIds?: number[];
+            observaciones?: string;
+        };
+        DatosContrato: {
+            /** Format: int64 */
+            clienteId: number;
+            codigo: string;
+            descripcion?: string;
+            estado?: string;
+            /** Format: date */
+            fin?: string;
+            /** Format: int64 */
+            frenteId?: number;
+            /** Format: date */
+            inicio?: string;
+            monto?: number;
+            numeroObra?: string;
+        };
+        DatosConversion: {
+            /** Format: int64 */
+            destinoId: number;
+            factor: number;
+            /** Format: int64 */
+            materialId?: number;
+            /** Format: int64 */
+            origenId: number;
+        };
+        DatosFactor: {
+            factor: number;
+        };
+        DatosFrente: {
+            activo?: boolean;
+            clave: string;
+            /** Format: int64 */
+            clienteId: number;
+            nombre: string;
+        };
+        DatosMaterial: {
+            activo?: boolean;
+            /** Format: int64 */
+            categoriaId?: number;
+            clave?: string;
+            nombre: string;
+            precioReferencia?: number;
+            /** Format: int64 */
+            unidadControlId: number;
+        };
+        DatosMovimiento: {
+            /** Format: int64 */
+            almacenDestinoId?: number;
+            /** Format: int64 */
+            almacenId: number;
+            /** Format: int64 */
+            archivoId?: number;
+            /** @description Crear y enviar a autorizar en un paso */
+            enviar?: boolean;
+            /** Format: date */
+            fecha: string;
+            flete?: number;
+            folioFactura?: string;
+            lineas: components["schemas"]["LineaCaptura"][];
+            motivo?: string;
+            /** Format: int64 */
+            movimientoOrigenId?: number;
+            observaciones?: string;
+            /** Format: int64 */
+            proveedorId?: number;
+            /** Format: int64 */
+            solicitanteId?: number;
+            /** @enum {string} */
+            tipo: "entrada" | "salida" | "devolucion" | "devolucion_proveedor" | "traspaso" | "reasignacion" | "merma" | "ajuste_costo";
+        };
+        DatosPaquete: {
+            activo?: boolean;
+            clave: string;
+            /** Format: int64 */
+            clienteId?: number;
+            nombre: string;
+            /** Format: int32 */
+            orden?: number;
+            /** Format: int64 */
+            padreId?: number;
+            unidad?: string;
+        };
+        DatosPedido: {
+            /** Format: int64 */
+            almacenId: number;
+            /** @description Crear y enviar en un paso */
+            enviar?: boolean;
+            /** Format: date */
+            fechaEntrega?: string;
+            observaciones?: string;
+            /** Format: int64 */
+            proveedorId: number;
+            renglones: components["schemas"]["RenglonPedidoCaptura"][];
+        };
+        DatosPersona: {
+            activa?: boolean;
+            curp?: string;
+            nombre: string;
+            nota?: string;
+            nss?: string;
+            revisar?: boolean;
         };
         DatosPrecio: {
             /** Format: int64 */
             paqueteId: number;
-            /** Format: int64 */
-            prototipoId?: number;
             precioCobro?: number;
             precioDestajo?: number;
-        };
-        UnidadObra: {
             /** Format: int64 */
-            id: number;
+            prototipoId?: number;
+        };
+        DatosPrestamo: {
+            /** Format: int64 */
+            almacenId: number;
+            cantidad: number;
+            /** Format: date */
+            compromiso?: string;
+            /** Format: int64 */
+            contratoId?: number;
+            /** Format: date */
+            fecha: string;
+            /** Format: int64 */
+            materialId: number;
+            observaciones?: string;
+            /** Format: int64 */
+            responsableId: number;
+        };
+        DatosPrestamoApertura: {
+            cantidad: number;
+            estado: string;
+            /** Format: int64 */
+            materialId?: number;
+            motivo?: string;
+            /** Format: int64 */
+            responsableId?: number;
+        };
+        DatosPresupuesto: {
+            monto?: number;
+            /** Format: int64 */
+            prototipoId?: number;
+            unidadIds?: number[];
+        };
+        DatosPrototipo: {
+            activo?: boolean;
+            clave: string;
+            descripcion?: string;
+            nombre: string;
+        };
+        DatosProveedor: {
+            activo?: boolean;
+            contacto?: string;
+            /** Format: email */
+            correo?: string;
+            /** Format: int32 */
+            diasCredito?: number;
+            nombre: string;
+            rfc?: string;
+            tasaIva?: number;
+            telefono?: string;
+        };
+        DatosRecepcion: {
+            /** Format: date */
+            fecha: string;
+            flete?: number;
+            folioFactura?: string;
+            observaciones?: string;
+            renglones: components["schemas"]["RenglonRecibido"][];
+        };
+        DatosRequisicion: {
             /** Format: int64 */
             contratoId: number;
-            tipo: string;
-            clave: string;
-            manzana?: string;
-            lote?: string;
-            /** Format: int64 */
-            prototipoId?: number;
-            prototipo?: string;
-            presupuestoMaterial?: number;
-            activa: boolean;
-            /** Format: int32 */
-            version: number;
+            /** @description Crear y enviar a autorizar en un paso */
+            enviar?: boolean;
+            /** Format: date */
+            fechaRequerida: string;
+            observaciones?: string;
+            renglones: components["schemas"]["RenglonCaptura"][];
+            urgente?: boolean;
         };
-        NuevasUnidades: {
-            /** @example LOTE */
-            tipo: string;
-            manzana?: string;
-            /** @example 29-31, 35 */
-            lotes?: string;
-            clave?: string;
-            /** Format: int64 */
-            prototipoId?: number;
-            presupuestoMaterial?: number;
+        DatosSurtido: {
+            /** Format: date */
+            fecha: string;
+            observaciones?: string;
+            renglones: components["schemas"]["RenglonSurtido"][];
+            /**
+             * Format: int64
+             * @description Persona que recibe en obra
+             */
+            solicitanteId?: number;
         };
         DatosUnidad: {
+            activa: boolean;
+            presupuestoMaterial?: number;
             /** Format: int64 */
             prototipoId?: number;
-            presupuestoMaterial?: number;
-            activa: boolean;
         };
-        UsuarioResumen: {
+        DatosUnidadMedida: {
+            activa?: boolean;
+            clave: string;
+            fraccionable?: boolean;
+            magnitud: string;
+            nombre: string;
+        };
+        DecisionCarga: {
+            /** Format: int64 */
+            destinoId?: number;
+            motivo?: string;
+            /** Format: int32 */
+            numero: number;
+            opcion: string;
+            regla: string;
+            valor?: string;
+        };
+        DecisionesCarga: {
+            decisiones: components["schemas"]["DecisionCarga"][];
+        };
+        DestinoPosible: {
             /** Format: int64 */
             id: number;
-            usuario: string;
-            nombre: string;
+            texto: string;
         };
-        Paquete: {
-            /** Format: int64 */
-            id: number;
-            /** Format: int64 */
-            clienteId?: number;
-            cliente?: string;
-            /** Format: int64 */
-            padreId?: number;
-            clave: string;
-            nombre: string;
-            unidad?: string;
-            /** Format: int32 */
-            orden: number;
-            activo: boolean;
-            /** Format: int32 */
-            version: number;
+        DetalleApertura: {
+            apertura: components["schemas"]["Apertura"];
+            faltaParaFirmar: string[];
+            /** @enum {string} */
+            firmaComo?: "coordinacion" | "administracion";
+            huella: string;
+            lineas: components["schemas"]["LineaApertura"][];
+            prestamos: components["schemas"]["PrestamoApertura"][];
+            resumen: components["schemas"]["Resumen"];
         };
-        DatosPaquete: {
-            /** Format: int64 */
-            clienteId?: number;
-            /** Format: int64 */
-            padreId?: number;
-            clave: string;
-            nombre: string;
-            unidad?: string;
-            /** Format: int32 */
-            orden?: number;
-            activo?: boolean;
+        DetalleCarga: {
+            conciliacion: components["schemas"]["HojaConciliada"][];
+            confirmadaPor?: string;
+            /** @description Registros creados al confirmar, por entidad */
+            creados: {
+                [key: string]: number;
+            };
+            parametros: {
+                [key: string]: string;
+            };
+            reglas: components["schemas"]["ReglaAplicada"][];
+            resumen: components["schemas"]["ResumenCarga"];
+            revertidaPor?: string;
+        };
+        DetalleConteo: {
+            conteo: components["schemas"]["Conteo"];
+            lineas: components["schemas"]["LineaConteo"][];
+        };
+        Devolucion: {
+            /** Format: date */
+            fecha?: string;
+        };
+        Efecto: {
+            descripcion: string;
+            /** @description Con signo: lo que suma o resta al sistema */
+            importe: number;
+            /** @enum {string} */
+            motivo: "SIN_COLUMNA" | "REPARTO" | "LOTE_CORREGIDO" | "MATERIAL" | "RAZON" | "FRENTE" | "NO_ENTREGADO" | "CANTIDAD" | "SOLO_EN_HOJA" | "SIN_PRECIO" | "PONDERACION" | "IVA";
         };
         Equivalencia: {
             /** Format: int64 */
@@ -2428,1314 +2773,885 @@ export interface components {
         Equivalencias: {
             paquetePropioIds: number[];
         };
-        UnidadMedida: {
-            /** Format: int64 */
-            id: number;
-            clave: string;
-            nombre: string;
-            /** @enum {string} */
-            magnitud: "conteo" | "masa" | "volumen" | "longitud" | "superficie";
-            fraccionable: boolean;
-            delSistema: boolean;
-            activa: boolean;
-            /** Format: int32 */
-            version: number;
-        };
-        DatosUnidadMedida: {
-            clave: string;
-            nombre: string;
-            magnitud: string;
-            fraccionable?: boolean;
-            activa?: boolean;
-        };
-        Conversion: {
-            /** Format: int64 */
-            id: number;
-            /** Format: int64 */
-            materialId?: number;
-            /** Format: int64 */
-            origenId: number;
-            origen: string;
-            /** Format: int64 */
-            destinoId: number;
-            destino: string;
-            factor: number;
-            delSistema: boolean;
-            /** Format: int32 */
-            version: number;
-        };
-        DatosConversion: {
-            /** Format: int64 */
-            materialId?: number;
-            /** Format: int64 */
-            origenId: number;
-            /** Format: int64 */
-            destinoId: number;
-            factor: number;
-        };
-        DatosFactor: {
-            factor: number;
-        };
-        Categoria: {
-            /** Format: int64 */
-            id: number;
-            nombre: string;
-            activa: boolean;
-            /** Format: int32 */
-            version: number;
-        };
-        DatosCategoria: {
-            nombre: string;
-            activa?: boolean;
-        };
-        ClasificacionCosto: {
-            /** Format: int32 */
-            id: number;
-            clave: string;
-            nombre: string;
-            consumePrograma: boolean;
-        };
-        Material: {
-            /** Format: int64 */
-            id: number;
-            clave: string;
-            nombre: string;
-            /** Format: int64 */
-            categoriaId?: number;
-            categoria?: string;
-            /** Format: int64 */
-            unidadControlId: number;
-            unidadControl: string;
-            /** @description Sin IVA. Solo para quien ve precios o costos */
-            precioReferencia?: number;
-            activo: boolean;
-            /** Format: int32 */
-            version: number;
-        };
-        PaginaMateriales: {
-            elementos: components["schemas"]["Material"][];
-            /** Format: int64 */
-            total: number;
-            /** Format: int32 */
-            pagina: number;
-            /** Format: int32 */
-            tamano: number;
-        };
-        DatosMaterial: {
-            clave?: string;
-            nombre: string;
-            /** Format: int64 */
-            categoriaId?: number;
-            /** Format: int64 */
-            unidadControlId: number;
-            precioReferencia?: number;
-            activo?: boolean;
-        };
-        Proveedor: {
-            /** Format: int64 */
-            id: number;
-            nombre: string;
-            rfc?: string;
-            contacto?: string;
-            telefono?: string;
-            correo?: string;
-            /** @description Tasa de IVA por defecto: 0.16, 0.08 o 0 */
-            tasaIva?: number;
-            /** Format: int32 */
-            diasCredito?: number;
-            activo: boolean;
-            /** Format: int32 */
-            version: number;
-        };
-        DatosProveedor: {
-            nombre: string;
-            rfc?: string;
-            contacto?: string;
-            telefono?: string;
-            /** Format: email */
-            correo?: string;
-            tasaIva?: number;
-            /** Format: int32 */
-            diasCredito?: number;
-            activo?: boolean;
-        };
-        TipoCargaInfo: {
-            tipo: string;
-            /** Format: int32 */
-            paso: number;
-            nombre: string;
-            origen: string;
-            requiere: string[];
-            parametros: string[];
-            /** @description Hay al menos una carga confirmada */
-            confirmada: boolean;
-            /** @description Sus cargas previas ya están confirmadas */
-            disponible: boolean;
-            /** Format: int64 */
-            ultimaCargaId?: number;
-            ultimoEstado?: string;
-        };
-        ResumenCarga: {
-            /** Format: int64 */
-            id: number;
-            tipo: string;
-            tipoNombre: string;
-            archivo: string;
-            hojas: string;
-            /** @description validada, confirmada o revertida */
-            estado: string;
-            versionReglas: string;
-            usuario: string;
-            /** Format: date-time */
-            creada: string;
-            /** Format: date-time */
-            confirmada?: string;
-            /** Format: date-time */
-            revertida?: string;
-            /** Format: int64 */
-            renglones: number;
-            /** Format: int64 */
-            validos: number;
-            /** Format: int64 */
-            corregidos: number;
-            /** Format: int64 */
-            enCuarentena: number;
-            /** Format: int64 */
-            descartados: number;
-            /** Format: int64 */
-            porCrear: number;
-            /** Format: int64 */
-            existentes: number;
-            /** @description El mismo archivo ya estaba cargado: se devuelve esa carga */
-            repetida: boolean;
-        };
-        HojaConciliada: {
-            hoja: string;
-            /** Format: int64 */
-            leidos: number;
-            /** Format: int64 */
-            validos: number;
-            /** Format: int64 */
-            corregidos: number;
-            /** Format: int64 */
-            enCuarentena: number;
-            /** Format: int64 */
-            descartados: number;
-            /** Format: int64 */
-            porCrear: number;
-            /** Format: int64 */
-            existentes: number;
-            /**
-             * Format: int64
-             * @description Leídos que no quedaron en ningún estado: 0
-             */
-            diferencia: number;
-        };
-        ReglaAplicada: {
-            regla: string;
-            severidad: string;
-            /** Format: int64 */
-            renglones: number;
-            /** Format: int64 */
-            pendientes: number;
-            ejemplo: string;
-        };
-        DetalleCarga: {
-            resumen: components["schemas"]["ResumenCarga"];
-            parametros: {
-                [key: string]: string;
-            };
-            conciliacion: components["schemas"]["HojaConciliada"][];
-            reglas: components["schemas"]["ReglaAplicada"][];
-            /** @description Registros creados al confirmar, por entidad */
-            creados: {
-                [key: string]: number;
-            };
-            confirmadaPor?: string;
-            revertidaPor?: string;
-        };
-        IncidenciaCarga: {
-            regla: string;
-            /** @description info, advertencia, cuarentena o bloqueo */
-            severidad: string;
-            detalle: string;
-            /** @description Sugerencia: destinoId y destino; con entidad y texto, aceptarla guarda un alias */
-            sugerencia?: {
-                [key: string]: unknown;
-            };
-            /** @description ACEPTAR, ELEGIR, CREAR, VALOR o DESCARTAR */
-            opciones: string[];
-            pendiente: boolean;
-            resolucion?: {
-                [key: string]: unknown;
-            };
-            resueltaPor?: string;
-            /** Format: date-time */
-            resueltaEn?: string;
-        };
-        FilaCargada: {
-            /** Format: int32 */
-            numero: number;
-            hoja: string;
-            /** Format: int32 */
-            filaExcel?: number;
-            crudo: {
-                [key: string]: string;
-            };
-            normal: {
-                [key: string]: string;
-            };
-            estado: string;
-            /** @description crear, existe u omitir */
-            accion: string;
-            incidencias: components["schemas"]["IncidenciaCarga"][];
-        };
-        PaginaFilas: {
-            elementos: components["schemas"]["FilaCargada"][];
-            /** Format: int64 */
-            total: number;
-            /** Format: int32 */
-            pagina: number;
-            /** Format: int32 */
-            tamano: number;
-        };
-        DecisionCarga: {
-            /** Format: int32 */
-            numero: number;
-            regla: string;
-            opcion: string;
-            /** Format: int64 */
-            destinoId?: number;
-            valor?: string;
-            motivo?: string;
-        };
-        DecisionesCarga: {
-            decisiones: components["schemas"]["DecisionCarga"][];
-        };
-        AliasCarga: {
-            /** Format: int64 */
-            id: number;
-            entidad: string;
-            texto: string;
-            /** Format: int64 */
-            destinoId: number;
-            /** @description Nombre del registro; vacío si ya no existe */
-            destino?: string;
-            /** @description regla, sugerencia_aceptada o manual */
-            origen: string;
-            /** Format: int64 */
-            cargaId?: number;
-            usuario?: string;
-            /** Format: date-time */
-            creado: string;
-            /** Format: int32 */
-            version: number;
-        };
-        CambioAlias: {
-            /** Format: int64 */
-            destinoId: number;
-        };
-        DestinoPosible: {
-            /** Format: int64 */
-            id: number;
-            texto: string;
-        };
-        Persona: {
-            /** Format: int64 */
-            id: number;
-            nombre: string;
-            nss?: string;
-            curp?: string;
-            /** @description Alta desde un apodo o posible duplicado */
-            revisar: boolean;
-            nota?: string;
-            activa: boolean;
-            /** @description La dio de alta una carga de Excel */
-            importada: boolean;
-            /** Format: int32 */
-            version: number;
-        };
-        DatosPersona: {
-            nombre: string;
-            nss?: string;
-            curp?: string;
-            revisar?: boolean;
-            nota?: string;
-            activa?: boolean;
-        };
-        Almacen: {
-            /** Format: int64 */
-            id: number;
-            /** Format: int64 */
-            frenteId: number;
-            frente: string;
-            clave: string;
-            nombre: string;
-            activo: boolean;
-            /** Format: int32 */
-            version: number;
-        };
-        DatosAlmacen: {
-            /** Format: int64 */
-            frenteId: number;
-            clave: string;
-            nombre: string;
-            activo?: boolean;
-        };
         Existencia: {
-            /** Format: int64 */
-            materialId: number;
-            clave: string;
-            material: string;
-            unidad: string;
-            existencia: number;
-            reservado: number;
-            prestado: number;
-            disponible: number;
-            /** @description Sin IVA; solo para quien ve costos */
-            costoPromedio?: number;
-            /** @description Solo para quien ve costos */
-            valor?: number;
             /** Format: date-time */
             actualizado: string;
-        };
-        RenglonKardex: {
-            /** Format: int64 */
-            id: number;
-            /** Format: int64 */
-            almacenId: number;
-            almacen: string;
-            /** Format: int64 */
-            movimientoId: number;
-            folio: string;
-            tipo: string;
-            /** Format: date */
-            fecha: string;
-            /** @description Con signo: + entra, − sale */
-            cantidad: number;
-            costoUnitario?: number;
-            importe?: number;
-            existencia: number;
-            valor?: number;
-            costoPromedio?: number;
-            /** Format: date-time */
-            registrado: string;
-        };
-        LineaCaptura: {
-            /**
-             * Format: int64
-             * @description En devolución, reasignación y ajuste se toma de la línea de origen
-             */
-            materialId?: number;
-            /** @description En la unidad capturada; el ajuste de costo no la usa */
-            cantidad?: number;
-            /**
-             * Format: int64
-             * @description Unidad capturada; vacía: la unidad de control del material
-             */
-            unidadId?: number;
-            /** @description Recepción: precio sin IVA por unidad capturada */
-            precio?: number;
-            /** @description Recepción: descuento del renglón, en pesos */
-            descuento?: number;
-            /** @description Recepción: tasa de IVA; vacía, la del proveedor */
-            tasaIva?: number;
-            /** @description Ajuste de costo: costo correcto por unidad de control, sin IVA */
-            costoNuevo?: number;
-            /** Format: int64 */
-            contratoId?: number;
-            /** @description Vale: uno o varios lotes; con varios, la cantidad se reparte exacta */
-            unidadObraIds?: number[];
-            /** Format: int64 */
-            paqueteId?: number;
-            /** Format: int32 */
-            clasificacionId?: number;
-            /**
-             * Format: int64
-             * @description Devolución, reasignación, devolución a proveedor y ajuste
-             */
-            lineaOrigenId?: number;
-        };
-        DatosMovimiento: {
-            /** @enum {string} */
-            tipo: "entrada" | "salida" | "devolucion" | "devolucion_proveedor" | "traspaso" | "reasignacion" | "merma" | "ajuste_costo";
-            /** Format: date */
-            fecha: string;
-            /** Format: int64 */
-            almacenId: number;
-            /** Format: int64 */
-            almacenDestinoId?: number;
-            /** Format: int64 */
-            proveedorId?: number;
-            folioFactura?: string;
-            flete?: number;
-            /** Format: int64 */
-            solicitanteId?: number;
-            /** Format: int64 */
-            movimientoOrigenId?: number;
-            /** Format: int64 */
-            archivoId?: number;
-            motivo?: string;
-            observaciones?: string;
-            lineas: components["schemas"]["LineaCaptura"][];
-            /** @description Crear y enviar a autorizar en un paso */
-            enviar?: boolean;
-        };
-        LineaMovimiento: {
-            /** Format: int64 */
-            id: number;
-            /** Format: int32 */
-            renglon: number;
-            /** Format: int64 */
-            materialId: number;
-            materialClave: string;
-            material: string;
-            unidadControl: string;
-            cantidad: number;
-            cantidadCaptura: number;
-            /** Format: int64 */
-            unidadCapturaId: number;
-            unidadCaptura: string;
-            precio?: number;
-            descuento?: number;
-            tasaIva?: number;
-            costoNuevo?: number;
-            costoUnitario?: number;
-            importe?: number;
-            /** Format: int64 */
-            contratoId?: number;
-            contrato?: string;
-            /** Format: int64 */
-            unidadObraId?: number;
-            unidadObra?: string;
-            /** Format: int64 */
-            paqueteId?: number;
-            paquete?: string;
-            /** Format: int32 */
-            clasificacionId?: number;
-            clasificacion?: string;
-            /** Format: int64 */
-            lineaOrigenId?: number;
-            /**
-             * Format: int64
-             * @description Vale surtido desde una requisición: el renglón que surte
-             */
-            requisicionLineaId?: number;
-            /**
-             * Format: int64
-             * @description Recepción contra pedido: el renglón del pedido que recibe
-             */
-            pedidoLineaId?: number;
-        };
-        Acciones: {
-            editar: boolean;
-            enviar: boolean;
-            autorizar: boolean;
-            aplicar: boolean;
-            cancelar: boolean;
-        };
-        Movimiento: {
-            /** Format: int64 */
-            id: number;
-            folio: string;
-            tipo: string;
-            /** @enum {string} */
-            estado: "borrador" | "pendiente" | "autorizado" | "aplicado" | "cancelado";
-            /** Format: date */
-            fecha: string;
-            /** Format: int64 */
-            almacenId: number;
-            almacen: string;
-            /** Format: int64 */
-            almacenDestinoId?: number;
-            almacenDestino?: string;
-            /** Format: int64 */
-            proveedorId?: number;
-            proveedor?: string;
-            folioFactura?: string;
-            flete?: number;
-            /** Format: int64 */
-            solicitanteId?: number;
-            solicitante?: string;
-            /** Format: int64 */
-            movimientoOrigenId?: number;
-            /** Format: int64 */
-            conteoId?: number;
-            /** Format: int64 */
-            prestamoId?: number;
-            /** Format: int64 */
-            archivoId?: number;
-            motivo?: string;
-            notaRechazo?: string;
-            motivoCancelacion?: string;
-            observaciones?: string;
-            capturo: string;
-            autorizo?: string;
-            aplico?: string;
-            /** Format: date-time */
-            autorizadoEn?: string;
-            /** Format: date-time */
-            aplicadoEn?: string;
-            /** Format: date-time */
-            canceladoEn?: string;
-            /** Format: date-time */
-            creado: string;
-            /** @description Suma de importes; solo para quien ve costos */
-            importe?: number;
-            /** Format: int32 */
-            version: number;
-            lineas: components["schemas"]["LineaMovimiento"][];
-            acciones: components["schemas"]["Acciones"];
-        };
-        ResumenMovimiento: {
-            /** Format: int64 */
-            id: number;
-            folio: string;
-            tipo: string;
-            estado: string;
-            /** Format: date */
-            fecha: string;
-            almacen: string;
-            almacenDestino?: string;
-            capturo: string;
-            autorizo?: string;
-            solicitante?: string;
-            /** Format: int32 */
-            lineas: number;
-            contratos: string[];
-            importe?: number;
-            /** Format: date-time */
-            creado: string;
-        };
-        LineaRestante: {
-            /** Format: int64 */
-            lineaId: number;
-            cantidad: number;
-        };
-        Nota: {
-            nota: string;
-        };
-        Motivo: {
-            motivo: string;
-        };
-        Ids: {
-            ids: number[];
-        };
-        ResultadoLote: {
-            /** Format: int64 */
-            id: number;
-            ok: boolean;
-            folio?: string;
-            codigo?: string;
-            mensaje?: string;
-        };
-        Prestamo: {
-            /** Format: int64 */
-            id: number;
-            folio: string;
-            /** Format: int64 */
-            almacenId: number;
-            almacen: string;
-            /** Format: int64 */
-            materialId: number;
-            materialClave: string;
-            material: string;
-            unidad: string;
-            cantidad: number;
-            /** Format: int64 */
-            responsableId: number;
-            responsable: string;
-            /** Format: int64 */
-            contratoId?: number;
-            contrato?: string;
-            /** Format: date */
-            fecha: string;
-            /** Format: date */
-            compromiso?: string;
-            /** @enum {string} */
-            estado: "abierto" | "devuelto" | "perdido";
-            vencido: boolean;
-            /** Format: date */
-            devueltoEn?: string;
-            presto: string;
-            recibio?: string;
-            observaciones?: string;
-            /** Format: int32 */
-            version: number;
-        };
-        DatosPrestamo: {
-            /** Format: int64 */
-            almacenId: number;
-            /** Format: int64 */
-            materialId: number;
-            cantidad: number;
-            /** Format: int64 */
-            responsableId: number;
-            /** Format: int64 */
-            contratoId?: number;
-            /** Format: date */
-            fecha: string;
-            /** Format: date */
-            compromiso?: string;
-            observaciones?: string;
-        };
-        PrestamoPerdido: {
-            prestamo: components["schemas"]["Prestamo"];
-            /** Format: int64 */
-            mermaId: number;
-        };
-        Devolucion: {
-            /** Format: date */
-            fecha?: string;
-        };
-        Perdida: {
-            motivo: string;
-        };
-        Conteo: {
-            /** Format: int64 */
-            id: number;
-            folio: string;
-            /** Format: int64 */
-            almacenId: number;
-            almacen: string;
-            /** Format: date */
-            fecha: string;
-            /** @enum {string} */
-            estado: "abierto" | "cerrado" | "cancelado";
-            abrio: string;
-            cerro?: string;
-            /** Format: date-time */
-            cerradoEn?: string;
-            observaciones?: string;
-            /** Format: int32 */
-            lineas: number;
-            /** Format: int32 */
-            contadas: number;
-            /** Format: int32 */
-            version: number;
-            /**
-             * Format: int64
-             * @description La apertura del almacén a la que pertenece el conteo (H8)
-             */
-            aperturaId?: number;
-            aperturaFolio?: string;
-        };
-        LineaConteo: {
-            /** Format: int64 */
-            materialId: number;
             clave: string;
+            /** @description Sin IVA; solo para quien ve costos */
+            costoPromedio?: number;
+            disponible: number;
+            existencia: number;
             material: string;
-            unidad: string;
-            contado?: number;
-            costoUnitario?: number;
-            existenciaSistema?: number;
-            diferencia?: number;
-            /** Format: date-time */
-            contadoEn?: string;
-        };
-        DetalleConteo: {
-            conteo: components["schemas"]["Conteo"];
-            lineas: components["schemas"]["LineaConteo"][];
-        };
-        DatosConteo: {
-            /** Format: int64 */
-            almacenId: number;
-            /** Format: date */
-            fecha: string;
-            materialIds?: number[];
-            observaciones?: string;
-        };
-        Contado: {
             /** Format: int64 */
             materialId: number;
-            contado: number;
-            costoUnitario?: number;
-        };
-        CapturaConteo: {
-            lineas: components["schemas"]["Contado"][];
-        };
-        ValorAlmacen: {
-            /** Format: int64 */
-            almacenId: number;
-            almacen: string;
+            prestado: number;
+            reservado: number;
+            unidad: string;
             /** @description Solo para quien ve costos */
             valor?: number;
-            /** Format: int32 */
-            materiales: number;
-        };
-        Periodo: {
-            /** Format: int32 */
-            anio: number;
-            /** Format: int32 */
-            mes: number;
-            cerro: string;
-            /** Format: date-time */
-            cerradoEn: string;
-            valor: components["schemas"]["ValorAlmacen"][];
-        };
-        Periodos: {
-            cerrados: components["schemas"]["Periodo"][];
-            /** @description Siguiente mes por cerrar (AAAA-MM); vacío si no hay movimientos */
-            siguiente?: string;
-            /**
-             * Format: int32
-             * @description Documentos sin aplicar en el siguiente mes
-             */
-            pendientesSiguiente: number;
-            /** @description El siguiente mes ya terminó */
-            siguienteTerminado: boolean;
-        };
-        Archivo: {
-            /** Format: int64 */
-            id: number;
-            nombre: string;
-            tipo: string;
-            /** Format: int32 */
-            tamano: number;
-        };
-        PersonaNombre: {
-            /** Format: int64 */
-            id: number;
-            nombre: string;
-            activa: boolean;
-        };
-        TotalConciliado: {
-            concepto: string;
-            /** @description Material y mes, frente y lote, trabajador… */
-            llave: string;
-            excel: number;
-            cargado: number;
-            /** @description En cuarentena */
-            pendiente: number;
-            /** @description Descartado con motivo */
-            descartado: number;
-            /** @description excel − cargado − pendiente − descartado: tiene que ser 0 */
-            diferencia: number;
-        };
-        ConceptoConciliado: {
-            concepto: string;
-            excel: number;
-            cargado: number;
-            pendiente: number;
-            descartado: number;
-            diferencia: number;
-            /** Format: int64 */
-            lineas: number;
-            /**
-             * Format: int64
-             * @description Líneas con diferencia distinta de 0
-             */
-            conDiferencia: number;
-        };
-        ConciliacionCarga: {
-            /** Format: int64 */
-            cargaId: number;
-            conceptos: components["schemas"]["ConceptoConciliado"][];
-            /** @description Líneas con diferencia, pendiente o descartado (o todas, si se piden), hasta 500 */
-            lineas: components["schemas"]["TotalConciliado"][];
-            recortada: boolean;
-        };
-        SalidaHistorica: {
-            /** Format: int64 */
-            id: number;
-            /** Format: date */
-            fecha: string;
-            /** @description salida, devolucion o reasignacion */
-            tipo: string;
-            documento?: string;
-            folio?: string;
-            material: string;
-            unidad: string;
-            cantidad: number;
-            paquete?: string;
-            clasificacion?: string;
-            solicitante?: string;
-            entregado: boolean;
-            /** @description Sin IVA; vacío sin permiso de costo */
-            costoUnitario?: number;
-            importe?: number;
-            costoEstimado: boolean;
-            /** @description El renglón del Excel decía varios lotes ("32-43") */
-            lotesTexto?: string;
-            observaciones?: string;
-            origen: string;
-        };
-        PagoHistorico: {
-            /** Format: int64 */
-            id: number;
-            /** Format: int32 */
-            anio: number;
-            semanas: number[];
-            semanaTexto?: string;
-            paquete?: string;
-            concepto?: string;
-            importeConcepto?: number;
-            /** @description Vacío sin permiso de costo */
-            monto?: number;
-            /** Format: int32 */
-            parcial: number;
-            montoCompartido: boolean;
-            sobreImporte: boolean;
-            /** @description Quién cobró; vacío sin permiso de personas */
-            trabajadores: string[];
-            origen: string;
-        };
-        AltaHistorica: {
-            /** Format: date */
-            mes: string;
-            /** @description mes o anterior */
-            origen: string;
-            persona: string;
-            estatus?: string;
-            /** Format: int32 */
-            dias?: number;
-        };
-        HistoriaUnidad: {
-            /** Format: int64 */
-            unidadId: number;
-            clave: string;
-            /** Format: int64 */
-            contratoId: number;
-            contrato: string;
-            salidas: components["schemas"]["SalidaHistorica"][];
-            pagos: components["schemas"]["PagoHistorico"][];
-            /** @description Altas del IMSS en el contrato; vacía sin permiso de personas */
-            altas: components["schemas"]["AltaHistorica"][];
-            /** @description Σ importe de lo entregado; vacío sin permiso de costo */
-            costoMaterial?: number;
-            /** @description Σ pagos de destajo; vacío sin permiso de costo */
-            destajo?: number;
-            veCostos: boolean;
-            vePersonas: boolean;
-        };
-        AccionesPedido: {
-            editar: boolean;
-            enviar: boolean;
-            recibir: boolean;
-            cerrar: boolean;
-            cancelar: boolean;
-        };
-        AccionesRequisicion: {
-            editar: boolean;
-            enviar: boolean;
-            autorizar: boolean;
-            cancelar: boolean;
-            cerrar: boolean;
-            reservar: boolean;
-            surtir: boolean;
-        };
-        Apartado: {
-            /** Format: int64 */
-            requisicionId: number;
-            folio: string;
-            unidadObra: string;
-            material: string;
-            cantidad: number;
-        };
-        Cobertura: {
-            /** Format: int64 */
-            requisicionLineaId: number;
-            /** Format: int64 */
-            requisicionId: number;
-            folio: string;
-            unidadObra: string;
-            cantidad: number;
-            recibido: number;
-        };
-        ColumnaClasificacion: {
-            /** Format: int32 */
-            id: number;
-            clave: string;
-            nombre: string;
-        };
-        ConciliacionContrato: {
-            /** Format: int64 */
-            contratoId: number;
-            contrato: string;
-            /** Format: int64 */
-            cargaId: number;
-            archivo: string;
-            hoja: string;
-            razon: string;
-            /** Format: int32 */
-            columnasDeLote: number;
-            sistema: number;
-            hojaTotal: number;
-            /** @description Por motivo, del mayor al menor */
-            efectos: components["schemas"]["Efecto"][];
-            lotes: components["schemas"]["LoteConciliado"][];
-            /** @description Los renglones que más pesan, hasta 500 */
-            renglones: components["schemas"]["RenglonDiferencia"][];
-            recortada: boolean;
-            avisos: string[];
-        };
-        CostoContrato: {
-            /** Format: int64 */
-            contratoId: number;
-            contrato: string;
-            clasificaciones: components["schemas"]["ColumnaClasificacion"][];
-            lotes: components["schemas"]["LoteCosto"][];
-            totales: components["schemas"]["LoteCosto"];
-        };
-        DatosPedido: {
-            /** Format: int64 */
-            proveedorId: number;
-            /** Format: int64 */
-            almacenId: number;
-            /** Format: date */
-            fechaEntrega?: string;
-            observaciones?: string;
-            renglones: components["schemas"]["RenglonPedidoCaptura"][];
-            /** @description Crear y enviar en un paso */
-            enviar?: boolean;
-        };
-        DatosPresupuesto: {
-            /** Format: int64 */
-            prototipoId?: number;
-            unidadIds?: number[];
-            monto?: number;
-        };
-        DatosRecepcion: {
-            /** Format: date */
-            fecha: string;
-            folioFactura?: string;
-            flete?: number;
-            observaciones?: string;
-            renglones: components["schemas"]["RenglonRecibido"][];
-        };
-        DatosRequisicion: {
-            /** Format: int64 */
-            contratoId: number;
-            /** Format: date */
-            fechaRequerida: string;
-            urgente?: boolean;
-            observaciones?: string;
-            renglones: components["schemas"]["RenglonCaptura"][];
-            /** @description Crear y enviar a autorizar en un paso */
-            enviar?: boolean;
-        };
-        DatosSurtido: {
-            /** Format: date */
-            fecha: string;
-            /**
-             * Format: int64
-             * @description Persona que recibe en obra
-             */
-            solicitanteId?: number;
-            observaciones?: string;
-            renglones: components["schemas"]["RenglonSurtido"][];
-        };
-        Efecto: {
-            /** @enum {string} */
-            motivo: "SIN_COLUMNA" | "REPARTO" | "LOTE_CORREGIDO" | "MATERIAL" | "RAZON" | "FRENTE" | "NO_ENTREGADO" | "CANTIDAD" | "SOLO_EN_HOJA" | "SIN_PRECIO" | "PONDERACION" | "IVA";
-            descripcion: string;
-            /** @description Con signo: lo que suma o resta al sistema */
-            importe: number;
         };
         ExistenciaValorizada: {
-            /** Format: int64 */
-            almacenId: number;
             almacen: string;
             /** Format: int64 */
-            materialId: number;
+            almacenId: number;
             clave: string;
-            material: string;
-            unidad: string;
-            existencia: number;
-            reservado: number;
-            prestado: number;
-            disponible: number;
             costoPromedio: number;
+            disponible: number;
+            existencia: number;
+            material: string;
+            /** Format: int64 */
+            materialId: number;
+            prestado: number;
+            reservado: number;
+            unidad: string;
             valor: number;
         };
         Faltante: {
             /** Format: int64 */
-            requisicionLineaId: number;
-            /** Format: int64 */
-            requisicionId: number;
-            folio: string;
-            /** Format: int32 */
-            renglon: number;
+            almacenId: number;
+            contrato: string;
             /** Format: int64 */
             contratoId: number;
-            contrato: string;
-            unidadObra: string;
+            faltante: number;
             /** Format: date */
             fechaRequerida: string;
-            urgente: boolean;
-            /** Format: int64 */
-            almacenId: number;
+            folio: string;
+            material: string;
+            materialClave: string;
             /** Format: int64 */
             materialId: number;
-            materialClave: string;
-            material: string;
-            /** Format: int64 */
-            unidadControlId: number;
-            unidadControl: string;
-            faltante: number;
-            /** @description Sin IVA; vacío sin permiso de precios */
-            precioReferencia?: number;
             /**
              * @description De dónde sale el proveedor sugerido
              * @enum {string}
              */
             origenSugerencia?: "sistema" | "excel";
+            /** @description Sin IVA; vacío sin permiso de precios */
+            precioReferencia?: number;
+            /** Format: int32 */
+            renglon: number;
+            /** Format: int64 */
+            requisicionId: number;
+            /** Format: int64 */
+            requisicionLineaId: number;
+            unidadControl: string;
+            /** Format: int64 */
+            unidadControlId: number;
+            unidadObra: string;
+            urgente: boolean;
+        };
+        FilaCargada: {
+            /** @description crear, existe u omitir */
+            accion: string;
+            crudo: {
+                [key: string]: string;
+            };
+            estado: string;
+            /** Format: int32 */
+            filaExcel?: number;
+            hoja: string;
+            incidencias: components["schemas"]["IncidenciaCarga"][];
+            normal: {
+                [key: string]: string;
+            };
+            /** Format: int32 */
+            numero: number;
         };
         FilaReporteCosto: {
-            /** @description Id del contrato, lote, paquete…; o el mes (2026-07). Vacío: sin dato */
-            llave?: string;
+            /** @description Solo al agrupar por material */
+            cantidad?: number;
             clave: string;
-            nombre: string;
+            /** @description Incluye renglones con costo estimado */
+            estimado: boolean;
             /** @description Del Excel (junio a la fecha del corte) */
             historico: number;
+            /** @description Id del contrato, lote, paquete…; o el mes (2026-07). Vacío: sin dato */
+            llave?: string;
+            /** Format: int32 */
+            movimientos: number;
+            nombre: string;
             /** @description De los vales del sistema */
             sistema: number;
             total: number;
-            /** @description Solo al agrupar por material */
-            cantidad?: number;
             unidad?: string;
-            /** @description Incluye renglones con costo estimado */
-            estimado: boolean;
+        };
+        Firma: {
+            huella: string;
+        };
+        Frente: {
+            activo: boolean;
+            clave: string;
+            cliente: string;
+            /** Format: int64 */
+            clienteId: number;
+            /** Format: int64 */
+            id: number;
+            nombre: string;
             /** Format: int32 */
-            movimientos: number;
+            version: number;
         };
         GrupoFaltantes: {
+            faltantes: components["schemas"]["Faltante"][];
+            proveedor: string;
             /**
              * Format: int64
              * @description Vacío si ningún proveedor ha surtido estos materiales
              */
             proveedorId?: number;
-            proveedor: string;
-            faltantes: components["schemas"]["Faltante"][];
+        };
+        Herramienta: {
+            nombre?: string;
+            /** Format: int64 */
+            unidadId: number;
+        };
+        HistoriaUnidad: {
+            /** @description Altas del IMSS en el contrato; vacía sin permiso de personas */
+            altas: components["schemas"]["AltaHistorica"][];
+            clave: string;
+            contrato: string;
+            /** Format: int64 */
+            contratoId: number;
+            /** @description Σ importe de lo entregado; vacío sin permiso de costo */
+            costoMaterial?: number;
+            /** @description Σ pagos de destajo; vacío sin permiso de costo */
+            destajo?: number;
+            pagos: components["schemas"]["PagoHistorico"][];
+            salidas: components["schemas"]["SalidaHistorica"][];
+            /** Format: int64 */
+            unidadId: number;
+            veCostos: boolean;
+            vePersonas: boolean;
+        };
+        HojaConciliada: {
+            /** Format: int64 */
+            corregidos: number;
+            /** Format: int64 */
+            descartados: number;
+            /**
+             * Format: int64
+             * @description Leídos que no quedaron en ningún estado: 0
+             */
+            diferencia: number;
+            /** Format: int64 */
+            enCuarentena: number;
+            /** Format: int64 */
+            existentes: number;
+            hoja: string;
+            /** Format: int64 */
+            leidos: number;
+            /** Format: int64 */
+            porCrear: number;
+            /** Format: int64 */
+            validos: number;
+        };
+        Ids: {
+            ids: number[];
+        };
+        IncidenciaCarga: {
+            detalle: string;
+            /** @description ACEPTAR, ELEGIR, CREAR, VALOR o DESCARTAR */
+            opciones: string[];
+            pendiente: boolean;
+            regla: string;
+            resolucion?: {
+                [key: string]: unknown;
+            };
+            /** Format: date-time */
+            resueltaEn?: string;
+            resueltaPor?: string;
+            /** @description info, advertencia, cuarentena o bloqueo */
+            severidad: string;
+            /** @description Sugerencia: destinoId y destino; con entidad y texto, aceptarla guarda un alias */
+            sugerencia?: {
+                [key: string]: unknown;
+            };
+        };
+        LineaApertura: {
+            cantidad: number;
+            clave: string;
+            contado?: number;
+            costoUnitario?: number;
+            detalleCosto?: string;
+            diferenciaExcel?: number;
+            existenciaExcel?: number;
+            faltaCosto: boolean;
+            importe?: number;
+            material: string;
+            /** Format: int64 */
+            materialId: number;
+            /** @enum {string} */
+            origenCosto?: "capturado" | "historico" | "referencia";
+            prestado: number;
+            unidad: string;
+        };
+        LineaCaptura: {
+            /** @description En la unidad capturada; el ajuste de costo no la usa */
+            cantidad?: number;
+            /** Format: int32 */
+            clasificacionId?: number;
+            /** Format: int64 */
+            contratoId?: number;
+            /** @description Ajuste de costo: costo correcto por unidad de control, sin IVA */
+            costoNuevo?: number;
+            /** @description Recepción: descuento del renglón, en pesos */
+            descuento?: number;
+            /**
+             * Format: int64
+             * @description Devolución, reasignación, devolución a proveedor y ajuste
+             */
+            lineaOrigenId?: number;
+            /**
+             * Format: int64
+             * @description En devolución, reasignación y ajuste se toma de la línea de origen
+             */
+            materialId?: number;
+            /** Format: int64 */
+            paqueteId?: number;
+            /** @description Recepción: precio sin IVA por unidad capturada */
+            precio?: number;
+            /** @description Recepción: tasa de IVA; vacía, la del proveedor */
+            tasaIva?: number;
+            /**
+             * Format: int64
+             * @description Unidad capturada; vacía: la unidad de control del material
+             */
+            unidadId?: number;
+            /** @description Vale: uno o varios lotes; con varios, la cantidad se reparte exacta */
+            unidadObraIds?: number[];
+        };
+        LineaConteo: {
+            clave: string;
+            contado?: number;
+            /** Format: date-time */
+            contadoEn?: string;
+            costoUnitario?: number;
+            diferencia?: number;
+            existenciaSistema?: number;
+            material: string;
+            /** Format: int64 */
+            materialId: number;
+            unidad: string;
+        };
+        LineaMovimiento: {
+            cantidad: number;
+            cantidadCaptura: number;
+            clasificacion?: string;
+            /** Format: int32 */
+            clasificacionId?: number;
+            contrato?: string;
+            /** Format: int64 */
+            contratoId?: number;
+            costoNuevo?: number;
+            costoUnitario?: number;
+            descuento?: number;
+            /** Format: int64 */
+            id: number;
+            importe?: number;
+            /** Format: int64 */
+            lineaOrigenId?: number;
+            material: string;
+            materialClave: string;
+            /** Format: int64 */
+            materialId: number;
+            paquete?: string;
+            /** Format: int64 */
+            paqueteId?: number;
+            /**
+             * Format: int64
+             * @description Recepción contra pedido: el renglón del pedido que recibe
+             */
+            pedidoLineaId?: number;
+            precio?: number;
+            /** Format: int32 */
+            renglon: number;
+            /**
+             * Format: int64
+             * @description Vale surtido desde una requisición: el renglón que surte
+             */
+            requisicionLineaId?: number;
+            tasaIva?: number;
+            unidadCaptura: string;
+            /** Format: int64 */
+            unidadCapturaId: number;
+            unidadControl: string;
+            unidadObra?: string;
+            /** Format: int64 */
+            unidadObraId?: number;
+        };
+        LineaRestante: {
+            cantidad: number;
+            /** Format: int64 */
+            lineaId: number;
         };
         LoteConciliado: {
             clave: string;
-            /** Format: int64 */
-            unidadObraId?: number;
             /** @description El lote es columna de la hoja del frente */
             columnaEnHoja: boolean;
-            /** @description Programa del histórico, sin IVA, ponderado */
-            sistema: number;
             efectos: components["schemas"]["Efecto"][];
             /** @description Lo que diría la hoja recalculada */
             hoja: number;
             /** @description Centavos por redondear cada efecto */
             redondeo: number;
+            /** @description Programa del histórico, sin IVA, ponderado */
+            sistema: number;
+            /** Format: int64 */
+            unidadObraId?: number;
         };
         LoteCosto: {
+            clave: string;
+            /** @description Material de Programa */
+            consumido: number;
+            destajo: number;
+            estimado: boolean;
+            historico: number;
+            material: number;
+            /** @description Material, en el orden de las clasificaciones */
+            porClasificacion: number[];
+            porcentaje?: number;
+            presupuesto?: number;
+            prototipo?: string;
+            /** @enum {string} */
+            semaforo: "sin" | "verde" | "amarillo" | "rojo";
+            sistema: number;
+            /** @description Material + destajo */
+            total: number;
             /**
              * Format: int64
              * @description Vacío: salidas sin lote ("Sin asignar") o el renglón de totales
              */
             unidadObraId?: number;
-            clave: string;
-            prototipo?: string;
-            /** @description Material, en el orden de las clasificaciones */
-            porClasificacion: number[];
-            historico: number;
-            sistema: number;
-            material: number;
-            destajo: number;
-            /** @description Material + destajo */
-            total: number;
-            presupuesto?: number;
-            /** @description Material de Programa */
-            consumido: number;
-            porcentaje?: number;
-            /** @enum {string} */
-            semaforo: "sin" | "verde" | "amarillo" | "rojo";
-            estimado: boolean;
         };
         LotePresupuesto: {
-            /** Format: int64 */
-            contratoId: number;
+            clave: string;
+            consumido: number;
             contrato: string;
             /** Format: int64 */
-            unidadObraId: number;
-            clave: string;
-            prototipo?: string;
+            contratoId: number;
+            porcentaje?: number;
             presupuesto?: number;
-            consumido: number;
+            prototipo?: string;
             /** @description Presupuesto − consumido (negativo si se rebasó) */
             restante?: number;
-            porcentaje?: number;
             /** @enum {string} */
             semaforo: "sin" | "verde" | "amarillo" | "rojo";
+            /** Format: int64 */
+            unidadObraId: number;
         };
-        Pedido: {
+        Material: {
+            activo: boolean;
+            categoria?: string;
+            /** Format: int64 */
+            categoriaId?: number;
+            clave: string;
             /** Format: int64 */
             id: number;
-            folio: string;
-            /** @enum {string} */
-            estado: "borrador" | "enviado" | "recibido" | "cerrado" | "cancelado";
+            nombre: string;
+            /** @description Sin IVA. Solo para quien ve precios o costos */
+            precioReferencia?: number;
+            unidadControl: string;
             /** Format: int64 */
-            proveedorId: number;
-            proveedor: string;
+            unidadControlId: number;
+            /** Format: int32 */
+            version: number;
+        };
+        Motivo: {
+            motivo: string;
+        };
+        Movimiento: {
+            acciones: components["schemas"]["Acciones"];
+            almacen: string;
+            almacenDestino?: string;
+            /** Format: int64 */
+            almacenDestinoId?: number;
             /** Format: int64 */
             almacenId: number;
-            almacen: string;
+            /** Format: date-time */
+            aplicadoEn?: string;
+            aplico?: string;
+            /** Format: int64 */
+            archivoId?: number;
+            /** Format: date-time */
+            autorizadoEn?: string;
+            autorizo?: string;
+            /** Format: date-time */
+            canceladoEn?: string;
+            capturo: string;
+            /** Format: int64 */
+            conteoId?: number;
+            /** Format: date-time */
+            creado: string;
+            /** @enum {string} */
+            estado: "borrador" | "pendiente" | "autorizado" | "aplicado" | "cancelado";
             /** Format: date */
             fecha: string;
-            /** Format: date */
-            fechaEntrega?: string;
+            flete?: number;
+            folio: string;
+            folioFactura?: string;
+            /** Format: int64 */
+            id: number;
+            /** @description Suma de importes; solo para quien ve costos */
+            importe?: number;
+            lineas: components["schemas"]["LineaMovimiento"][];
+            motivo?: string;
+            motivoCancelacion?: string;
+            /** Format: int64 */
+            movimientoOrigenId?: number;
+            notaRechazo?: string;
             observaciones?: string;
-            motivoCierre?: string;
+            /** Format: int64 */
+            prestamoId?: number;
+            proveedor?: string;
+            /** Format: int64 */
+            proveedorId?: number;
+            solicitante?: string;
+            /** Format: int64 */
+            solicitanteId?: number;
+            tipo: string;
+            /** Format: int32 */
+            version: number;
+        };
+        Nota: {
+            nota: string;
+        };
+        NuevasUnidades: {
+            clave?: string;
+            /** @example 29-31, 35 */
+            lotes?: string;
+            manzana?: string;
+            presupuestoMaterial?: number;
+            /** Format: int64 */
+            prototipoId?: number;
+            /** @example LOTE */
+            tipo: string;
+        };
+        NuevoPrestamoApertura: {
+            articulo: string;
+            cantidad: number;
+            /** Format: date */
+            fecha?: string;
+            responsableTexto?: string;
+        };
+        PaginaFilas: {
+            elementos: components["schemas"]["FilaCargada"][];
+            /** Format: int32 */
+            pagina: number;
+            /** Format: int32 */
+            tamano: number;
+            /** Format: int64 */
+            total: number;
+        };
+        PaginaMateriales: {
+            elementos: components["schemas"]["Material"][];
+            /** Format: int32 */
+            pagina: number;
+            /** Format: int32 */
+            tamano: number;
+            /** Format: int64 */
+            total: number;
+        };
+        PagoHistorico: {
+            /** Format: int32 */
+            anio: number;
+            concepto?: string;
+            /** Format: int64 */
+            id: number;
+            importeConcepto?: number;
+            /** @description Vacío sin permiso de costo */
+            monto?: number;
+            montoCompartido: boolean;
+            origen: string;
+            paquete?: string;
+            /** Format: int32 */
+            parcial: number;
+            semanaTexto?: string;
+            semanas: number[];
+            sobreImporte: boolean;
+            /** @description Quién cobró; vacío sin permiso de personas */
+            trabajadores: string[];
+        };
+        Paquete: {
+            activo: boolean;
+            clave: string;
+            cliente?: string;
+            /** Format: int64 */
+            clienteId?: number;
+            /** Format: int64 */
+            id: number;
+            nombre: string;
+            /** Format: int32 */
+            orden: number;
+            /** Format: int64 */
+            padreId?: number;
+            unidad?: string;
+            /** Format: int32 */
+            version: number;
+        };
+        PasoSegundoFactorDto: {
+            /** @description codigo o alta */
+            paso: string;
+        };
+        Pedido: {
+            acciones: components["schemas"]["AccionesPedido"];
+            almacen: string;
+            /** Format: int64 */
+            almacenId: number;
+            /** @description Porcentaje recibido (0 a 100) */
+            avance: number;
             capturo: string;
-            envio?: string;
-            /** Format: date-time */
-            enviadoEn?: string;
             /** Format: date-time */
             cerradoEn?: string;
             /** Format: date-time */
             creado: string;
+            /** Format: date-time */
+            enviadoEn?: string;
+            envio?: string;
+            /** @enum {string} */
+            estado: "borrador" | "enviado" | "recibido" | "cerrado" | "cancelado";
+            /** Format: date */
+            fecha: string;
+            /** Format: date */
+            fechaEntrega?: string;
+            folio: string;
+            /** Format: int64 */
+            id: number;
+            iva?: number;
+            motivoCierre?: string;
+            observaciones?: string;
+            proveedor: string;
+            /** Format: int64 */
+            proveedorId: number;
+            recepciones: components["schemas"]["RecepcionDePedido"][];
+            renglones: components["schemas"]["RenglonPedido"][];
             /** @description Sin IVA; vacío sin permiso de precios */
             subtotal?: number;
-            iva?: number;
             total?: number;
-            /** @description Porcentaje recibido (0 a 100) */
-            avance: number;
             /** Format: int32 */
             version: number;
-            renglones: components["schemas"]["RenglonPedido"][];
-            recepciones: components["schemas"]["RecepcionDePedido"][];
-            acciones: components["schemas"]["AccionesPedido"];
         };
         PedidoDeRequisicion: {
+            cantidad: number;
+            estado: string;
+            folio: string;
             /** Format: int64 */
             id: number;
-            folio: string;
-            estado: string;
-            cantidad: number;
             recibido: number;
         };
-        RecepcionDePedido: {
+        Perdida: {
+            motivo: string;
+        };
+        Periodo: {
+            /** Format: int32 */
+            anio: number;
+            /** Format: date-time */
+            cerradoEn: string;
+            cerro: string;
+            /** Format: int32 */
+            mes: number;
+            valor: components["schemas"]["ValorAlmacen"][];
+        };
+        Periodos: {
+            cerrados: components["schemas"]["Periodo"][];
+            /**
+             * Format: int32
+             * @description Documentos sin aplicar en el siguiente mes
+             */
+            pendientesSiguiente: number;
+            /** @description Siguiente mes por cerrar (AAAA-MM); vacío si no hay movimientos */
+            siguiente?: string;
+            /** @description El siguiente mes ya terminó */
+            siguienteTerminado: boolean;
+        };
+        Persona: {
+            activa: boolean;
+            curp?: string;
             /** Format: int64 */
             id: number;
+            /** @description La dio de alta una carga de Excel */
+            importada: boolean;
+            nombre: string;
+            nota?: string;
+            nss?: string;
+            /** @description Alta desde un apodo o posible duplicado */
+            revisar: boolean;
+            /** Format: int32 */
+            version: number;
+        };
+        PersonaNombre: {
+            activa: boolean;
+            /** Format: int64 */
+            id: number;
+            nombre: string;
+        };
+        PrecioPaquete: {
+            deCliente: boolean;
+            /** Format: int64 */
+            id: number;
+            paquete: string;
+            paqueteClave: string;
+            /** Format: int64 */
+            paqueteId: number;
+            precioCobro?: number;
+            precioDestajo?: number;
+            prototipo?: string;
+            /** Format: int64 */
+            prototipoId?: number;
+            /** Format: int32 */
+            version: number;
+        };
+        Prestamo: {
+            almacen: string;
+            /** Format: int64 */
+            almacenId: number;
+            cantidad: number;
+            /** Format: date */
+            compromiso?: string;
+            contrato?: string;
+            /** Format: int64 */
+            contratoId?: number;
+            /** Format: date */
+            devueltoEn?: string;
+            /** @enum {string} */
+            estado: "abierto" | "devuelto" | "perdido";
+            /** Format: date */
+            fecha: string;
             folio: string;
+            /** Format: int64 */
+            id: number;
+            material: string;
+            materialClave: string;
+            /** Format: int64 */
+            materialId: number;
+            observaciones?: string;
+            presto: string;
+            recibio?: string;
+            responsable: string;
+            /** Format: int64 */
+            responsableId: number;
+            unidad: string;
+            vencido: boolean;
+            /** Format: int32 */
+            version: number;
+        };
+        PrestamoApertura: {
+            articulo: string;
+            cantidad: number;
+            /** @enum {string} */
+            estado: "pendiente" | "listo" | "descartado";
+            /** Format: date */
+            fecha?: string;
+            /** Format: int32 */
+            filaExcel?: number;
+            /** Format: int64 */
+            id: number;
+            material?: string;
+            materialClave?: string;
+            /** Format: int64 */
+            materialId?: number;
+            motivo?: string;
+            /**
+             * Format: int64
+             * @description Renglón del histórico de préstamos; nulo si se agregó a mano
+             */
+            origenId?: number;
+            /** Format: int64 */
+            prestamoId?: number;
+            responsable?: string;
+            /** Format: int64 */
+            responsableId?: number;
+            responsableTexto?: string;
+            unidad?: string;
+            /** Format: int32 */
+            version: number;
+        };
+        PrestamoPerdido: {
+            /** Format: int64 */
+            mermaId: number;
+            prestamo: components["schemas"]["Prestamo"];
+        };
+        Prototipo: {
+            activo: boolean;
+            clave: string;
+            descripcion?: string;
+            /** Format: int64 */
+            id: number;
+            nombre: string;
+            /** Format: int32 */
+            version: number;
+        };
+        Proveedor: {
+            activo: boolean;
+            contacto?: string;
+            correo?: string;
+            /** Format: int32 */
+            diasCredito?: number;
+            /** Format: int64 */
+            id: number;
+            nombre: string;
+            rfc?: string;
+            /** @description Tasa de IVA por defecto: 0.16, 0.08 o 0 */
+            tasaIva?: number;
+            telefono?: string;
+            /** Format: int32 */
+            version: number;
+        };
+        RecepcionDePedido: {
             estado: string;
             /** Format: date */
             fecha: string;
+            folio: string;
+            /** Format: int64 */
+            id: number;
+        };
+        ReglaAplicada: {
+            ejemplo: string;
+            /** Format: int64 */
+            pendientes: number;
+            regla: string;
+            /** Format: int64 */
+            renglones: number;
+            severidad: string;
         };
         RenglonCaptura: {
-            /** Format: int64 */
-            materialId: number;
             /** @description En la unidad capturada; con varios lotes, el total que se reparte */
             cantidad: number;
+            /** Format: int32 */
+            clasificacionId: number;
+            /** Format: int64 */
+            materialId: number;
+            observaciones?: string;
+            /** Format: int64 */
+            paqueteId: number;
             /**
              * Format: int64
              * @description Unidad capturada; vacía: la unidad de control del material
              */
             unidadId?: number;
             unidadObraIds: number[];
-            /** Format: int64 */
-            paqueteId: number;
-            /** Format: int32 */
-            clasificacionId: number;
-            observaciones?: string;
         };
         RenglonDiferencia: {
+            cantidad?: number;
             /** Format: int32 */
             filaExcel: number;
+            importe: number;
             lote: string;
             material?: string;
             motivo: string;
-            cantidad?: number;
-            importe: number;
             nota?: string;
         };
-        RenglonPedido: {
+        RenglonKardex: {
+            almacen: string;
+            /** Format: int64 */
+            almacenId: number;
+            /** @description Con signo: + entra, − sale */
+            cantidad: number;
+            costoPromedio?: number;
+            costoUnitario?: number;
+            existencia: number;
+            /** Format: date */
+            fecha: string;
+            folio: string;
             /** Format: int64 */
             id: number;
-            /** Format: int32 */
-            renglon: number;
+            importe?: number;
             /** Format: int64 */
-            materialId: number;
-            materialClave: string;
-            material: string;
-            unidadControl: string;
+            movimientoId: number;
+            /** Format: date-time */
+            registrado: string;
+            tipo: string;
+            valor?: number;
+        };
+        RenglonPedido: {
             cantidad: number;
             cantidadCaptura: number;
             /** Format: int64 */
-            unidadCapturaId: number;
-            unidadCaptura: string;
-            /** @description Vacío sin permiso de precios */
-            precio?: number;
-            tasaIva: number;
+            id: number;
             /** @description Cantidad capturada × precio, sin IVA */
             importe?: number;
-            /** @description En unidad de control, neto de devoluciones */
-            recibido: number;
-            pendiente: number;
-            observaciones?: string;
-            requisiciones: components["schemas"]["Cobertura"][];
-        };
-        RenglonPedidoCaptura: {
+            material: string;
+            materialClave: string;
             /** Format: int64 */
             materialId: number;
+            observaciones?: string;
+            pendiente: number;
+            /** @description Vacío sin permiso de precios */
+            precio?: number;
+            /** @description En unidad de control, neto de devoluciones */
+            recibido: number;
+            /** Format: int32 */
+            renglon: number;
+            requisiciones: components["schemas"]["Cobertura"][];
+            tasaIva: number;
+            unidadCaptura: string;
+            /** Format: int64 */
+            unidadCapturaId: number;
+            unidadControl: string;
+        };
+        RenglonPedidoCaptura: {
             /** @description En la unidad capturada */
             cantidad: number;
+            /** Format: int64 */
+            materialId: number;
+            observaciones?: string;
+            /** @description Sin IVA, por unidad capturada */
+            precio: number;
+            /** @description Renglones de requisición que cubre, el más urgente primero */
+            requisicionLineaIds?: number[];
+            /** @description Vacía: la del proveedor (o 8%) */
+            tasaIva?: number;
             /**
              * Format: int64
              * @description Unidad capturada; vacía: la unidad de control
              */
             unidadId?: number;
-            /** @description Sin IVA, por unidad capturada */
-            precio: number;
-            /** @description Vacía: la del proveedor (o 8%) */
-            tasaIva?: number;
-            /** @description Renglones de requisición que cubre, el más urgente primero */
-            requisicionLineaIds?: number[];
-            observaciones?: string;
         };
         RenglonRecibido: {
+            cantidad: number;
             /** Format: int64 */
             pedidoLineaId: number;
-            cantidad: number;
         };
         RenglonRequisicion: {
-            /** Format: int64 */
-            id: number;
-            /** Format: int32 */
-            renglon: number;
-            /** Format: int64 */
-            materialId: number;
-            materialClave: string;
-            material: string;
-            unidadControl: string;
             cantidad: number;
             cantidadCaptura: number;
-            /** Format: int64 */
-            unidadCapturaId: number;
-            unidadCaptura: string;
-            /** Format: int64 */
-            unidadObraId: number;
-            unidadObra: string;
-            /** Format: int64 */
-            paqueteId: number;
-            paquete: string;
+            clasificacion: string;
             /** Format: int32 */
             clasificacionId: number;
-            clasificacion: string;
-            observaciones?: string;
-            /** @description Salió en vales aplicados, neto de devoluciones */
-            surtido: number;
+            /** @description Libre en el almacén para cualquier vale */
+            disponible: number;
             /** @description En vales que todavía no se aplican */
             enVale: number;
-            /** @description Apartado en el almacén */
-            reservado: number;
+            /** @description Pendiente sin cubrir ni pedir: hay que comprar */
+            faltante: number;
+            /** Format: int64 */
+            id: number;
+            material: string;
+            materialClave: string;
+            /** Format: int64 */
+            materialId: number;
+            observaciones?: string;
+            paquete: string;
+            /** Format: int64 */
+            paqueteId: number;
             /** @description Pedido al proveedor, sin llegar */
             porRecibir: number;
             /** @description Lo que puede ir en un vale nuevo */
             porSurtir: number;
-            /** @description Pendiente sin cubrir ni pedir: hay que comprar */
-            faltante: number;
-            /** @description Libre en el almacén para cualquier vale */
-            disponible: number;
+            /** Format: int32 */
+            renglon: number;
+            /** @description Apartado en el almacén */
+            reservado: number;
+            /** @description Salió en vales aplicados, neto de devoluciones */
+            surtido: number;
+            unidadCaptura: string;
+            /** Format: int64 */
+            unidadCapturaId: number;
+            unidadControl: string;
+            unidadObra: string;
+            /** Format: int64 */
+            unidadObraId: number;
         };
         RenglonSurtido: {
+            cantidad: number;
             /** Format: int64 */
             requisicionLineaId: number;
-            cantidad: number;
         };
         ReporteCosto: {
             agrupar: string;
@@ -3745,67 +3661,126 @@ export interface components {
             total: number;
         };
         Requisicion: {
-            /** Format: int64 */
-            id: number;
-            folio: string;
-            /** @enum {string} */
-            estado: "borrador" | "pendiente" | "autorizada" | "cerrada" | "cancelada";
-            /** Format: int64 */
-            contratoId: number;
-            contrato: string;
+            acciones: components["schemas"]["AccionesRequisicion"];
+            almacen: string;
             /** Format: int64 */
             almacenId: number;
-            almacen: string;
+            /** Format: date-time */
+            autorizadaEn?: string;
+            autorizo?: string;
+            /** @description Porcentaje surtido (0 a 100) */
+            avance: number;
+            capturo: string;
+            /** Format: date-time */
+            cerradaEn?: string;
+            contrato: string;
+            /** Format: int64 */
+            contratoId: number;
+            /** Format: date-time */
+            creado: string;
+            /** @enum {string} */
+            estado: "borrador" | "pendiente" | "autorizada" | "cerrada" | "cancelada";
             /** Format: date */
             fecha: string;
             /** Format: date */
             fechaRequerida: string;
-            urgente: boolean;
-            observaciones?: string;
-            notaRechazo?: string;
+            folio: string;
+            /** Format: int64 */
+            id: number;
             motivoCierre?: string;
-            capturo: string;
-            autorizo?: string;
-            /** Format: date-time */
-            autorizadaEn?: string;
-            /** Format: date-time */
-            cerradaEn?: string;
-            /** Format: date-time */
-            creado: string;
-            /** @description Porcentaje surtido (0 a 100) */
-            avance: number;
+            notaRechazo?: string;
+            observaciones?: string;
+            pedidos: components["schemas"]["PedidoDeRequisicion"][];
+            renglones: components["schemas"]["RenglonRequisicion"][];
+            urgente: boolean;
+            vales: components["schemas"]["ValeDeRequisicion"][];
             /** Format: int32 */
             version: number;
-            renglones: components["schemas"]["RenglonRequisicion"][];
-            vales: components["schemas"]["ValeDeRequisicion"][];
-            pedidos: components["schemas"]["PedidoDeRequisicion"][];
-            acciones: components["schemas"]["AccionesRequisicion"];
+        };
+        Residentes: {
+            usuarioIds: number[];
+        };
+        ResultadoLote: {
+            codigo?: string;
+            folio?: string;
+            /** Format: int64 */
+            id: number;
+            mensaje?: string;
+            ok: boolean;
         };
         ResultadoRecepcion: {
+            apartados: components["schemas"]["Apartado"][];
+            folio: string;
             /** Format: int64 */
             movimientoId: number;
-            folio: string;
-            apartados: components["schemas"]["Apartado"][];
             pedido: components["schemas"]["Pedido"];
         };
-        ResumenContrato: {
+        Resumen: {
+            /** Format: int32 */
+            conDiferenciaExcel?: number;
+            /** Format: int32 */
+            conExistencia: number;
+            conFotoExcel: boolean;
+            /** Format: int32 */
+            contados: number;
+            importe?: number;
+            /** Format: int32 */
+            materiales: number;
+            /** Format: int32 */
+            prestamosDescartados: number;
+            /** Format: int32 */
+            prestamosListos: number;
+            /** Format: int32 */
+            prestamosPendientes: number;
+            /** Format: int32 */
+            sinContar: number;
+            /** Format: int32 */
+            sinCosto: number;
+        };
+        ResumenCarga: {
+            archivo: string;
+            /** Format: date-time */
+            confirmada?: string;
             /** Format: int64 */
-            contratoId: number;
-            contrato: string;
-            frente?: string;
+            corregidos: number;
+            /** Format: date-time */
+            creada: string;
+            /** Format: int64 */
+            descartados: number;
+            /** Format: int64 */
+            enCuarentena: number;
+            /** @description validada, confirmada o revertida */
             estado: string;
-            historico: number;
-            sistema: number;
-            material: number;
-            destajo: number;
-            total: number;
-            /** @description Suma de los lotes con presupuesto */
-            presupuesto?: number;
+            /** Format: int64 */
+            existentes: number;
+            hojas: string;
+            /** Format: int64 */
+            id: number;
+            /** Format: int64 */
+            porCrear: number;
+            /** Format: int64 */
+            renglones: number;
+            /** @description El mismo archivo ya estaba cargado: se devuelve esa carga */
+            repetida: boolean;
+            /** Format: date-time */
+            revertida?: string;
+            tipo: string;
+            tipoNombre: string;
+            usuario: string;
+            /** Format: int64 */
+            validos: number;
+            versionReglas: string;
+        };
+        ResumenContrato: {
             /** @description Programa de los lotes con presupuesto */
             consumido: number;
-            porcentaje?: number;
-            /** @enum {string} */
-            semaforo: "sin" | "verde" | "amarillo" | "rojo";
+            contrato: string;
+            /** Format: int64 */
+            contratoId: number;
+            destajo: number;
+            estado: string;
+            frente?: string;
+            historico: number;
             /** Format: int32 */
             lotes: number;
             /**
@@ -3818,247 +3793,272 @@ export interface components {
              * @description Lotes en o arriba del 100%
              */
             lotesRebasados: number;
+            material: number;
+            porcentaje?: number;
+            /** @description Suma de los lotes con presupuesto */
+            presupuesto?: number;
+            /** @enum {string} */
+            semaforo: "sin" | "verde" | "amarillo" | "rojo";
+            sistema: number;
+            total: number;
         };
-        ResumenPedido: {
+        ResumenMovimiento: {
+            almacen: string;
+            almacenDestino?: string;
+            autorizo?: string;
+            capturo: string;
+            contratos: string[];
+            /** Format: date-time */
+            creado: string;
+            estado: string;
+            /** Format: date */
+            fecha: string;
+            folio: string;
             /** Format: int64 */
             id: number;
-            folio: string;
-            estado: string;
-            proveedor: string;
+            importe?: number;
+            /** Format: int32 */
+            lineas: number;
+            solicitante?: string;
+            tipo: string;
+        };
+        ResumenPedido: {
             almacen: string;
+            /** Format: date-time */
+            creado: string;
+            estado: string;
             /** Format: date */
             fecha: string;
             /** Format: date */
             fechaEntrega?: string;
+            folio: string;
+            /** Format: int64 */
+            id: number;
+            proveedor: string;
             /** Format: int32 */
             renglones: number;
             /** @description Sin IVA; vacío sin permiso de precios */
             subtotal?: number;
-            /** Format: date-time */
-            creado: string;
         };
         ResumenRequisicion: {
-            /** Format: int64 */
-            id: number;
-            folio: string;
-            estado: string;
+            almacen: string;
+            autorizo?: string;
+            avance: number;
+            capturo: string;
+            /** @description Algún renglón tiene faltante por comprar */
+            conFaltante: boolean;
+            contrato: string;
             /** Format: int64 */
             contratoId: number;
-            contrato: string;
-            almacen: string;
+            /** Format: date-time */
+            creado: string;
+            estado: string;
             /** Format: date */
             fecha: string;
             /** Format: date */
             fechaRequerida: string;
-            urgente: boolean;
-            capturo: string;
-            autorizo?: string;
+            folio: string;
+            /** Format: int64 */
+            id: number;
             /** Format: int32 */
             renglones: number;
-            avance: number;
-            /** @description Algún renglón tiene faltante por comprar */
-            conFaltante: boolean;
-            /** Format: date-time */
-            creado: string;
+            urgente: boolean;
+        };
+        RolDto: {
+            clave: string;
+            nombre: string;
+        };
+        SalidaHistorica: {
+            cantidad: number;
+            clasificacion?: string;
+            costoEstimado: boolean;
+            /** @description Sin IVA; vacío sin permiso de costo */
+            costoUnitario?: number;
+            documento?: string;
+            entregado: boolean;
+            /** Format: date */
+            fecha: string;
+            folio?: string;
+            /** Format: int64 */
+            id: number;
+            importe?: number;
+            /** @description El renglón del Excel decía varios lotes ("32-43") */
+            lotesTexto?: string;
+            material: string;
+            observaciones?: string;
+            origen: string;
+            paquete?: string;
+            solicitante?: string;
+            /** @description salida, devolucion o reasignacion */
+            tipo: string;
+            unidad: string;
+        };
+        SesionDto: {
+            empresa: string;
+            /** Format: int64 */
+            empresaId: number;
+            nombre: string;
+            permisos: string[];
+            roles: components["schemas"]["RolDto"][];
+            usuario: string;
+            /** Format: int64 */
+            usuarioId: number;
+        };
+        SolicitudCodigo: {
+            codigo: string;
+        };
+        SolicitudLogin: {
+            contrasena: string;
+            usuario: string;
+        };
+        SolicitudNuevoUsuario: {
+            contrasena: string;
+            /** Format: email */
+            correo?: string;
+            nombre: string;
+            roles: string[];
+            usuario: string;
         };
         SurtidoRequisicion: {
+            contrato?: string;
             /** Format: int64 */
-            requisicionId?: number;
-            folio?: string;
+            contratoId?: number;
+            enVale?: number;
             estado?: string;
+            faltante?: number;
             /** Format: date */
             fecha?: string;
             /** Format: date */
             fechaRequerida?: string;
+            folio?: string;
+            material?: string;
+            materialClave?: string;
+            pedido?: number;
+            porRecibir?: number;
+            porcentaje?: number;
             /** Format: int64 */
-            contratoId?: number;
-            contrato?: string;
+            requisicionId?: number;
+            reservado?: number;
+            surtido?: number;
+            unidad?: string;
+            unidadObra?: string;
             /** Format: int64 */
             unidadObraId?: number;
-            unidadObra?: string;
-            materialClave?: string;
-            material?: string;
-            unidad?: string;
-            pedido?: number;
-            surtido?: number;
-            enVale?: number;
-            reservado?: number;
-            porRecibir?: number;
-            faltante?: number;
-            porcentaje?: number;
         };
-        ValeCreado: {
+        TipoCargaInfo: {
+            /** @description Hay al menos una carga confirmada */
+            confirmada: boolean;
+            /** @description Sus cargas previas ya están confirmadas */
+            disponible: boolean;
+            nombre: string;
+            origen: string;
+            parametros: string[];
+            /** Format: int32 */
+            paso: number;
+            requiere: string[];
+            tipo: string;
             /** Format: int64 */
-            movimientoId: number;
-            folio: string;
+            ultimaCargaId?: number;
+            ultimoEstado?: string;
         };
-        ValeDeRequisicion: {
+        TipoUnidad: {
+            clave: string;
+            /** Format: int32 */
+            id: number;
+            nombre: string;
+            usaManzanaLote: boolean;
+        };
+        TotalConciliado: {
+            cargado: number;
+            concepto: string;
+            /** @description Descartado con motivo */
+            descartado: number;
+            /** @description excel − cargado − pendiente − descartado: tiene que ser 0 */
+            diferencia: number;
+            excel: number;
+            /** @description Material y mes, frente y lote, trabajador… */
+            llave: string;
+            /** @description En cuarentena */
+            pendiente: number;
+        };
+        UnidadMedida: {
+            activa: boolean;
+            clave: string;
+            delSistema: boolean;
+            fraccionable: boolean;
             /** Format: int64 */
             id: number;
+            /** @enum {string} */
+            magnitud: "conteo" | "masa" | "volumen" | "longitud" | "superficie";
+            nombre: string;
+            /** Format: int32 */
+            version: number;
+        };
+        UnidadObra: {
+            activa: boolean;
+            clave: string;
+            /** Format: int64 */
+            contratoId: number;
+            /** Format: int64 */
+            id: number;
+            lote?: string;
+            manzana?: string;
+            presupuestoMaterial?: number;
+            prototipo?: string;
+            /** Format: int64 */
+            prototipoId?: number;
+            tipo: string;
+            /** Format: int32 */
+            version: number;
+        };
+        UsuarioDto: {
+            activo: boolean;
+            correo?: string;
+            /** Format: int64 */
+            id: number;
+            nombre: string;
+            roles: components["schemas"]["RolDto"][];
+            /** @description Tiene segundo factor confirmado */
+            segundoFactor: boolean;
+            usuario: string;
+        };
+        UsuarioResumen: {
+            /** Format: int64 */
+            id: number;
+            nombre: string;
+            usuario: string;
+        };
+        ValeCreado: {
             folio: string;
+            /** Format: int64 */
+            movimientoId: number;
+        };
+        ValeDeRequisicion: {
             estado: string;
             /** Format: date */
             fecha: string;
+            folio: string;
+            /** Format: int64 */
+            id: number;
             /** Format: int32 */
             renglones: number;
+        };
+        ValorAlmacen: {
+            almacen: string;
+            /** Format: int64 */
+            almacenId: number;
+            /** Format: int32 */
+            materiales: number;
+            /** @description Solo para quien ve costos */
+            valor?: number;
         };
         ValorInventario: {
             materiales: components["schemas"]["ExistenciaValorizada"][];
             valor: number;
         };
-        Apertura: {
-            /** Format: int64 */
-            id: number;
-            folio: string;
-            /** Format: int64 */
-            almacenId: number;
-            almacen: string;
-            /** Format: date */
-            fecha: string;
-            /** @enum {string} */
-            estado: "abierta" | "en_firma" | "aplicada" | "cancelada";
-            /** Format: int64 */
-            conteoId: number;
-            conteoFolio: string;
-            abrio: string;
-            firmaCoordinacion?: string;
-            /** Format: date-time */
-            firmaCoordinacionEn?: string;
-            firmaAdministracion?: string;
-            /** Format: date-time */
-            firmaAdministracionEn?: string;
-            /** Format: int64 */
-            movimientoId?: number;
-            /** @description Valor firmado, sin IVA (con permiso de ver costos) */
-            importe?: number;
-            motivoCancelacion?: string;
-            observaciones?: string;
-            /** Format: int32 */
-            version: number;
-        };
-        LineaApertura: {
-            /** Format: int64 */
-            materialId: number;
-            clave: string;
-            material: string;
-            unidad: string;
-            contado?: number;
-            prestado: number;
-            cantidad: number;
-            costoUnitario?: number;
-            /** @enum {string} */
-            origenCosto?: "capturado" | "historico" | "referencia";
-            detalleCosto?: string;
-            importe?: number;
-            faltaCosto: boolean;
-            existenciaExcel?: number;
-            diferenciaExcel?: number;
-        };
-        PrestamoApertura: {
-            /** Format: int64 */
-            id: number;
-            /**
-             * Format: int64
-             * @description Renglón del histórico de préstamos; nulo si se agregó a mano
-             */
-            origenId?: number;
-            /** Format: int32 */
-            filaExcel?: number;
-            articulo: string;
-            /** Format: date */
-            fecha?: string;
-            cantidad: number;
-            responsableTexto?: string;
-            /** Format: int64 */
-            materialId?: number;
-            materialClave?: string;
-            material?: string;
-            unidad?: string;
-            /** Format: int64 */
-            responsableId?: number;
-            responsable?: string;
-            /** @enum {string} */
-            estado: "pendiente" | "listo" | "descartado";
-            motivo?: string;
-            /** Format: int64 */
-            prestamoId?: number;
-            /** Format: int32 */
-            version: number;
-        };
-        Resumen: {
-            /** Format: int32 */
-            materiales: number;
-            /** Format: int32 */
-            contados: number;
-            /** Format: int32 */
-            sinContar: number;
-            /** Format: int32 */
-            conExistencia: number;
-            /** Format: int32 */
-            sinCosto: number;
-            /** Format: int32 */
-            prestamosPendientes: number;
-            /** Format: int32 */
-            prestamosListos: number;
-            /** Format: int32 */
-            prestamosDescartados: number;
-            importe?: number;
-            conFotoExcel: boolean;
-            /** Format: int32 */
-            conDiferenciaExcel?: number;
-        };
-        DetalleApertura: {
-            apertura: components["schemas"]["Apertura"];
-            resumen: components["schemas"]["Resumen"];
-            lineas: components["schemas"]["LineaApertura"][];
-            prestamos: components["schemas"]["PrestamoApertura"][];
-            huella: string;
-            /** @enum {string} */
-            firmaComo?: "coordinacion" | "administracion";
-            faltaParaFirmar: string[];
-        };
-        DatosApertura: {
-            /** Format: int64 */
-            almacenId: number;
-            /** Format: date */
-            fecha: string;
-            observaciones?: string;
-        };
-        DatosPrestamoApertura: {
-            /** Format: int64 */
-            materialId?: number;
-            /** Format: int64 */
-            responsableId?: number;
-            cantidad: number;
-            estado: string;
-            motivo?: string;
-        };
-        NuevoPrestamoApertura: {
-            articulo: string;
-            cantidad: number;
-            /** Format: date */
-            fecha?: string;
-            responsableTexto?: string;
-        };
-        Herramienta: {
-            /** Format: int64 */
-            unidadId: number;
-            nombre?: string;
-        };
-        CostoApertura: {
-            /** Format: int64 */
-            materialId: number;
-            costoUnitario?: number;
-            nota?: string;
-        };
-        CapturaCostos: {
-            costos: components["schemas"]["CostoApertura"][];
-        };
-        Firma: {
-            huella: string;
-        };
-        Cancelacion: {
-            motivo: string;
+        VersionDto: {
+            entorno: string;
+            version: string;
         };
     };
     responses: never;
@@ -4069,6 +4069,604 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    listarAlias: {
+        parameters: {
+            query?: {
+                entidad?: string;
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AliasCarga"][];
+                };
+            };
+        };
+    };
+    borrarAlias: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    cambiarAlias: {
+        parameters: {
+            query?: never;
+            header?: {
+                "If-Match"?: string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CambioAlias"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AliasCarga"];
+                };
+            };
+        };
+    };
+    listarAlmacenes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Almacen"][];
+                };
+            };
+        };
+    };
+    crearAlmacen: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosAlmacen"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Almacen"];
+                };
+            };
+        };
+    };
+    obtenerAlmacen: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Almacen"];
+                };
+            };
+        };
+    };
+    cambiarAlmacen: {
+        parameters: {
+            query?: never;
+            header?: {
+                "If-Match"?: string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosAlmacen"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Almacen"];
+                };
+            };
+        };
+    };
+    existenciasDeAlmacen: {
+        parameters: {
+            query?: {
+                q?: string;
+                soloConExistencia?: boolean;
+            };
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Existencia"][];
+                };
+            };
+        };
+    };
+    salidasDeAlmacenComoExcel: {
+        parameters: {
+            query: {
+                desde: string;
+                hasta: string;
+            };
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
+                };
+            };
+        };
+    };
+    listarAperturas: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Apertura"][];
+                };
+            };
+        };
+    };
+    abrirApertura: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosApertura"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleApertura"];
+                };
+            };
+        };
+    };
+    obtenerApertura: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleApertura"];
+                };
+            };
+        };
+    };
+    actaApertura: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
+                };
+            };
+        };
+    };
+    cancelarApertura: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Cancelacion"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleApertura"];
+                };
+            };
+        };
+    };
+    capturarCostosApertura: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CapturaCostos"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleApertura"];
+                };
+            };
+        };
+    };
+    firmarApertura: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Firma"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleApertura"];
+                };
+            };
+        };
+    };
+    agregarPrestamoApertura: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NuevoPrestamoApertura"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleApertura"];
+                };
+            };
+        };
+    };
+    traerPrestamosApertura: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleApertura"];
+                };
+            };
+        };
+    };
+    cambiarPrestamoApertura: {
+        parameters: {
+            query?: never;
+            header?: {
+                "If-Match"?: string;
+            };
+            path: {
+                id: number;
+                prestamoId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosPrestamoApertura"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleApertura"];
+                };
+            };
+        };
+    };
+    altaHerramientaApertura: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+                prestamoId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Herramienta"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleApertura"];
+                };
+            };
+        };
+    };
+    retirarFirmasApertura: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleApertura"];
+                };
+            };
+        };
+    };
+    aperturaSinContarEnCero: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleApertura"];
+                };
+            };
+        };
+    };
+    subirArchivo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    archivo: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Archivo"];
+                };
+            };
+        };
+    };
+    verArchivo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description El archivo con su tipo: JPEG, PNG, WebP o PDF */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": string;
+                };
+            };
+        };
+    };
+    tokenCsrf: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CsrfDto"];
+                };
+            };
+        };
+    };
     iniciarSesion: {
         parameters: {
             query?: never;
@@ -4098,46 +4696,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PasoSegundoFactorDto"];
-                };
-            };
-        };
-    };
-    sesionActual: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SesionDto"];
-                };
-            };
-        };
-    };
-    tokenCsrf: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["CsrfDto"];
                 };
             };
         };
@@ -4210,27 +4768,7 @@ export interface operations {
             };
         };
     };
-    restablecerSegundoFactor: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description No Content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    listarUsuarios: {
+    sesionActual: {
         parameters: {
             query?: never;
             header?: never;
@@ -4245,12 +4783,32 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["UsuarioDto"][];
+                    "application/json": components["schemas"]["SesionDto"];
                 };
             };
         };
     };
-    crearUsuario: {
+    listarCategorias: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Categoria"][];
+                };
+            };
+        };
+    };
+    crearCategoria: {
         parameters: {
             query?: never;
             header?: never;
@@ -4259,22 +4817,50 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["SolicitudNuevoUsuario"];
+                "application/json": components["schemas"]["DatosCategoria"];
             };
         };
         responses: {
-            /** @description Creado */
+            /** @description Created */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["UsuarioDto"];
+                    "application/json": components["schemas"]["Categoria"];
                 };
             };
         };
     };
-    listarRoles: {
+    cambiarCategoria: {
+        parameters: {
+            query?: never;
+            header?: {
+                "If-Match"?: string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosCategoria"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Categoria"];
+                };
+            };
+        };
+    };
+    listarClasificaciones: {
         parameters: {
             query?: never;
             header?: never;
@@ -4289,27 +4875,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["CatalogoRolDto"][];
-                };
-            };
-        };
-    };
-    version: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["VersionDto"];
+                    "application/json": components["schemas"]["ClasificacionCosto"][];
                 };
             };
         };
@@ -4386,9 +4952,36 @@ export interface operations {
             };
         };
     };
-    listarFrentes: {
+    conciliarContrato: {
         parameters: {
-            query?: never;
+            query?: {
+                formato?: "json" | "xlsx";
+            };
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConciliacionContrato"];
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
+                };
+            };
+        };
+    };
+    listarConteos: {
+        parameters: {
+            query?: {
+                almacenId?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -4401,12 +4994,12 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Frente"][];
+                    "application/json": components["schemas"]["Conteo"][];
                 };
             };
         };
     };
-    crearFrente: {
+    abrirConteo: {
         parameters: {
             query?: never;
             header?: never;
@@ -4415,7 +5008,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["DatosFrente"];
+                "application/json": components["schemas"]["DatosConteo"];
             };
         };
         responses: {
@@ -4425,44 +5018,18 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Frente"];
+                    "application/json": components["schemas"]["DetalleConteo"];
                 };
             };
         };
     };
-    cambiarFrente: {
-        parameters: {
-            query?: never;
-            header?: {
-                "If-Match"?: string;
-            };
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["DatosFrente"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Frente"];
-                };
-            };
-        };
-    };
-    listarPrototipos: {
+    obtenerConteo: {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                id: number;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -4473,68 +5040,18 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Prototipo"][];
+                    "application/json": components["schemas"]["DetalleConteo"];
                 };
             };
         };
     };
-    crearPrototipo: {
+    cancelarConteo: {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["DatosPrototipo"];
-            };
-        };
-        responses: {
-            /** @description Created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Prototipo"];
-                };
-            };
-        };
-    };
-    cambiarPrototipo: {
-        parameters: {
-            query?: never;
-            header?: {
-                "If-Match"?: string;
-            };
             path: {
                 id: number;
             };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["DatosPrototipo"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Prototipo"];
-                };
-            };
-        };
-    };
-    listarTiposUnidad: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -4545,7 +5062,55 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["TipoUnidad"][];
+                    "application/json": components["schemas"]["DetalleConteo"];
+                };
+            };
+        };
+    };
+    cerrarConteo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleConteo"];
+                };
+            };
+        };
+    };
+    capturarConteo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CapturaConteo"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleConteo"];
                 };
             };
         };
@@ -4647,7 +5212,7 @@ export interface operations {
             };
         };
     };
-    listarUnidades: {
+    listarPrecios: {
         parameters: {
             query?: never;
             header?: never;
@@ -4664,12 +5229,12 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["UnidadObra"][];
+                    "application/json": components["schemas"]["PrecioPaquete"][];
                 };
             };
         };
     };
-    crearUnidades: {
+    fijarPrecio: {
         parameters: {
             query?: never;
             header?: never;
@@ -4680,35 +5245,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["NuevasUnidades"];
-            };
-        };
-        responses: {
-            /** @description Created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UnidadObra"][];
-                };
-            };
-        };
-    };
-    cambiarUnidad: {
-        parameters: {
-            query?: never;
-            header?: {
-                "If-Match"?: string;
-            };
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["DatosUnidad"];
+                "application/json": components["schemas"]["DatosPrecio"];
             };
         };
         responses: {
@@ -4718,7 +5255,33 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["UnidadObra"];
+                    "application/json": components["schemas"]["PrecioPaquete"];
+                };
+            };
+        };
+    };
+    asignarPresupuesto: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosPresupuesto"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnidadObra"][];
                 };
             };
         };
@@ -4771,27 +5334,7 @@ export interface operations {
             };
         };
     };
-    candidatosResidente: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UsuarioResumen"][];
-                };
-            };
-        };
-    };
-    listarPrecios: {
+    listarUnidades: {
         parameters: {
             query?: never;
             header?: never;
@@ -4808,12 +5351,12 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PrecioPaquete"][];
+                    "application/json": components["schemas"]["UnidadObra"][];
                 };
             };
         };
     };
-    fijarPrecio: {
+    crearUnidades: {
         parameters: {
             query?: never;
             header?: never;
@@ -4824,54 +5367,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["DatosPrecio"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PrecioPaquete"];
-                };
-            };
-        };
-    };
-    listarPaquetes: {
-        parameters: {
-            query?: {
-                clienteId?: number;
-                propios?: boolean;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Paquete"][];
-                };
-            };
-        };
-    };
-    crearPaquete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["DatosPaquete"];
+                "application/json": components["schemas"]["NuevasUnidades"];
             };
         };
         responses: {
@@ -4881,155 +5377,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Paquete"];
-                };
-            };
-        };
-    };
-    cambiarPaquete: {
-        parameters: {
-            query?: never;
-            header?: {
-                "If-Match"?: string;
-            };
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["DatosPaquete"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Paquete"];
-                };
-            };
-        };
-    };
-    listarEquivalencias: {
-        parameters: {
-            query?: {
-                clienteId?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Equivalencia"][];
-                };
-            };
-        };
-    };
-    fijarEquivalencias: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["Equivalencias"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Equivalencia"][];
-                };
-            };
-        };
-    };
-    listarUnidadesMedida: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UnidadMedida"][];
-                };
-            };
-        };
-    };
-    crearUnidadMedida: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["DatosUnidadMedida"];
-            };
-        };
-        responses: {
-            /** @description Created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UnidadMedida"];
-                };
-            };
-        };
-    };
-    cambiarUnidadMedida: {
-        parameters: {
-            query?: never;
-            header?: {
-                "If-Match"?: string;
-            };
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["DatosUnidadMedida"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UnidadMedida"];
+                    "application/json": components["schemas"]["UnidadObra"][];
                 };
             };
         };
@@ -5108,7 +5456,30 @@ export interface operations {
             };
         };
     };
-    listarCategorias: {
+    faltantesPorProveedor: {
+        parameters: {
+            query?: {
+                proveedorId?: number;
+                almacenId?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GrupoFaltantes"][];
+                };
+            };
+        };
+    };
+    listarFrentes: {
         parameters: {
             query?: never;
             header?: never;
@@ -5123,12 +5494,12 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Categoria"][];
+                    "application/json": components["schemas"]["Frente"][];
                 };
             };
         };
     };
-    crearCategoria: {
+    crearFrente: {
         parameters: {
             query?: never;
             header?: never;
@@ -5137,7 +5508,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["DatosCategoria"];
+                "application/json": components["schemas"]["DatosFrente"];
             };
         };
         responses: {
@@ -5147,12 +5518,12 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Categoria"];
+                    "application/json": components["schemas"]["Frente"];
                 };
             };
         };
     };
-    cambiarCategoria: {
+    cambiarFrente: {
         parameters: {
             query?: never;
             header?: {
@@ -5165,7 +5536,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["DatosCategoria"];
+                "application/json": components["schemas"]["DatosFrente"];
             };
         };
         responses: {
@@ -5175,12 +5546,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Categoria"];
+                    "application/json": components["schemas"]["Frente"];
                 };
             };
         };
     };
-    listarClasificaciones: {
+    historiaDeUnidad: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HistoriaUnidad"];
+                };
+            };
+        };
+    };
+    listarCargas: {
         parameters: {
             query?: never;
             header?: never;
@@ -5195,7 +5588,319 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ClasificacionCosto"][];
+                    "application/json": components["schemas"]["ResumenCarga"][];
+                };
+            };
+        };
+    };
+    subirCarga: {
+        parameters: {
+            query: {
+                tipo: string;
+                clienteId?: number;
+                mes?: string;
+                anio?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    archivo: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResumenCarga"];
+                };
+            };
+        };
+    };
+    destinosPosibles: {
+        parameters: {
+            query: {
+                entidad: string;
+                q?: string;
+                frenteId?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DestinoPosible"][];
+                };
+            };
+        };
+    };
+    destinoPorId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entidad: string;
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DestinoPosible"];
+                };
+            };
+        };
+    };
+    ordenDeCarga: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TipoCargaInfo"][];
+                };
+            };
+        };
+    };
+    obtenerCarga: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleCarga"];
+                };
+            };
+        };
+    };
+    conciliacionDeCarga: {
+        parameters: {
+            query?: {
+                todas?: boolean;
+            };
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConciliacionCarga"];
+                };
+            };
+        };
+    };
+    conciliacionDeCargaExcel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
+                };
+            };
+        };
+    };
+    confirmarCarga: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleCarga"];
+                };
+            };
+        };
+    };
+    decidirCarga: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DecisionesCarga"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleCarga"];
+                };
+            };
+        };
+    };
+    quitarDecision: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+                numero: number;
+                regla: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleCarga"];
+                };
+            };
+        };
+    };
+    filasDeCarga: {
+        parameters: {
+            query?: {
+                estado?: string;
+                regla?: string;
+                q?: string;
+                pendientes?: boolean;
+                pagina?: number;
+                tamano?: number;
+            };
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginaFilas"];
+                };
+            };
+        };
+    };
+    revalidarCarga: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleCarga"];
+                };
+            };
+        };
+    };
+    revertirCarga: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleCarga"];
                 };
             };
         };
@@ -5322,653 +6027,6 @@ export interface operations {
             };
         };
     };
-    listarProveedores: {
-        parameters: {
-            query?: {
-                q?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Proveedor"][];
-                };
-            };
-        };
-    };
-    crearProveedor: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["DatosProveedor"];
-            };
-        };
-        responses: {
-            /** @description Created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Proveedor"];
-                };
-            };
-        };
-    };
-    cambiarProveedor: {
-        parameters: {
-            query?: never;
-            header?: {
-                "If-Match"?: string;
-            };
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["DatosProveedor"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Proveedor"];
-                };
-            };
-        };
-    };
-    ordenDeCarga: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TipoCargaInfo"][];
-                };
-            };
-        };
-    };
-    listarCargas: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ResumenCarga"][];
-                };
-            };
-        };
-    };
-    subirCarga: {
-        parameters: {
-            query: {
-                tipo: string;
-                clienteId?: number;
-                mes?: string;
-                anio?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "multipart/form-data": {
-                    /** Format: binary */
-                    archivo: string;
-                };
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ResumenCarga"];
-                };
-            };
-        };
-    };
-    obtenerCarga: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DetalleCarga"];
-                };
-            };
-        };
-    };
-    filasDeCarga: {
-        parameters: {
-            query?: {
-                estado?: string;
-                regla?: string;
-                q?: string;
-                pendientes?: boolean;
-                pagina?: number;
-                tamano?: number;
-            };
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PaginaFilas"];
-                };
-            };
-        };
-    };
-    conciliacionDeCarga: {
-        parameters: {
-            query?: {
-                todas?: boolean;
-            };
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ConciliacionCarga"];
-                };
-            };
-        };
-    };
-    decidirCarga: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["DecisionesCarga"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DetalleCarga"];
-                };
-            };
-        };
-    };
-    quitarDecision: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-                numero: number;
-                regla: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DetalleCarga"];
-                };
-            };
-        };
-    };
-    revalidarCarga: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DetalleCarga"];
-                };
-            };
-        };
-    };
-    confirmarCarga: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DetalleCarga"];
-                };
-            };
-        };
-    };
-    revertirCarga: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DetalleCarga"];
-                };
-            };
-        };
-    };
-    destinosPosibles: {
-        parameters: {
-            query: {
-                entidad: string;
-                q?: string;
-                frenteId?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DestinoPosible"][];
-                };
-            };
-        };
-    };
-    destinoPorId: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                entidad: string;
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DestinoPosible"];
-                };
-            };
-        };
-    };
-    listarAlias: {
-        parameters: {
-            query?: {
-                entidad?: string;
-                q?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AliasCarga"][];
-                };
-            };
-        };
-    };
-    borrarAlias: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description No Content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    cambiarAlias: {
-        parameters: {
-            query?: never;
-            header?: {
-                "If-Match"?: string;
-            };
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CambioAlias"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AliasCarga"];
-                };
-            };
-        };
-    };
-    buscarPersonas: {
-        parameters: {
-            query?: {
-                q?: string;
-                soloRevisar?: boolean;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Persona"][];
-                };
-            };
-        };
-    };
-    obtenerPersona: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Persona"];
-                };
-            };
-        };
-    };
-    cambiarPersona: {
-        parameters: {
-            query?: never;
-            header?: {
-                "If-Match"?: string;
-            };
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["DatosPersona"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Persona"];
-                };
-            };
-        };
-    };
-    listarAlmacenes: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Almacen"][];
-                };
-            };
-        };
-    };
-    crearAlmacen: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["DatosAlmacen"];
-            };
-        };
-        responses: {
-            /** @description Created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Almacen"];
-                };
-            };
-        };
-    };
-    obtenerAlmacen: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Almacen"];
-                };
-            };
-        };
-    };
-    cambiarAlmacen: {
-        parameters: {
-            query?: never;
-            header?: {
-                "If-Match"?: string;
-            };
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["DatosAlmacen"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Almacen"];
-                };
-            };
-        };
-    };
-    existenciasDeAlmacen: {
-        parameters: {
-            query?: {
-                q?: string;
-                soloConExistencia?: boolean;
-            };
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Existencia"][];
-                };
-            };
-        };
-    };
     kardexDeMaterial: {
         parameters: {
             query?: {
@@ -5999,6 +6057,7 @@ export interface operations {
         parameters: {
             query?: {
                 tipo?: string;
+                /** @description Separados por coma: borrador,pendiente… */
                 estados?: string;
                 almacenId?: number;
                 desde?: string;
@@ -6046,6 +6105,54 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Movimiento"];
+                };
+            };
+        };
+    };
+    aplicarMovimientos: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Ids"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultadoLote"][];
+                };
+            };
+        };
+    };
+    autorizarMovimientos: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Ids"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultadoLote"][];
                 };
             };
         };
@@ -6120,29 +6227,7 @@ export interface operations {
             };
         };
     };
-    restantesDeMovimiento: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["LineaRestante"][];
-                };
-            };
-        };
-    };
-    enviarMovimiento: {
+    aplicarMovimiento: {
         parameters: {
             query?: never;
             header?: never;
@@ -6165,54 +6250,6 @@ export interface operations {
         };
     };
     autorizarMovimiento: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Movimiento"];
-                };
-            };
-        };
-    };
-    rechazarMovimiento: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["Nota"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Movimiento"];
-                };
-            };
-        };
-    };
-    aplicarMovimiento: {
         parameters: {
             query?: never;
             header?: never;
@@ -6260,18 +6297,16 @@ export interface operations {
             };
         };
     };
-    autorizarMovimientos: {
+    enviarMovimiento: {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                id: number;
+            };
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["Ids"];
-            };
-        };
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {
@@ -6279,21 +6314,23 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ResultadoLote"][];
+                    "application/json": components["schemas"]["Movimiento"];
                 };
             };
         };
     };
-    aplicarMovimientos: {
+    rechazarMovimiento: {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                id: number;
+            };
             cookie?: never;
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["Ids"];
+                "application/json": components["schemas"]["Nota"];
             };
         };
         responses: {
@@ -6303,7 +6340,494 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ResultadoLote"][];
+                    "application/json": components["schemas"]["Movimiento"];
+                };
+            };
+        };
+    };
+    restantesDeMovimiento: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LineaRestante"][];
+                };
+            };
+        };
+    };
+    listarPaquetes: {
+        parameters: {
+            query?: {
+                clienteId?: number;
+                propios?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Paquete"][];
+                };
+            };
+        };
+    };
+    crearPaquete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosPaquete"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Paquete"];
+                };
+            };
+        };
+    };
+    listarEquivalencias: {
+        parameters: {
+            query?: {
+                clienteId?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Equivalencia"][];
+                };
+            };
+        };
+    };
+    cambiarPaquete: {
+        parameters: {
+            query?: never;
+            header?: {
+                "If-Match"?: string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosPaquete"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Paquete"];
+                };
+            };
+        };
+    };
+    fijarEquivalencias: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Equivalencias"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Equivalencia"][];
+                };
+            };
+        };
+    };
+    listarPedidos: {
+        parameters: {
+            query?: {
+                /** @description Separados por coma: borrador,enviado,recibido… */
+                estados?: string;
+                proveedorId?: number;
+                almacenId?: number;
+                desde?: string;
+                hasta?: string;
+                folio?: string;
+                pagina?: number;
+                tamano?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResumenPedido"][];
+                };
+            };
+        };
+    };
+    crearPedido: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosPedido"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Pedido"];
+                };
+            };
+        };
+    };
+    obtenerPedido: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Pedido"];
+                };
+            };
+        };
+    };
+    reemplazarPedido: {
+        parameters: {
+            query?: never;
+            header?: {
+                "If-Match"?: string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosPedido"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Pedido"];
+                };
+            };
+        };
+    };
+    cancelarPedido: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Motivo"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Pedido"];
+                };
+            };
+        };
+    };
+    cerrarPedido: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Motivo"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Pedido"];
+                };
+            };
+        };
+    };
+    enviarPedido: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Pedido"];
+                };
+            };
+        };
+    };
+    recibirPedido: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosRecepcion"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultadoRecepcion"];
+                };
+            };
+        };
+    };
+    listarPeriodos: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Periodos"];
+                };
+            };
+        };
+    };
+    cerrarPeriodo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                anio: number;
+                mes: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Periodos"];
+                };
+            };
+        };
+    };
+    buscarPersonas: {
+        parameters: {
+            query?: {
+                q?: string;
+                soloRevisar?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Persona"][];
+                };
+            };
+        };
+    };
+    buscarNombresPersonas: {
+        parameters: {
+            query: {
+                q: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PersonaNombre"][];
+                };
+            };
+        };
+    };
+    obtenerPersona: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Persona"];
+                };
+            };
+        };
+    };
+    cambiarPersona: {
+        parameters: {
+            query?: never;
+            header?: {
+                "If-Match"?: string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosPersona"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Persona"];
                 };
             };
         };
@@ -6430,10 +6954,292 @@ export interface operations {
             };
         };
     };
-    listarConteos: {
+    listarPrototipos: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Prototipo"][];
+                };
+            };
+        };
+    };
+    crearPrototipo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosPrototipo"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Prototipo"];
+                };
+            };
+        };
+    };
+    cambiarPrototipo: {
+        parameters: {
+            query?: never;
+            header?: {
+                "If-Match"?: string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosPrototipo"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Prototipo"];
+                };
+            };
+        };
+    };
+    listarProveedores: {
+        parameters: {
+            query?: {
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Proveedor"][];
+                };
+            };
+        };
+    };
+    crearProveedor: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosProveedor"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Proveedor"];
+                };
+            };
+        };
+    };
+    cambiarProveedor: {
+        parameters: {
+            query?: never;
+            header?: {
+                "If-Match"?: string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosProveedor"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Proveedor"];
+                };
+            };
+        };
+    };
+    reporteContratos: {
+        parameters: {
+            query?: {
+                formato?: "json" | "xlsx";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResumenContrato"][];
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
+                };
+            };
+        };
+    };
+    reporteCostoPorLote: {
+        parameters: {
+            query?: {
+                formato?: "json" | "xlsx";
+            };
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CostoContrato"];
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
+                };
+            };
+        };
+    };
+    reporteCosto: {
+        parameters: {
+            query?: {
+                agrupar?: "contrato" | "frente" | "unidad" | "paquete" | "clasificacion" | "material" | "mes";
+                contratoId?: number;
+                frenteId?: number;
+                unidadObraId?: number;
+                paqueteId?: number;
+                clasificacionId?: number;
+                materialId?: number;
+                desde?: string;
+                hasta?: string;
+                fuente?: "historico" | "sistema";
+                formato?: "json" | "xlsx";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReporteCosto"];
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
+                };
+            };
+        };
+    };
+    reportePresupuesto: {
+        parameters: {
+            query?: {
+                contratoId?: number;
+                /** @description Lotes separados por coma (avisos al capturar) */
+                unidadIds?: number[];
+                /** @description Solo los lotes del 80% en adelante */
+                avisos?: boolean;
+                formato?: "json" | "xlsx";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LotePresupuesto"][];
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
+                };
+            };
+        };
+    };
+    reporteRequisicionVsSurtido: {
+        parameters: {
+            query?: {
+                contratoId?: number;
+                desde?: string;
+                hasta?: string;
+                formato?: "json" | "xlsx";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SurtidoRequisicion"][];
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
+                };
+            };
+        };
+    };
+    reporteValorInventario: {
         parameters: {
             query?: {
                 almacenId?: number;
+                formato?: "json" | "xlsx";
             };
             header?: never;
             path?: never;
@@ -6447,12 +7253,42 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Conteo"][];
+                    "application/json": components["schemas"]["ValorInventario"];
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
                 };
             };
         };
     };
-    abrirConteo: {
+    listarRequisiciones: {
+        parameters: {
+            query?: {
+                /** @description Separados por coma: borrador,pendiente,autorizada… */
+                estados?: string;
+                contratoId?: number;
+                desde?: string;
+                hasta?: string;
+                folio?: string;
+                pagina?: number;
+                tamano?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResumenRequisicion"][];
+                };
+            };
+        };
+    };
+    crearRequisicion: {
         parameters: {
             query?: never;
             header?: never;
@@ -6461,7 +7297,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["DatosConteo"];
+                "application/json": components["schemas"]["DatosRequisicion"];
             };
         };
         responses: {
@@ -6471,235 +7307,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["DetalleConteo"];
-                };
-            };
-        };
-    };
-    obtenerConteo: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DetalleConteo"];
-                };
-            };
-        };
-    };
-    capturarConteo: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CapturaConteo"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DetalleConteo"];
-                };
-            };
-        };
-    };
-    cerrarConteo: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DetalleConteo"];
-                };
-            };
-        };
-    };
-    cancelarConteo: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DetalleConteo"];
-                };
-            };
-        };
-    };
-    listarPeriodos: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Periodos"];
-                };
-            };
-        };
-    };
-    cerrarPeriodo: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                anio: number;
-                mes: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Periodos"];
-                };
-            };
-        };
-    };
-    subirArchivo: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "multipart/form-data": {
-                    /** Format: binary */
-                    archivo: string;
-                };
-            };
-        };
-        responses: {
-            /** @description Created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Archivo"];
-                };
-            };
-        };
-    };
-    verArchivo: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": string;
-                };
-            };
-        };
-    };
-    buscarNombresPersonas: {
-        parameters: {
-            query: {
-                q: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PersonaNombre"][];
-                };
-            };
-        };
-    };
-    historiaDeUnidad: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HistoriaUnidad"];
+                    "application/json": components["schemas"]["Requisicion"];
                 };
             };
         };
@@ -6774,59 +7382,7 @@ export interface operations {
             };
         };
     };
-    listarRequisiciones: {
-        parameters: {
-            query?: {
-                estados?: string;
-                contratoId?: number;
-                desde?: string;
-                hasta?: string;
-                folio?: string;
-                pagina?: number;
-                tamano?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ResumenRequisicion"][];
-                };
-            };
-        };
-    };
-    crearRequisicion: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["DatosRequisicion"];
-            };
-        };
-        responses: {
-            /** @description Created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Requisicion"];
-                };
-            };
-        };
-    };
-    enviarRequisicion: {
+    autorizarRequisicion: {
         parameters: {
             query?: never;
             header?: never;
@@ -6848,7 +7404,59 @@ export interface operations {
             };
         };
     };
-    autorizarRequisicion: {
+    cancelarRequisicion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Motivo"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Requisicion"];
+                };
+            };
+        };
+    };
+    cerrarRequisicion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Motivo"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Requisicion"];
+                };
+            };
+        };
+    };
+    enviarRequisicion: {
         parameters: {
             query?: never;
             header?: never;
@@ -6944,70 +7552,9 @@ export interface operations {
             };
         };
     };
-    cerrarRequisicion: {
+    candidatosResidente: {
         parameters: {
             query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["Motivo"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Requisicion"];
-                };
-            };
-        };
-    };
-    cancelarRequisicion: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["Motivo"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Requisicion"];
-                };
-            };
-        };
-    };
-    listarPedidos: {
-        parameters: {
-            query?: {
-                estados?: string;
-                proveedorId?: number;
-                almacenId?: number;
-                desde?: string;
-                hasta?: string;
-                folio?: string;
-                pagina?: number;
-                tamano?: number;
-            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -7020,12 +7567,52 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ResumenPedido"][];
+                    "application/json": components["schemas"]["UsuarioResumen"][];
                 };
             };
         };
     };
-    crearPedido: {
+    listarTiposUnidad: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TipoUnidad"][];
+                };
+            };
+        };
+    };
+    listarUnidadesMedida: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnidadMedida"][];
+                };
+            };
+        };
+    };
+    crearUnidadMedida: {
         parameters: {
             query?: never;
             header?: never;
@@ -7034,7 +7621,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["DatosPedido"];
+                "application/json": components["schemas"]["DatosUnidadMedida"];
             };
         };
         responses: {
@@ -7044,34 +7631,12 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Pedido"];
+                    "application/json": components["schemas"]["UnidadMedida"];
                 };
             };
         };
     };
-    obtenerPedido: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Pedido"];
-                };
-            };
-        };
-    };
-    reemplazarPedido: {
+    cambiarUnidadMedida: {
         parameters: {
             query?: never;
             header?: {
@@ -7084,7 +7649,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["DatosPedido"];
+                "application/json": components["schemas"]["DatosUnidadMedida"];
             };
         };
         responses: {
@@ -7094,501 +7659,12 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Pedido"];
+                    "application/json": components["schemas"]["UnidadMedida"];
                 };
             };
         };
     };
-    enviarPedido: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Pedido"];
-                };
-            };
-        };
-    };
-    cerrarPedido: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["Motivo"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Pedido"];
-                };
-            };
-        };
-    };
-    cancelarPedido: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["Motivo"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Pedido"];
-                };
-            };
-        };
-    };
-    faltantesPorProveedor: {
-        parameters: {
-            query?: {
-                proveedorId?: number;
-                almacenId?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GrupoFaltantes"][];
-                };
-            };
-        };
-    };
-    recibirPedido: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["DatosRecepcion"];
-            };
-        };
-        responses: {
-            /** @description Created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ResultadoRecepcion"];
-                };
-            };
-        };
-    };
-    reporteContratos: {
-        parameters: {
-            query?: {
-                formato?: "json" | "xlsx";
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ResumenContrato"][];
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
-                };
-            };
-        };
-    };
-    reporteCostoPorLote: {
-        parameters: {
-            query?: {
-                formato?: "json" | "xlsx";
-            };
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["CostoContrato"];
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
-                };
-            };
-        };
-    };
-    reporteCosto: {
-        parameters: {
-            query?: {
-                agrupar?: "contrato" | "frente" | "unidad" | "paquete" | "clasificacion" | "material" | "mes";
-                contratoId?: number;
-                frenteId?: number;
-                unidadObraId?: number;
-                paqueteId?: number;
-                clasificacionId?: number;
-                materialId?: number;
-                desde?: string;
-                hasta?: string;
-                fuente?: "historico" | "sistema";
-                formato?: "json" | "xlsx";
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ReporteCosto"];
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
-                };
-            };
-        };
-    };
-    reportePresupuesto: {
-        parameters: {
-            query?: {
-                contratoId?: number;
-                unidadIds?: number[];
-                avisos?: boolean;
-                formato?: "json" | "xlsx";
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["LotePresupuesto"][];
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
-                };
-            };
-        };
-    };
-    reporteValorInventario: {
-        parameters: {
-            query?: {
-                almacenId?: number;
-                formato?: "json" | "xlsx";
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ValorInventario"];
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
-                };
-            };
-        };
-    };
-    reporteRequisicionVsSurtido: {
-        parameters: {
-            query?: {
-                contratoId?: number;
-                desde?: string;
-                hasta?: string;
-                formato?: "json" | "xlsx";
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SurtidoRequisicion"][];
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
-                };
-            };
-        };
-    };
-    conciliarContrato: {
-        parameters: {
-            query?: {
-                formato?: "json" | "xlsx";
-            };
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ConciliacionContrato"];
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
-                };
-            };
-        };
-    };
-    conciliacionDeCargaExcel: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
-                };
-            };
-        };
-    };
-    asignarPresupuesto: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["DatosPresupuesto"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UnidadObra"][];
-                };
-            };
-        };
-    };
-    listarAperturas: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Apertura"][];
-                };
-            };
-        };
-    };
-    abrirApertura: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["DatosApertura"];
-            };
-        };
-        responses: {
-            /** @description Created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DetalleApertura"];
-                };
-            };
-        };
-    };
-    obtenerApertura: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DetalleApertura"];
-                };
-            };
-        };
-    };
-    aperturaSinContarEnCero: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DetalleApertura"];
-                };
-            };
-        };
-    };
-    traerPrestamosApertura: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DetalleApertura"];
-                };
-            };
-        };
-    };
-    agregarPrestamoApertura: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["NuevoPrestamoApertura"];
-            };
-        };
-        responses: {
-            /** @description Created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DetalleApertura"];
-                };
-            };
-        };
-    };
-    cambiarPrestamoApertura: {
+    cambiarUnidad: {
         parameters: {
             query?: never;
             header?: {
@@ -7596,13 +7672,12 @@ export interface operations {
             };
             path: {
                 id: number;
-                prestamoId: number;
             };
             cookie?: never;
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["DatosPrestamoApertura"];
+                "application/json": components["schemas"]["DatosUnidad"];
             };
         };
         responses: {
@@ -7612,97 +7687,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["DetalleApertura"];
+                    "application/json": components["schemas"]["UnidadObra"];
                 };
             };
         };
     };
-    altaHerramientaApertura: {
+    listarUsuarios: {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                id: number;
-                prestamoId: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["Herramienta"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DetalleApertura"];
-                };
-            };
-        };
-    };
-    capturarCostosApertura: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CapturaCostos"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DetalleApertura"];
-                };
-            };
-        };
-    };
-    firmarApertura: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["Firma"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DetalleApertura"];
-                };
-            };
-        };
-    };
-    retirarFirmasApertura: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -7713,25 +7707,43 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["DetalleApertura"];
+                    "application/json": components["schemas"]["UsuarioDto"][];
                 };
             };
         };
     };
-    cancelarApertura: {
+    crearUsuario: {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                id: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["Cancelacion"];
+                "application/json": components["schemas"]["SolicitudNuevoUsuario"];
             };
         };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UsuarioDto"];
+                };
+            };
+        };
+    };
+    listarRoles: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {
@@ -7739,12 +7751,12 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["DetalleApertura"];
+                    "application/json": components["schemas"]["CatalogoRolDto"][];
                 };
             };
         };
     };
-    actaApertura: {
+    restablecerSegundoFactor: {
         parameters: {
             query?: never;
             header?: never;
@@ -7755,27 +7767,20 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description OK */
-            200: {
+            /** @description No Content */
+            204: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
-                };
+                content?: never;
             };
         };
     };
-    salidasDeAlmacenComoExcel: {
+    version: {
         parameters: {
-            query: {
-                desde: string;
-                hasta: string;
-            };
+            query?: never;
             header?: never;
-            path: {
-                id: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -7786,7 +7791,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
+                    "application/json": components["schemas"]["VersionDto"];
                 };
             };
         };
