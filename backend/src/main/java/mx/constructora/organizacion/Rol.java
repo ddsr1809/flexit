@@ -7,6 +7,7 @@ import static mx.constructora.compartido.Permisos.COSTO_VER_TODO;
 import static mx.constructora.compartido.Permisos.DOCUMENTO_AUTORIZAR;
 import static mx.constructora.compartido.Permisos.ESTRUCTURA_VER_TODO;
 import static mx.constructora.compartido.Permisos.EXISTENCIAS_VER;
+import static mx.constructora.compartido.Permisos.INCIDENTE_ATENDER;
 import static mx.constructora.compartido.Permisos.MOVIMIENTO_CAPTURAR;
 import static mx.constructora.compartido.Permisos.PEDIDO_CREAR;
 import static mx.constructora.compartido.Permisos.PERSONAS_ADMINISTRAR;
@@ -67,6 +68,7 @@ public enum Rol {
       "Administración",
       Set.of(
           ADMINISTRAR,
+          INCIDENTE_ATENDER,
           USUARIOS_ADMINISTRAR,
           PERSONAS_ADMINISTRAR,
           EXISTENCIAS_VER,

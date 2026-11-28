@@ -2159,6 +2159,161 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/incidentes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Incidentes (quien atiende ve todos; los demás, los que reportaron) */
+        get: operations["listarIncidentes"];
+        put?: never;
+        /** Reportar un problema (cualquier usuario) */
+        post: operations["reportarIncidente"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/incidentes/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Un incidente con su seguimiento (ETag) */
+        get: operations["obtenerIncidente"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Cambiar severidad e issue de GitHub (quien atiende; If-Match) */
+        patch: operations["clasificarIncidente"];
+        trace?: never;
+    };
+    "/api/v1/incidentes/{id}/descartar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** No era un error o está repetido: por qué (quien atiende) */
+        post: operations["descartarIncidente"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/incidentes/{id}/notas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Agregar una nota al seguimiento */
+        post: operations["anotarIncidente"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/incidentes/{id}/reabrir": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sigue pasando: por qué se reabre */
+        post: operations["reabrirIncidente"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/incidentes/{id}/resolver": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Resuelto: qué se hizo (quien atiende) */
+        post: operations["resolverIncidente"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/periodos/{anio}/{mes}/acta.xlsx": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Acta del cierre en Excel: valor por almacén, inventario y movimientos del mes */
+        get: operations["actaDeCierre"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/periodos/{anio}/{mes}/revision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Antes de cerrar: lo que impide cerrar el mes y los avisos que no lo impiden */
+        get: operations["revisarCierre"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reportes/estabilizacion": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Estabilización del piloto (H9): uso del almacén por día, capturas tardías, pendientes, incidentes y el criterio del hito */
+        get: operations["reporteEstabilizacion"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -4059,6 +4214,277 @@ export interface components {
         VersionDto: {
             entorno: string;
             version: string;
+        };
+        ClasificacionIncidente: {
+            /** Format: int32 */
+            issue?: number;
+            nota?: string;
+            severidad: string;
+        };
+        CriterioH9: {
+            /** Format: int32 */
+            criticosAbiertos: number;
+            cumple: boolean;
+            /**
+             * Format: int32
+             * @description Días que pide el criterio (14)
+             */
+            diasRequeridos: number;
+            /** @description Dos semanas seguidas capturando a tiempo, con vales */
+            dosSemanasATiempo: boolean;
+            /** @description Ya se cerró un mes desde la apertura */
+            primerCierre: boolean;
+            /**
+             * Format: int32
+             * @description Días seguidos sin capturas tardías
+             */
+            racha: number;
+            sinCriticos: boolean;
+            /** @description Último mes cerrado (AAAA-MM) */
+            ultimoMesCerrado?: string;
+            /**
+             * Format: int32
+             * @description Vales aplicados dentro de la racha
+             */
+            valesEnRacha: number;
+        };
+        CriticoEstabilizacion: {
+            folio: string;
+            /** Format: int64 */
+            id: number;
+            /** Format: date-time */
+            reportadoEn: string;
+            titulo: string;
+        };
+        DatosIncidente: {
+            /** Format: int64 */
+            almacenId?: number;
+            descripcion: string;
+            documento?: string;
+            pantalla?: string;
+            peticion?: string;
+            severidad: string;
+            titulo: string;
+        };
+        DiaEstabilizacion: {
+            /** Format: int32 */
+            cancelados: number;
+            /** Format: int32 */
+            documentos: number;
+            /** Format: int32 */
+            entradas: number;
+            /** Format: date */
+            fecha: string;
+            /** Format: int32 */
+            salidas: number;
+            /** Format: int32 */
+            tardios: number;
+        };
+        DocumentoEstabilizacion: {
+            /**
+             * Format: date
+             * @description Día en que se capturó (solo los tardíos)
+             */
+            capturado?: string;
+            /**
+             * Format: int32
+             * @description Tardío: días de la fecha a la captura; pendiente: días que lleva
+             */
+            dias: number;
+            estado: string;
+            /** Format: date */
+            fecha: string;
+            folio: string;
+            tipo: string;
+        };
+        DocumentoRevision: {
+            almacen?: string;
+            estado?: string;
+            /**
+             * Format: date
+             * @description Fecha del documento; del préstamo, la fecha en que debía regresar
+             */
+            fecha?: string;
+            folio: string;
+            /** @description Tipo de movimiento, o conteo, apertura, prestamo o requisicion */
+            tipo: string;
+        };
+        Estabilizacion: {
+            almacen: string;
+            /** Format: int64 */
+            almacenId: number;
+            /**
+             * Format: date
+             * @description Fecha del saldo de apertura; vacío si el almacén no ha abierto
+             */
+            apertura?: string;
+            criterio: components["schemas"]["CriterioH9"];
+            criticos: components["schemas"]["CriticoEstabilizacion"][];
+            /** Format: date */
+            desde: string;
+            dias: components["schemas"]["DiaEstabilizacion"][];
+            /** Format: date */
+            hasta: string;
+            indicadores: components["schemas"]["IndicadoresEstabilizacion"];
+            /** @description Hasta 100, del más viejo al más nuevo */
+            pendientes: components["schemas"]["DocumentoEstabilizacion"][];
+            /** @description Hasta 100, del más tardío al menos */
+            tardios: components["schemas"]["DocumentoEstabilizacion"][];
+            /**
+             * Format: int32
+             * @description Días que se toleran para capturar
+             */
+            toleranciaDias: number;
+        };
+        Incidente: {
+            almacen?: string;
+            /** Format: int64 */
+            almacenId?: number;
+            /** Format: date-time */
+            cerradoEn?: string;
+            cerro?: string;
+            descripcion: string;
+            /** @description Folio del documento relacionado */
+            documento?: string;
+            /** @enum {string} */
+            estado: "abierto" | "resuelto" | "descartado";
+            folio: string;
+            /** Format: int64 */
+            id: number;
+            /**
+             * Format: int32
+             * @description Número del issue en GitHub
+             */
+            issue?: number;
+            notas: components["schemas"]["NotaIncidente"][];
+            pantalla?: string;
+            /** @description X-Request-Id de la petición que falló */
+            peticion?: string;
+            /** @description Quien consulta lo puede clasificar y cerrar */
+            puedeAtender: boolean;
+            /** Format: int32 */
+            reaperturas: number;
+            /** Format: date-time */
+            reportadoEn: string;
+            reporto: string;
+            resolucion?: string;
+            /** @enum {string} */
+            severidad: "critica" | "mayor" | "menor";
+            titulo: string;
+            /** Format: int32 */
+            version: number;
+        };
+        IncidenteResumen: {
+            almacen?: string;
+            /** Format: int64 */
+            almacenId?: number;
+            /** Format: date-time */
+            cerradoEn?: string;
+            /** @enum {string} */
+            estado: "abierto" | "resuelto" | "descartado";
+            folio: string;
+            /** Format: int64 */
+            id: number;
+            /** Format: int32 */
+            issue?: number;
+            /** Format: int32 */
+            reaperturas: number;
+            /** Format: date-time */
+            reportadoEn: string;
+            reporto: string;
+            /** @enum {string} */
+            severidad: "critica" | "mayor" | "menor";
+            titulo: string;
+        };
+        IndicadoresEstabilizacion: {
+            /**
+             * Format: int32
+             * @description Renglones de ajuste de los conteos
+             */
+            ajustesDeConteo: number;
+            /** Format: int32 */
+            cancelados: number;
+            /** Format: int32 */
+            conteosCerrados: number;
+            /**
+             * Format: int32
+             * @description Días sin ningún documento
+             */
+            diasSinCaptura: number;
+            /** Format: int32 */
+            documentos: number;
+            /**
+             * Format: int32
+             * @description Recepciones aplicadas
+             */
+            entradas: number;
+            /** Format: int32 */
+            incidentesReportados: number;
+            /** Format: int32 */
+            incidentesResueltos: number;
+            /** Format: int32 */
+            mayoresAbiertos: number;
+            /** @description Mediana de horas de reporte a resolución */
+            medianaHorasResolucion?: number;
+            /** @description Mediana de horas de captura a aplicación de los vales */
+            medianaHorasVale?: number;
+            /** Format: int32 */
+            menoresAbiertos: number;
+            /**
+             * Format: int32
+             * @description Sin aplicar ni cancelar, hoy
+             */
+            pendientes: number;
+            /**
+             * Format: int32
+             * @description Pendientes de más de 2 días
+             */
+            pendientesViejos: number;
+            /** @description De 0 a 100 */
+            porcentajeCancelados: number;
+            /** @description De 0 a 100 */
+            porcentajeTardios: number;
+            /** Format: int32 */
+            prestamosAbiertos: number;
+            /** Format: int32 */
+            prestamosVencidos: number;
+            /**
+             * Format: int32
+             * @description Vales aplicados
+             */
+            salidas: number;
+            /** Format: int32 */
+            tardios: number;
+        };
+        NotaIncidente: {
+            /** Format: date-time */
+            creado: string;
+            /** Format: int64 */
+            id: number;
+            texto: string;
+            /** @enum {string} */
+            tipo: "nota" | "severidad" | "issue" | "resuelto" | "descartado" | "reabierto";
+            usuario: string;
+        };
+        PuntoRevision: {
+            codigo: string;
+            /** Format: int32 */
+            cuantos: number;
+            /** @description Los primeros 50 (20 de otros módulos) */
+            documentos: components["schemas"]["DocumentoRevision"][];
+            mensaje: string;
+        };
+        RevisionCierre: {
+            avisos: components["schemas"]["PuntoRevision"][];
+            bloqueos: components["schemas"]["PuntoRevision"][];
+            cerrado: boolean;
+            /** @description AAAA-MM */
+            mes: string;
+            /** @description Sin bloqueos: se puede cerrar ya */
+            sePuedeCerrar: boolean;
+        };
+        TextoIncidente: {
+            texto: string;
         };
     };
     responses: never;
@@ -7792,6 +8218,280 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["VersionDto"];
+                };
+            };
+        };
+    };
+    listarIncidentes: {
+        parameters: {
+            query?: {
+                estado?: string;
+                severidad?: string;
+                almacenId?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidenteResumen"][];
+                };
+            };
+        };
+    };
+    reportarIncidente: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosIncidente"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Incidente"];
+                };
+            };
+        };
+    };
+    obtenerIncidente: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Incidente"];
+                };
+            };
+        };
+    };
+    clasificarIncidente: {
+        parameters: {
+            query?: never;
+            header?: {
+                "If-Match"?: string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ClasificacionIncidente"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Incidente"];
+                };
+            };
+        };
+    };
+    descartarIncidente: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TextoIncidente"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Incidente"];
+                };
+            };
+        };
+    };
+    anotarIncidente: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TextoIncidente"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Incidente"];
+                };
+            };
+        };
+    };
+    reabrirIncidente: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TextoIncidente"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Incidente"];
+                };
+            };
+        };
+    };
+    resolverIncidente: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TextoIncidente"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Incidente"];
+                };
+            };
+        };
+    };
+    actaDeCierre: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                anio: number;
+                mes: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
+                };
+            };
+        };
+    };
+    revisarCierre: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                anio: number;
+                mes: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RevisionCierre"];
+                };
+            };
+        };
+    };
+    reporteEstabilizacion: {
+        parameters: {
+            query: {
+                almacenId: number;
+                desde?: string;
+                hasta?: string;
+                formato?: "json" | "xlsx";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Estabilizacion"];
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
                 };
             };
         };

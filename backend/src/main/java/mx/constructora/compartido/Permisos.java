@@ -66,6 +66,12 @@ public final class Permisos {
    */
   public static final String PERSONAS_ADMINISTRAR = "personas:administrar";
 
+  /**
+   * Atender los incidentes del piloto: cambiar la severidad, ligarlos a GitHub, resolverlos o
+   * descartarlos y ver los de todos. Reportar uno no necesita permiso.
+   */
+  public static final String INCIDENTE_ATENDER = "incidente:atender";
+
   /** Dar de alta usuarios y asignar roles. */
   public static final String USUARIOS_ADMINISTRAR = "usuarios:administrar";
 

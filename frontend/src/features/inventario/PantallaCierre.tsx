@@ -6,8 +6,11 @@ import { Tabla } from '@/components/Tabla'
 import { Aviso } from '@/components/ui/aviso'
 import { Boton } from '@/components/ui/boton'
 import { Tarjeta } from '@/components/ui/tarjeta'
+import type { components } from '@/api/esquema'
 import { formatearFecha, formatearMoneda, formatearNumero } from '@/lib/formato'
-import { consultasInventario } from './consultas'
+import { consultasInventario, formatearDia, TIPOS } from './consultas'
+
+type PuntoRevision = components['schemas']['PuntoRevision']
 
 const MESES = [
   'enero',
@@ -26,10 +29,18 @@ const MESES = [
 
 const nombreMes = (anio: number, mes: number) => `${MESES[mes - 1]} ${anio}`
 
+const nombreDocumento = (tipo: string) =>
+  ({ conteo: 'Conteo', apertura: 'Apertura', prestamo: 'Préstamo', requisicion: 'Requisición' })[
+    tipo
+  ] ??
+  TIPOS[tipo]?.nombre ??
+  tipo
+
 /**
  * Cierre de mes (administración). Los meses se cierran en orden, cuando ya terminaron y no les
- * quedan documentos sin aplicar o cancelar. Cerrado, no acepta movimientos y queda la foto del
- * inventario valuado.
+ * quedan documentos sin aplicar o cancelar, ni conteos o aperturas abiertos (después ya no se
+ * podrían cerrar). Antes de cerrar se revisa el mes: lo que lo impide y los avisos que no.
+ * Cerrado, no acepta movimientos, queda la foto del inventario valuado y se descarga el acta.
  */
 export function PantallaCierre() {
   const cliente = useQueryClient()
@@ -39,11 +50,25 @@ export function PantallaCierre() {
       exigir(
         await api.POST('/api/v1/periodos/{anio}/{mes}/cerrar', { params: { path: { anio, mes } } }),
       ),
-    onSuccess: (datos) => cliente.setQueryData(consultasInventario.periodos.queryKey, datos),
+    onSuccess: (datos) => {
+      cliente.setQueryData(consultasInventario.periodos.queryKey, datos)
+      void cliente.invalidateQueries({ queryKey: ['revision-cierre'] })
+    },
   })
 
   const datos = periodos.data
   const [anio, mes] = (datos?.siguiente ?? '').split('-').map(Number)
+  const revision = useQuery({
+    queryKey: ['revision-cierre', anio, mes],
+    queryFn: async () =>
+      exigir(
+        await api.GET('/api/v1/periodos/{anio}/{mes}/revision', {
+          params: { path: { anio: anio ?? 0, mes: mes ?? 0 } },
+        }),
+      ),
+    enabled: Boolean(anio && mes && datos?.siguienteTerminado),
+  })
+  const r = revision.data
 
   return (
     <div className="flex max-w-4xl flex-col gap-6">
@@ -60,20 +85,42 @@ export function PantallaCierre() {
           <h2 className="font-medium">Siguiente por cerrar: {nombreMes(anio, mes)}</h2>
           {!datos.siguienteTerminado ? (
             <p className="text-sm text-tenue">El mes todavía no termina.</p>
-          ) : datos.pendientesSiguiente > 0 ? (
-            <p className="text-sm">
-              Hay {datos.pendientesSiguiente} documentos sin aplicar ni cancelar.{' '}
-              <Link to="/movimientos" className="text-marca underline">
-                Revísalos en Documentos
-              </Link>
-              .
-            </p>
+          ) : revision.isError ? (
+            <Aviso>{mensajeDe(revision.error)}</Aviso>
+          ) : !r ? (
+            <p className="text-sm text-tenue">Revisando el mes…</p>
           ) : (
-            <div>
-              <Boton disabled={cerrar.isPending} onClick={() => cerrar.mutate({ anio, mes })}>
-                Cerrar {nombreMes(anio, mes)}
-              </Boton>
-            </div>
+            <>
+              {r.bloqueos.length > 0 && (
+                <Puntos
+                  titulo="Lo que impide cerrar"
+                  puntos={r.bloqueos}
+                  className="border-peligro/30 bg-peligro/5"
+                />
+              )}
+              {r.avisos.length > 0 && (
+                <Puntos
+                  titulo="Avisos (no impiden cerrar)"
+                  puntos={r.avisos}
+                  className="border-borde bg-fondo"
+                />
+              )}
+              {r.bloqueos.length > 0 && datos.pendientesSiguiente > 0 && (
+                <p className="text-sm">
+                  <Link to="/movimientos" className="text-marca underline">
+                    Revisa los documentos en Documentos
+                  </Link>
+                  .
+                </p>
+              )}
+              {r.sePuedeCerrar && (
+                <div>
+                  <Boton disabled={cerrar.isPending} onClick={() => cerrar.mutate({ anio, mes })}>
+                    Cerrar {nombreMes(anio, mes)}
+                  </Boton>
+                </div>
+              )}
+            </>
           )}
         </Tarjeta>
       ) : (
@@ -100,9 +147,55 @@ export function PantallaCierre() {
                       )
                       .join(' · '),
             },
+            {
+              titulo: 'Acta',
+              celda: (p) => (
+                <a
+                  href={`/api/v1/periodos/${p.anio}/${p.mes}/acta.xlsx`}
+                  download
+                  className="text-marca underline"
+                >
+                  Excel
+                </a>
+              ),
+            },
           ]}
         />
       </Tarjeta>
     </div>
+  )
+}
+
+function Puntos({
+  titulo,
+  puntos,
+  className,
+}: {
+  titulo: string
+  puntos: PuntoRevision[]
+  className: string
+}) {
+  return (
+    <section className={`rounded-md border p-3 text-sm ${className}`}>
+      <h3 className="mb-2 font-medium">{titulo}</h3>
+      <ul className="flex flex-col gap-2">
+        {puntos.map((p) => (
+          <li key={p.codigo}>
+            <p>{p.mensaje}</p>
+            {p.documentos.length > 0 && (
+              <p className="text-tenue">
+                {p.documentos
+                  .map(
+                    (d) =>
+                      `${d.folio} (${nombreDocumento(d.tipo)}${d.fecha ? `, ${formatearDia(d.fecha)}` : ''}${d.almacen ? `, ${d.almacen}` : ''})`,
+                  )
+                  .join(' · ')}
+                {p.cuantos > p.documentos.length && ` · y ${p.cuantos - p.documentos.length} más`}
+              </p>
+            )}
+          </li>
+        ))}
+      </ul>
+    </section>
   )
 }

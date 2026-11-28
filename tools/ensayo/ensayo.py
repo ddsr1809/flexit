@@ -27,6 +27,10 @@ Ver docs/runbooks/ensayo-general.md y docs/runbooks/corte.md.
         --salida corte/congelado.json
     python3 tools/ensayo/ensayo.py corte --congelado corte/congelado.json ...  # mismos datos que correr
 
+    # Estabilización (H9): cada semana, que nadie volvió a capturar en el Excel congelado.
+    python3 tools/ensayo/ensayo.py verificar --congelado corte/congelado.json \\
+        --almacen "Control de almacén.xlsx"
+
 La contraseña se pide en la terminal (o ENSAYO_CONTRASENA); el código del segundo factor también
 (o --codigo). Los Excel y decisiones.json traen datos reales: nunca se suben al repositorio.
 """
@@ -670,6 +674,26 @@ def verificar_congelado(archivos: dict[str, Path], congelado: dict[str, Any]) ->
     return problemas
 
 
+def verificacion(archivos: dict[str, Path], congelado: dict[str, Any]) -> list[dict[str, Any]]:
+    """Estabilización (H9): por archivo, si sigue siendo el congelado y cuándo se modificó."""
+    if congelado.get("formato") != VERSION_FORMATO:
+        raise SystemExit("congelado.json es de otro formato: vuelve a congelar")
+    filas = []
+    for origen, ruta in archivos.items():
+        esperado = congelado.get("archivos", {}).get(origen)
+        modificado = dt.datetime.fromtimestamp(ruta.stat().st_mtime).astimezone()
+        filas.append(
+            {
+                "origen": origen,
+                "nombre": ruta.name,
+                "congelado": esperado["nombre"] if esperado else None,
+                "coincide": esperado is not None and sha256_de(ruta) == esperado["sha256"],
+                "modificado": modificado.isoformat(timespec="minutes"),
+            }
+        )
+    return filas
+
+
 # -------------------------------------------------------------------------------- revertir
 
 
@@ -705,6 +729,10 @@ def principal(argv: list[str] | None = None) -> int:
     for origen in ("almacen", "sua", "destajo"):
         congelar_p.add_argument("--" + origen, type=Path, required=True)
     congelar_p.add_argument("--salida", type=Path, default=Path("congelado.json"))
+    verificar_p = sub.add_parser("verificar")
+    verificar_p.add_argument("--congelado", type=Path, required=True)
+    for origen in ("almacen", "sua", "destajo"):
+        verificar_p.add_argument("--" + origen, type=Path)
     for nombre in ("exportar", "correr", "revertir", "corte"):
         p = sub.add_parser(nombre)
         p.add_argument("--url", required=True)
@@ -742,6 +770,28 @@ def principal(argv: list[str] | None = None) -> int:
             print(f"{origen:8} {a['sha256']}  {a['nombre']}")
         print(f"Congelados en {argumentos.salida}. Anota los sha256 en el acta del corte.")
         return 0
+
+    if argumentos.comando == "verificar":
+        archivos = {
+            o: getattr(argumentos, o)
+            for o in ("almacen", "sua", "destajo")
+            if getattr(argumentos, o) is not None
+        }
+        if not archivos:
+            raise SystemExit("Indica al menos un Excel: --almacen, --sua o --destajo")
+        for origen, ruta in archivos.items():
+            if not ruta.is_file():
+                raise SystemExit(f"No existe el archivo de {origen}: {ruta}")
+        congelado = json.loads(argumentos.congelado.read_text("utf-8"))
+        filas = verificacion(archivos, congelado)
+        for f in filas:
+            estado = "igual al congelado" if f["coincide"] else "CAMBIÓ después del corte"
+            print(f"{f['origen']:8} {estado} · {f['nombre']} · modificado {f['modificado']}")
+        if all(f["coincide"] for f in filas):
+            print(f"Nadie capturó en el Excel desde el corte ({congelado['congelado']}).")
+            return 0
+        print("Alguien guardó el Excel después del corte: revisa qué se capturó ahí.")
+        return 3
 
     if argumentos.comando == "exportar":
         datos = exportar(sesion(argumentos), argumentos.url)

@@ -77,6 +77,17 @@ Administración no captura lo contado en la apertura que va a firmar.
 
 Al terminar, en preproducción se cancela (o se deja) la apertura de práctica; producción no se toca.
 
+## Reportar un problema (todos, 10 minutos · H9)
+
+- El botón *Reportar un problema* está en todas las pantallas. Se usa en el momento, desde la
+  pantalla donde pasó: lleva sola la pantalla y, si algo acaba de fallar, el identificador de la
+  petición.
+- Se elige qué tan grave es: **crítica** si no se pueden registrar entradas o salidas o quedó mal
+  una existencia o un costo; **mayor** si se puede seguir con un rodeo; **menor** para lo demás.
+- En *Incidentes* cada quien ve los suyos y su seguimiento. Si se resolvió pero sigue pasando, se
+  reabre con una nota.
+- Ejercicio: reportar un problema menor de prueba en preproducción y verlo en *Incidentes*.
+
 ## Lista de asistencia
 
 | Rol | Nombre | Fecha | Hizo el ejercicio |

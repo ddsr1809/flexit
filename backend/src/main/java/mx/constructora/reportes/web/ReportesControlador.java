@@ -14,6 +14,8 @@ import mx.constructora.abastecimiento.AbastecimientoApi.SurtidoRequisicion;
 import mx.constructora.compartido.ErrorNegocio;
 import mx.constructora.compartido.LibroExcel;
 import mx.constructora.reportes.aplicacion.Exportar;
+import mx.constructora.reportes.aplicacion.ServicioEstabilizacion;
+import mx.constructora.reportes.aplicacion.ServicioEstabilizacion.Estabilizacion;
 import mx.constructora.reportes.aplicacion.ServicioReportes;
 import mx.constructora.reportes.aplicacion.ServicioReportes.CostoContrato;
 import mx.constructora.reportes.aplicacion.ServicioReportes.LotePresupuesto;
@@ -44,9 +46,11 @@ class ReportesControlador {
   private static final String XLSX = LibroExcel.TIPO;
 
   private final ServicioReportes servicio;
+  private final ServicioEstabilizacion estabilizacion;
 
-  ReportesControlador(ServicioReportes servicio) {
+  ReportesControlador(ServicioReportes servicio, ServicioEstabilizacion estabilizacion) {
     this.servicio = servicio;
+    this.estabilizacion = estabilizacion;
   }
 
   @GetMapping("/contratos")
@@ -225,6 +229,36 @@ class ReportesControlador {
         Exportar::requisicionVsSurtido,
         "requisicion-vs-surtido",
         formato);
+  }
+
+  @GetMapping("/estabilizacion")
+  @Operation(
+      operationId = "reporteEstabilizacion",
+      summary =
+          "Estabilización del piloto (H9): uso del almacén por día, capturas tardías, pendientes,"
+              + " incidentes y el criterio del hito")
+  @ApiResponse(
+      responseCode = "200",
+      content = {
+        @Content(
+            mediaType = "application/json",
+            schema = @Schema(implementation = Estabilizacion.class)),
+        @Content(mediaType = XLSX)
+      })
+  ResponseEntity<?> estabilizacion(
+      @RequestParam long almacenId,
+      @Schema(description = "Por omisión, la fecha de la apertura del almacén")
+          @RequestParam(required = false)
+          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+          LocalDate desde,
+      @Schema(description = "Por omisión, hoy")
+          @RequestParam(required = false)
+          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+          LocalDate hasta,
+      @Schema(allowableValues = {"json", "xlsx"}) @RequestParam(defaultValue = "json")
+          String formato) {
+    Estabilizacion e = estabilizacion.reporte(almacenId, desde, hasta);
+    return responder(e, Exportar::estabilizacion, "estabilizacion-" + e.almacen(), formato);
   }
 
   /** JSON, o el mismo reporte como .xlsx descargable. */

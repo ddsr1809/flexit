@@ -11,6 +11,7 @@ export type LotePresupuesto = components['schemas']['LotePresupuesto']
 export type ValorInventario = components['schemas']['ValorInventario']
 export type SurtidoRequisicion = components['schemas']['SurtidoRequisicion']
 export type ConciliacionContrato = components['schemas']['ConciliacionContrato']
+export type Estabilizacion = components['schemas']['Estabilizacion']
 
 export const AGRUPACIONES: Record<Agrupacion, string> = {
   contrato: 'Contrato',
@@ -104,5 +105,15 @@ export const consultasReportes = {
             params: { path: { id: contratoId } },
           }),
         ) as unknown as ConciliacionContrato,
+    }),
+  estabilizacion: (almacenId: number, desde?: string, hasta?: string) =>
+    queryOptions({
+      queryKey: ['estabilizacion', almacenId, { desde, hasta }],
+      queryFn: async () =>
+        exigir(
+          await api.GET('/api/v1/reportes/estabilizacion', {
+            params: { query: { almacenId, desde, hasta } },
+          }),
+        ) as unknown as Estabilizacion,
     }),
 }

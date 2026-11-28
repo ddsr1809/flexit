@@ -504,6 +504,21 @@ class PruebasEnsayo(unittest.TestCase):
             )
         self.assertIn("sua", str(salida.exception))
 
+    def test_verificar_en_la_estabilizacion_que_nadie_toco_el_excel(self):
+        ruta = Path(self.tmp.name) / "congelado.json"
+        ruta.write_text(json.dumps(ensayo.congelar(self.archivos)), "utf-8")
+        almacen = ["--congelado", str(ruta), "--almacen", str(self.archivos["almacen"])]
+        self.assertEqual(ensayo.principal(["verificar", *almacen]), 0)
+        # Alguien vuelve a capturar una salida en el Excel del piloto.
+        self.archivos["almacen"].write_bytes(b"PK\x03\x04 otra salida capturada")
+        self.assertEqual(ensayo.principal(["verificar", *almacen]), 3)
+        filas = ensayo.verificacion(
+            {"almacen": self.archivos["almacen"]}, json.loads(ruta.read_text("utf-8"))
+        )
+        self.assertFalse(filas[0]["coincide"])
+        with self.assertRaises(SystemExit):
+            ensayo.principal(["verificar", "--congelado", str(ruta)])
+
     def test_el_informe_del_corte_trae_los_sha256(self):
         datos = self._exportado()
         prod = Entorno(9000, resueltas=False)

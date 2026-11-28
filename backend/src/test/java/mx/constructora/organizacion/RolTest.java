@@ -5,6 +5,7 @@ import static mx.constructora.compartido.Permisos.COSTO_VER_PROPIO;
 import static mx.constructora.compartido.Permisos.COSTO_VER_TODO;
 import static mx.constructora.compartido.Permisos.DOCUMENTO_AUTORIZAR;
 import static mx.constructora.compartido.Permisos.ESTRUCTURA_VER_TODO;
+import static mx.constructora.compartido.Permisos.INCIDENTE_ATENDER;
 import static mx.constructora.compartido.Permisos.MOVIMIENTO_CAPTURAR;
 import static mx.constructora.compartido.Permisos.PEDIDO_CREAR;
 import static mx.constructora.compartido.Permisos.PERSONAS_ADMINISTRAR;
@@ -21,6 +22,15 @@ import org.junit.jupiter.api.Test;
 
 /** La matriz "Roles y permisos" del plan técnico, fila por fila. */
 class RolTest {
+
+  @Test
+  void losIncidentesLosAtiendeAdministracion() {
+    for (Rol rol : Rol.values()) {
+      assertThat(rol.permisos().contains(INCIDENTE_ATENDER))
+          .as(rol.clave())
+          .isEqualTo(rol == Rol.ADMIN);
+    }
+  }
 
   @Test
   void soloElAlmacenistaCapturaMovimientos() {

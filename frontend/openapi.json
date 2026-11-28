@@ -6085,6 +6085,478 @@
           "Sistema"
         ]
       }
+    },
+    "/api/v1/incidentes": {
+      "get": {
+        "operationId": "listarIncidentes",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "estado",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "severidad",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "almacenId",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IncidenteResumen"
+                  }
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Incidentes (quien atiende ve todos; los demás, los que reportaron)",
+        "tags": [
+          "Soporte"
+        ]
+      },
+      "post": {
+        "operationId": "reportarIncidente",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosIncidente"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Incidente"
+                }
+              }
+            },
+            "description": "Created"
+          }
+        },
+        "summary": "Reportar un problema (cualquier usuario)",
+        "tags": [
+          "Soporte"
+        ]
+      }
+    },
+    "/api/v1/incidentes/{id}": {
+      "get": {
+        "operationId": "obtenerIncidente",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Incidente"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Un incidente con su seguimiento (ETag)",
+        "tags": [
+          "Soporte"
+        ]
+      },
+      "patch": {
+        "operationId": "clasificarIncidente",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "in": "header",
+            "name": "If-Match",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClasificacionIncidente"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Incidente"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Cambiar severidad e issue de GitHub (quien atiende; If-Match)",
+        "tags": [
+          "Soporte"
+        ]
+      }
+    },
+    "/api/v1/incidentes/{id}/descartar": {
+      "post": {
+        "operationId": "descartarIncidente",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TextoIncidente"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Incidente"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "No era un error o está repetido: por qué (quien atiende)",
+        "tags": [
+          "Soporte"
+        ]
+      }
+    },
+    "/api/v1/incidentes/{id}/notas": {
+      "post": {
+        "operationId": "anotarIncidente",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TextoIncidente"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Incidente"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Agregar una nota al seguimiento",
+        "tags": [
+          "Soporte"
+        ]
+      }
+    },
+    "/api/v1/incidentes/{id}/reabrir": {
+      "post": {
+        "operationId": "reabrirIncidente",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TextoIncidente"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Incidente"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Sigue pasando: por qué se reabre",
+        "tags": [
+          "Soporte"
+        ]
+      }
+    },
+    "/api/v1/incidentes/{id}/resolver": {
+      "post": {
+        "operationId": "resolverIncidente",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TextoIncidente"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Incidente"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Resuelto: qué se hizo (quien atiende)",
+        "tags": [
+          "Soporte"
+        ]
+      }
+    },
+    "/api/v1/periodos/{anio}/{mes}/acta.xlsx": {
+      "get": {
+        "operationId": "actaDeCierre",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "anio",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "in": "path",
+            "name": "mes",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Acta del cierre en Excel: valor por almacén, inventario y movimientos del mes",
+        "tags": [
+          "Inventario"
+        ]
+      }
+    },
+    "/api/v1/periodos/{anio}/{mes}/revision": {
+      "get": {
+        "operationId": "revisarCierre",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "anio",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "in": "path",
+            "name": "mes",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RevisionCierre"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Antes de cerrar: lo que impide cerrar el mes y los avisos que no lo impiden",
+        "tags": [
+          "Inventario"
+        ]
+      }
+    },
+    "/api/v1/reportes/estabilizacion": {
+      "get": {
+        "operationId": "reporteEstabilizacion",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "almacenId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "in": "query",
+            "name": "desde",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "description": "Por omisión, la fecha de la apertura del almacén"
+            }
+          },
+          {
+            "in": "query",
+            "name": "hasta",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "description": "Por omisión, hoy"
+            }
+          },
+          {
+            "in": "query",
+            "name": "formato",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "json",
+              "enum": [
+                "json",
+                "xlsx"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Estabilizacion"
+                }
+              },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Estabilización del piloto (H9): uso del almacén por día, capturas tardías, pendientes, incidentes y el criterio del hito",
+        "tags": [
+          "Reportes"
+        ]
+      }
     }
   },
   "components": {
@@ -12049,6 +12521,718 @@
         "required": [
           "entorno",
           "version"
+        ]
+      },
+      "ClasificacionIncidente": {
+        "type": "object",
+        "properties": {
+          "issue": {
+            "type": "integer",
+            "format": "int32",
+            "exclusiveMinimum": 0
+          },
+          "nota": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 0
+          },
+          "severidad": {
+            "type": "string",
+            "pattern": "critica|mayor|menor"
+          }
+        },
+        "required": [
+          "severidad"
+        ]
+      },
+      "CriterioH9": {
+        "type": "object",
+        "properties": {
+          "criticosAbiertos": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cumple": {
+            "type": "boolean"
+          },
+          "diasRequeridos": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Días que pide el criterio (14)"
+          },
+          "dosSemanasATiempo": {
+            "type": "boolean",
+            "description": "Dos semanas seguidas capturando a tiempo, con vales"
+          },
+          "primerCierre": {
+            "type": "boolean",
+            "description": "Ya se cerró un mes desde la apertura"
+          },
+          "racha": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Días seguidos sin capturas tardías"
+          },
+          "sinCriticos": {
+            "type": "boolean"
+          },
+          "ultimoMesCerrado": {
+            "type": "string",
+            "description": "Último mes cerrado (AAAA-MM)"
+          },
+          "valesEnRacha": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Vales aplicados dentro de la racha"
+          }
+        },
+        "required": [
+          "criticosAbiertos",
+          "cumple",
+          "diasRequeridos",
+          "dosSemanasATiempo",
+          "primerCierre",
+          "racha",
+          "sinCriticos",
+          "valesEnRacha"
+        ]
+      },
+      "CriticoEstabilizacion": {
+        "type": "object",
+        "properties": {
+          "folio": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "reportadoEn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "titulo": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "folio",
+          "id",
+          "reportadoEn",
+          "titulo"
+        ]
+      },
+      "DatosIncidente": {
+        "type": "object",
+        "properties": {
+          "almacenId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "descripcion": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 0
+          },
+          "documento": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 0
+          },
+          "pantalla": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 0
+          },
+          "peticion": {
+            "type": "string",
+            "pattern": "[A-Za-z0-9-]{1,64}"
+          },
+          "severidad": {
+            "type": "string",
+            "pattern": "critica|mayor|menor"
+          },
+          "titulo": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 3
+          }
+        },
+        "required": [
+          "descripcion",
+          "severidad",
+          "titulo"
+        ]
+      },
+      "DiaEstabilizacion": {
+        "type": "object",
+        "properties": {
+          "cancelados": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "documentos": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "entradas": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fecha": {
+            "type": "string",
+            "format": "date"
+          },
+          "salidas": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tardios": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "cancelados",
+          "documentos",
+          "entradas",
+          "fecha",
+          "salidas",
+          "tardios"
+        ]
+      },
+      "DocumentoEstabilizacion": {
+        "type": "object",
+        "properties": {
+          "capturado": {
+            "type": "string",
+            "format": "date",
+            "description": "Día en que se capturó (solo los tardíos)"
+          },
+          "dias": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Tardío: días de la fecha a la captura; pendiente: días que lleva"
+          },
+          "estado": {
+            "type": "string"
+          },
+          "fecha": {
+            "type": "string",
+            "format": "date"
+          },
+          "folio": {
+            "type": "string"
+          },
+          "tipo": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "dias",
+          "estado",
+          "fecha",
+          "folio",
+          "tipo"
+        ]
+      },
+      "DocumentoRevision": {
+        "type": "object",
+        "properties": {
+          "almacen": {
+            "type": "string"
+          },
+          "estado": {
+            "type": "string"
+          },
+          "fecha": {
+            "type": "string",
+            "format": "date",
+            "description": "Fecha del documento; del préstamo, la fecha en que debía regresar"
+          },
+          "folio": {
+            "type": "string"
+          },
+          "tipo": {
+            "type": "string",
+            "description": "Tipo de movimiento, o conteo, apertura, prestamo o requisicion"
+          }
+        },
+        "required": [
+          "folio",
+          "tipo"
+        ]
+      },
+      "Estabilizacion": {
+        "type": "object",
+        "properties": {
+          "almacen": {
+            "type": "string"
+          },
+          "almacenId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "apertura": {
+            "type": "string",
+            "format": "date",
+            "description": "Fecha del saldo de apertura; vacío si el almacén no ha abierto"
+          },
+          "criterio": {
+            "$ref": "#/components/schemas/CriterioH9"
+          },
+          "criticos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CriticoEstabilizacion"
+            }
+          },
+          "desde": {
+            "type": "string",
+            "format": "date"
+          },
+          "dias": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DiaEstabilizacion"
+            }
+          },
+          "hasta": {
+            "type": "string",
+            "format": "date"
+          },
+          "indicadores": {
+            "$ref": "#/components/schemas/IndicadoresEstabilizacion"
+          },
+          "pendientes": {
+            "type": "array",
+            "description": "Hasta 100, del más viejo al más nuevo",
+            "items": {
+              "$ref": "#/components/schemas/DocumentoEstabilizacion"
+            }
+          },
+          "tardios": {
+            "type": "array",
+            "description": "Hasta 100, del más tardío al menos",
+            "items": {
+              "$ref": "#/components/schemas/DocumentoEstabilizacion"
+            }
+          },
+          "toleranciaDias": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Días que se toleran para capturar"
+          }
+        },
+        "required": [
+          "almacen",
+          "almacenId",
+          "criterio",
+          "criticos",
+          "desde",
+          "dias",
+          "hasta",
+          "indicadores",
+          "pendientes",
+          "tardios",
+          "toleranciaDias"
+        ]
+      },
+      "Incidente": {
+        "type": "object",
+        "properties": {
+          "almacen": {
+            "type": "string"
+          },
+          "almacenId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "cerradoEn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "cerro": {
+            "type": "string"
+          },
+          "descripcion": {
+            "type": "string"
+          },
+          "documento": {
+            "type": "string",
+            "description": "Folio del documento relacionado"
+          },
+          "estado": {
+            "type": "string",
+            "enum": [
+              "abierto",
+              "resuelto",
+              "descartado"
+            ]
+          },
+          "folio": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "issue": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Número del issue en GitHub"
+          },
+          "notas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotaIncidente"
+            }
+          },
+          "pantalla": {
+            "type": "string"
+          },
+          "peticion": {
+            "type": "string",
+            "description": "X-Request-Id de la petición que falló"
+          },
+          "puedeAtender": {
+            "type": "boolean",
+            "description": "Quien consulta lo puede clasificar y cerrar"
+          },
+          "reaperturas": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "reportadoEn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reporto": {
+            "type": "string"
+          },
+          "resolucion": {
+            "type": "string"
+          },
+          "severidad": {
+            "type": "string",
+            "enum": [
+              "critica",
+              "mayor",
+              "menor"
+            ]
+          },
+          "titulo": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "descripcion",
+          "estado",
+          "folio",
+          "id",
+          "notas",
+          "puedeAtender",
+          "reaperturas",
+          "reportadoEn",
+          "reporto",
+          "severidad",
+          "titulo",
+          "version"
+        ]
+      },
+      "IncidenteResumen": {
+        "type": "object",
+        "properties": {
+          "almacen": {
+            "type": "string"
+          },
+          "almacenId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "cerradoEn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "estado": {
+            "type": "string",
+            "enum": [
+              "abierto",
+              "resuelto",
+              "descartado"
+            ]
+          },
+          "folio": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "issue": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "reaperturas": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "reportadoEn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reporto": {
+            "type": "string"
+          },
+          "severidad": {
+            "type": "string",
+            "enum": [
+              "critica",
+              "mayor",
+              "menor"
+            ]
+          },
+          "titulo": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "estado",
+          "folio",
+          "id",
+          "reaperturas",
+          "reportadoEn",
+          "reporto",
+          "severidad",
+          "titulo"
+        ]
+      },
+      "IndicadoresEstabilizacion": {
+        "type": "object",
+        "properties": {
+          "ajustesDeConteo": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Renglones de ajuste de los conteos"
+          },
+          "cancelados": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "conteosCerrados": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "diasSinCaptura": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Días sin ningún documento"
+          },
+          "documentos": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "entradas": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Recepciones aplicadas"
+          },
+          "incidentesReportados": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "incidentesResueltos": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "mayoresAbiertos": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "medianaHorasResolucion": {
+            "type": "number",
+            "description": "Mediana de horas de reporte a resolución"
+          },
+          "medianaHorasVale": {
+            "type": "number",
+            "description": "Mediana de horas de captura a aplicación de los vales"
+          },
+          "menoresAbiertos": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pendientes": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Sin aplicar ni cancelar, hoy"
+          },
+          "pendientesViejos": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Pendientes de más de 2 días"
+          },
+          "porcentajeCancelados": {
+            "type": "number",
+            "description": "De 0 a 100"
+          },
+          "porcentajeTardios": {
+            "type": "number",
+            "description": "De 0 a 100"
+          },
+          "prestamosAbiertos": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "prestamosVencidos": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "salidas": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Vales aplicados"
+          },
+          "tardios": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "ajustesDeConteo",
+          "cancelados",
+          "conteosCerrados",
+          "diasSinCaptura",
+          "documentos",
+          "entradas",
+          "incidentesReportados",
+          "incidentesResueltos",
+          "mayoresAbiertos",
+          "menoresAbiertos",
+          "pendientes",
+          "pendientesViejos",
+          "porcentajeCancelados",
+          "porcentajeTardios",
+          "prestamosAbiertos",
+          "prestamosVencidos",
+          "salidas",
+          "tardios"
+        ]
+      },
+      "NotaIncidente": {
+        "type": "object",
+        "properties": {
+          "creado": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "texto": {
+            "type": "string"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "nota",
+              "severidad",
+              "issue",
+              "resuelto",
+              "descartado",
+              "reabierto"
+            ]
+          },
+          "usuario": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "creado",
+          "id",
+          "texto",
+          "tipo",
+          "usuario"
+        ]
+      },
+      "PuntoRevision": {
+        "type": "object",
+        "properties": {
+          "codigo": {
+            "type": "string"
+          },
+          "cuantos": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "documentos": {
+            "type": "array",
+            "description": "Los primeros 50 (20 de otros módulos)",
+            "items": {
+              "$ref": "#/components/schemas/DocumentoRevision"
+            }
+          },
+          "mensaje": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "codigo",
+          "cuantos",
+          "documentos",
+          "mensaje"
+        ]
+      },
+      "RevisionCierre": {
+        "type": "object",
+        "properties": {
+          "avisos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PuntoRevision"
+            }
+          },
+          "bloqueos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PuntoRevision"
+            }
+          },
+          "cerrado": {
+            "type": "boolean"
+          },
+          "mes": {
+            "type": "string",
+            "description": "AAAA-MM"
+          },
+          "sePuedeCerrar": {
+            "type": "boolean",
+            "description": "Sin bloqueos: se puede cerrar ya"
+          }
+        },
+        "required": [
+          "avisos",
+          "bloqueos",
+          "cerrado",
+          "mes",
+          "sePuedeCerrar"
+        ]
+      },
+      "TextoIncidente": {
+        "type": "object",
+        "properties": {
+          "texto": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 0
+          }
+        },
+        "required": [
+          "texto"
         ]
       }
     }
