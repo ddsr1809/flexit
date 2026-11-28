@@ -153,7 +153,7 @@ public class ServicioPedidos {
       @NotNull Long almacenId,
       LocalDate fechaEntrega,
       @Size(max = 500) String observaciones,
-      @NotEmpty @Size(max = 300) List<@Valid RenglonPedidoCaptura> renglones,
+      @NotEmpty @Size(min = 1, max = 300) List<@Valid RenglonPedidoCaptura> renglones,
       @Schema(description = "Crear y enviar en un paso") Boolean enviar) {}
 
   /** Lo que un renglón del pedido cubre de un renglón de requisición. */
@@ -251,7 +251,7 @@ public class ServicioPedidos {
       @Size(max = 40) String folioFactura,
       @PositiveOrZero @Digits(integer = 12, fraction = 4) BigDecimal flete,
       @Size(max = 500) String observaciones,
-      @NotEmpty @Size(max = 300) List<@Valid RenglonRecibido> renglones) {}
+      @NotEmpty @Size(min = 1, max = 300) List<@Valid RenglonRecibido> renglones) {}
 
   /** Lo recibido que quedó apartado para una requisición. */
   public record Apartado(

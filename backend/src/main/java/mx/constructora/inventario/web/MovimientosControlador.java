@@ -54,7 +54,7 @@ class MovimientosControlador {
   record Motivo(@NotBlank @Size(max = 500) String motivo) {}
 
   /** Varios documentos a la vez (autorizar o aplicar en grupo). */
-  record Ids(@NotEmpty @Size(max = 200) List<Long> ids) {}
+  record Ids(@NotEmpty @Size(min = 1, max = 200) List<Long> ids) {}
 
   /** Resultado de un documento dentro de una operación en grupo. */
   record ResultadoLote(

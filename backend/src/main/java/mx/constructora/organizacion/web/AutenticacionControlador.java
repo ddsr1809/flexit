@@ -1,6 +1,7 @@
 package mx.constructora.organizacion.web;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -163,7 +164,7 @@ class AutenticacionControlador {
   /** Llamarlo antes del primer POST: deja la cookie {@code XSRF-TOKEN} en el navegador. */
   @GetMapping("/csrf")
   @Operation(operationId = "tokenCsrf", summary = "Token CSRF")
-  CsrfDto csrf(CsrfToken token) {
+  CsrfDto csrf(@Parameter(hidden = true) CsrfToken token) {
     return new CsrfDto(token.getToken(), token.getHeaderName());
   }
 }

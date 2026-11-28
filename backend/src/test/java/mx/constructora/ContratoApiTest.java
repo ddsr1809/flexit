@@ -63,6 +63,14 @@ class ContratoApiTest extends PruebaIntegracion {
             "/api/v1/personas",
             "/api/v1/personas/{id}");
 
+    Map<String, Object> csrf = contrato.json("$.paths['/api/v1/auth/csrf'].get");
+    assertThat(csrf)
+        .as("el token CSRF lo pone Spring Security: el cliente no manda parámetros")
+        .doesNotContainKey("parameters");
+    Integer minimo =
+        contrato.json("$.components.schemas.CapturaConteo.properties.lineas.minItems");
+    assertThat(minimo).as("una lista que no puede ir vacía se publica con minItems 1").isEqualTo(1);
+
     Path destino = Path.of("target", "openapi.json");
     Files.createDirectories(destino.getParent());
     Files.writeString(destino, contrato.cuerpo());

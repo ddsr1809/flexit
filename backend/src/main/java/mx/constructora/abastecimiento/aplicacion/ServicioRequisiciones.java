@@ -103,7 +103,7 @@ public class ServicioRequisiciones {
           BigDecimal cantidad,
       @Schema(description = "Unidad capturada; vacía: la unidad de control del material")
           Long unidadId,
-      @NotEmpty @Size(max = 200) List<Long> unidadObraIds,
+      @NotEmpty @Size(min = 1, max = 200) List<Long> unidadObraIds,
       @NotNull Long paqueteId,
       @NotNull Integer clasificacionId,
       @Size(max = 300) String observaciones) {}
@@ -114,7 +114,7 @@ public class ServicioRequisiciones {
       @NotNull LocalDate fechaRequerida,
       Boolean urgente,
       @Size(max = 500) String observaciones,
-      @NotEmpty @Size(max = 300) List<@Valid RenglonCaptura> renglones,
+      @NotEmpty @Size(min = 1, max = 300) List<@Valid RenglonCaptura> renglones,
       @Schema(description = "Crear y enviar a autorizar en un paso") Boolean enviar) {}
 
   /** Renglón de la requisición con su avance, en unidad de control. */
@@ -238,7 +238,7 @@ public class ServicioRequisiciones {
       @NotNull LocalDate fecha,
       @Schema(description = "Persona que recibe en obra") Long solicitanteId,
       @Size(max = 500) String observaciones,
-      @NotEmpty @Size(max = 1000) List<@Valid RenglonSurtido> renglones) {}
+      @NotEmpty @Size(min = 1, max = 1000) List<@Valid RenglonSurtido> renglones) {}
 
   /** Vale creado: queda enviado a autorizar. */
   public record ValeCreado(

@@ -18,7 +18,9 @@ Docker Compose, Caddy, Terraform (Vultr + Cloudflare), GitHub Actions + GHCR.
 - `make front` frontend en :5173
 - `make test` todas las pruebas (Docker para Testcontainers)
 - `make lint` / `make fmt`
-- `make api`  regenera `frontend/openapi.json` y los tipos desde el backend corriendo
+- `make api`  regenera `frontend/openapi.json` y los tipos: del backend corriendo o, si no está
+  arriba, del contrato que deja `make test-back`. El archivo no se edita a mano; CI falla si no
+  coincide con lo que publica el backend
 - `make sql`  pruebas de RLS, permisos, bitácora y folios directo en PostgreSQL
 
 ## Reglas que nunca se rompen
@@ -68,8 +70,8 @@ filtran y la bitácora registra al usuario. Sin contexto, la base no muestra fil
 además filtran por `empresa_id` en el código (doble filtro).
 
 ## Definición de terminado
-Pruebas nuevas en verde, `make test` y `make lint` en verde, `frontend/openapi.json` regenerado si
-cambió la API, `docs/estado.md` actualizado, PR que cierra el issue.
+Pruebas nuevas en verde, `make test` y `make lint` en verde, `frontend/openapi.json` regenerado con
+`make api` si cambió la API, `docs/estado.md` actualizado, PR que cierra el issue.
 
 ## Cómo trabajar
 - Antes de escribir código, propón el plan en pocas líneas y espera confirmación si toca costeo,

@@ -69,11 +69,13 @@ jobs:
           name: openapi
           path: /tmp/contrato
       - name: Comparar con el contrato del repositorio
+        # Compara contenido: sin servers y sin importar el orden de claves ni de arreglos.
         run: |
-          npx --yes prettier --parser json /tmp/contrato/openapi.json > /tmp/contrato/nuevo.json
-          npx --yes prettier --parser json openapi.json > /tmp/contrato/actual.json
-          if ! diff -q <(jq -S 'del(.servers)' /tmp/contrato/nuevo.json) <(jq -S 'del(.servers)' /tmp/contrato/actual.json) >/dev/null; then
-            echo "::warning file=frontend/openapi.json::El contrato del backend cambió. Corre 'make api' y sube frontend/openapi.json."
+          norma='del(.servers) | walk(if type == "array" then sort_by(tojson) else . end)'
+          if ! diff -u <(jq -S "$norma" openapi.json) <(jq -S "$norma" /tmp/contrato/openapi.json) > /tmp/contrato/diferencias.diff; then
+            echo "::error file=frontend/openapi.json::frontend/openapi.json no es el contrato que publica el backend. Corre 'make test-back' y 'make api', y sube el archivo."
+            head -n 200 /tmp/contrato/diferencias.diff
+            exit 1
           fi
           cp /tmp/contrato/openapi.json openapi.json
       - name: Tipos desde el contrato (si el backend rompe al frontend, falla aquí)

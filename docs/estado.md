@@ -436,6 +436,13 @@ porque Spring 7 ya no lo copia en la excepción traducida.
   Excel; solo celdas capturadas.
 - **Excel congelado por sha256** y carga final con `ensayo.py corte`, que no se borra.
 - Plan de reversa con el formato de la hoja Salidas; la columna Entregado va como VERDADERO de Excel.
+- **`frontend/openapi.json` sale del backend, no de la mano.** Al regenerarlo se vio que desde H2 el
+  archivo del repo no tenía los `pattern`, `minLength` y `exclusiveMinimum` de las validaciones, ni
+  los resúmenes actuales. Se corrigió lo que el backend publicaba mal: `/auth/csrf` ya no pide el
+  token como parámetro, las listas obligatorias salen con `minItems: 1` (`@Size(min = 1, …)`) y
+  `verArchivo` responde binario de cualquier tipo. `make api` ya no necesita `make dev` (usa el
+  contrato que deja `make test-back`) y no vacía el archivo si falla; CI ahora falla si el archivo
+  no coincide.
 
 ## Siguiente: H9 · Estabilización (semanas 16 y 17)
 

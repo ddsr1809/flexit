@@ -1,6 +1,9 @@
 package mx.constructora.compartido.web;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
 import mx.constructora.compartido.Almacenamiento;
@@ -44,6 +47,10 @@ class ArchivosControlador {
 
   @GetMapping("/{id}")
   @Operation(operationId = "verArchivo", summary = "Contenido de un archivo")
+  @ApiResponse(
+      responseCode = "200",
+      description = "El archivo con su tipo: JPEG, PNG, WebP o PDF",
+      content = @Content(mediaType = "*/*", schema = @Schema(type = "string", format = "binary")))
   ResponseEntity<byte[]> ver(@PathVariable long id) {
     Contenido contenido =
         almacenamiento

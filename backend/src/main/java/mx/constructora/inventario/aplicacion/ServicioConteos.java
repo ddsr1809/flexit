@@ -117,7 +117,7 @@ public class ServicioConteos {
       @PositiveOrZero @Digits(integer = 10, fraction = 6) BigDecimal costoUnitario) {}
 
   /** Captura de varias líneas a la vez. */
-  public record CapturaConteo(@NotEmpty @Size(max = 2000) List<@Valid Contado> lineas) {}
+  public record CapturaConteo(@NotEmpty @Size(min = 1, max = 2000) List<@Valid Contado> lineas) {}
 
   private final RepositorioConteos repositorio;
   private final RepositorioSaldos saldos;

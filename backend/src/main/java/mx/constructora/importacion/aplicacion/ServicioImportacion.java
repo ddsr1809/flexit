@@ -237,7 +237,7 @@ public class ServicioImportacion {
       @Size(max = 300) String motivo) {}
 
   public record DecisionesCarga(
-      @NotEmpty @Size(max = 1000) List<@Valid DecisionCarga> decisiones) {}
+      @NotEmpty @Size(min = 1, max = 1000) List<@Valid DecisionCarga> decisiones) {}
 
   /** Cómo se escribía algo en el Excel y qué es en el sistema. */
   public record AliasCarga(

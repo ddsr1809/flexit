@@ -34,8 +34,17 @@ fmt: ## Aplica el formato (Java y TypeScript)
 	cd backend && ./mvnw -B -q spotless:apply
 	cd frontend && npm run formato
 
-api: ## Regenera frontend/openapi.json y los tipos desde el backend corriendo (make dev)
-	curl -fsS http://localhost:8080/v3/api-docs | jq . > frontend/openapi.json
+# Toma el contrato del backend corriendo; si no está arriba, el que dejó make test-back en
+# backend/target. Escribe a un archivo aparte primero: si algo falla, openapi.json no se toca.
+api: ## Regenera frontend/openapi.json y los tipos (del backend en make dev o de la última corrida de make test-back)
+	@if curl -fsS -o /tmp/flexit-openapi.json http://localhost:8080/v3/api-docs 2>/dev/null; then \
+	  origen=/tmp/flexit-openapi.json; echo "Contrato del backend corriendo en :8080"; \
+	elif [ -s backend/target/openapi.json ]; then \
+	  origen=backend/target/openapi.json; echo "Contrato de la última corrida de make test-back"; \
+	else \
+	  echo "No hay contrato: levanta el backend (make dev) o corre make test-back" >&2; exit 1; \
+	fi; \
+	jq 'del(.servers)' "$$origen" > frontend/openapi.json.nuevo && mv frontend/openapi.json.nuevo frontend/openapi.json
 	cd frontend && npm run gen:api
 
 # Con psql instalado usa el de la máquina; si no, el cliente de la imagen de PostgreSQL 18.

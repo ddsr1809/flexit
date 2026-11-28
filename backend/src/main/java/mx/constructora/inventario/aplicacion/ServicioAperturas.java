@@ -231,7 +231,8 @@ public class ServicioAperturas {
       @Size(max = 200) String nota) {}
 
   /** Varios costos a la vez. */
-  public record CapturaCostos(@NotEmpty @Size(max = 2000) List<@Valid CostoApertura> costos) {}
+  public record CapturaCostos(
+      @NotEmpty @Size(min = 1, max = 2000) List<@Valid CostoApertura> costos) {}
 
   /** La firma, con la huella de lo que se revisó. */
   public record Firma(@NotBlank @Size(max = 64) String huella) {}

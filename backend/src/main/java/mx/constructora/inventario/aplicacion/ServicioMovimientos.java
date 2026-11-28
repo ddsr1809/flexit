@@ -124,7 +124,7 @@ public class ServicioMovimientos {
       Long archivoId,
       @Size(max = 500) String motivo,
       @Size(max = 500) String observaciones,
-      @NotEmpty @Size(max = 500) List<@Valid LineaCaptura> lineas,
+      @NotEmpty @Size(min = 1, max = 500) List<@Valid LineaCaptura> lineas,
       @Schema(description = "Crear y enviar a autorizar en un paso") Boolean enviar) {}
 
   /** Línea de un documento, con nombres. Costo e importe solo para quien ve costos. */
