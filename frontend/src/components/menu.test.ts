@@ -94,4 +94,12 @@ describe('menú por permisos', () => {
       'Apertura',
     )
   })
+
+  it('todos ven Incidentes; Estabilización solo quien ve todo el costo o administra', () => {
+    const almacen = menuPara(sesion(['movimiento:capturar', 'existencias:ver'])).map((e) => e.texto)
+    expect(almacen).toContain('Incidentes')
+    expect(almacen).not.toContain('Estabilización')
+    const direccion = menuPara(sesion(['costo:ver-todo'])).map((e) => e.texto)
+    expect(direccion).toEqual(expect.arrayContaining(['Incidentes', 'Estabilización']))
+  })
 })

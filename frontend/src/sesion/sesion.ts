@@ -22,6 +22,7 @@ export const PERMISOS = {
   catalogoEditar: 'catalogo:editar',
   estructuraVerTodo: 'estructura:ver-todo',
   presupuestoEditar: 'presupuesto:editar',
+  incidenteAtender: 'incidente:atender',
 } as const
 
 export type Permiso = (typeof PERMISOS)[keyof typeof PERMISOS]
@@ -43,6 +44,7 @@ export const DESCRIPCION_PERMISO: Record<string, string> = {
   'catalogo:editar': 'Dar de alta materiales y proveedores',
   'estructura:ver-todo': 'Ver todos los contratos',
   'presupuesto:editar': 'Asignar el presupuesto de material de los lotes',
+  'incidente:atender': 'Atender los incidentes del piloto',
 }
 
 export const puede = (sesion: Sesion | null, permiso: Permiso) =>

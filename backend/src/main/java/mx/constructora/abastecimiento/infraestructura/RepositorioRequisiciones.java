@@ -436,4 +436,47 @@ public class RepositorioRequisiciones {
       throw new IllegalStateException("La requisición " + id + " no se actualizó");
     }
   }
+
+  // ------------------------------------------------------------------------------ Cierre de mes
+
+  /** Folios de requisiciones y cuántas son en total. */
+  public record Folios(List<String> primeros, int total) {}
+
+  /** Autorizadas que siguen abiertas y se necesitaban a más tardar {@code hasta}. */
+  public Folios autorizadasAbiertas(long empresa, LocalDate hasta) {
+    return folios(
+        """
+        SELECT folio, count(*) OVER ()::int AS total FROM abastecimiento.requisicion
+         WHERE empresa_id = :empresa AND estado = 'autorizada' AND fecha_requerida <= :hasta
+         ORDER BY fecha_requerida, id LIMIT 20
+        """,
+        empresa,
+        hasta);
+  }
+
+  /** Enviadas a autorizar a más tardar {@code hasta} que nadie ha autorizado. */
+  public Folios sinAutorizar(long empresa, LocalDate hasta) {
+    return folios(
+        """
+        SELECT folio, count(*) OVER ()::int AS total FROM abastecimiento.requisicion
+         WHERE empresa_id = :empresa AND estado = 'pendiente' AND fecha <= :hasta
+         ORDER BY fecha, id LIMIT 20
+        """,
+        empresa,
+        hasta);
+  }
+
+  private record FolioConTotal(String folio, int total) {}
+
+  private Folios folios(String sql, long empresa, LocalDate hasta) {
+    List<FolioConTotal> filas =
+        jdbc.sql(sql)
+            .param("empresa", empresa)
+            .param("hasta", hasta)
+            .query(FolioConTotal.class)
+            .list();
+    return new Folios(
+        filas.stream().map(FolioConTotal::folio).toList(),
+        filas.isEmpty() ? 0 : filas.getFirst().total());
+  }
 }

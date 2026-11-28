@@ -1,6 +1,7 @@
 import { Link, Outlet, useNavigate } from '@tanstack/react-router'
 import { LogOut } from 'lucide-react'
 import { Boton } from '@/components/ui/boton'
+import { ReportarProblema } from '@/features/soporte/ReportarProblema'
 import { useCerrarSesion, useSesion } from '@/sesion/sesion'
 import { menuPara } from './menu'
 
@@ -44,7 +45,8 @@ export function Marco() {
             ),
           )}
         </nav>
-        <div className="mt-auto hidden p-2 md:block">
+        <div className="mt-auto hidden flex-col gap-1 p-2 md:flex">
+          <ReportarProblema className="w-full justify-start text-white/80 hover:bg-white/10 hover:text-white" />
           <Boton
             variante="fantasma"
             className="w-full justify-start text-white/80 hover:bg-white/10 hover:text-white"
@@ -55,7 +57,8 @@ export function Marco() {
         </div>
       </aside>
       <main className="flex-1 p-4 md:p-8">
-        <div className="mb-4 flex justify-end md:hidden">
+        <div className="mb-4 flex justify-end gap-2 md:hidden">
+          <ReportarProblema />
           <Boton variante="secundario" onClick={salir}>
             <LogOut className="size-4" /> Salir
           </Boton>

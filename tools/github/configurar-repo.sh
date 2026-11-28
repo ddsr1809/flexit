@@ -28,6 +28,9 @@ tipo:feature|0e8a16|Funcionalidad nueva
 tipo:bug|b42318|Algo no funciona
 tipo:deuda|fbca04|Deuda técnica
 riesgo:alto|b60205|Toca costeo, existencias, permisos o migraciones
+severidad:critica|b60205|Piloto: no se registran entradas o salidas, o quedó mal un dato (ADR-015)
+severidad:mayor|d93f0b|Piloto: se sigue con un rodeo, o un dato importante se ve mal
+severidad:menor|fbca04|Piloto: un detalle
 dependencias|ededed|Actualización de dependencias
 ia|c5def5|Lo hizo o lo ayudó una IA
 ETIQUETAS

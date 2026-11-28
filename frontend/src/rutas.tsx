@@ -9,7 +9,7 @@ import {
   useNavigate,
 } from '@tanstack/react-router'
 import { Marco } from '@/components/Marco'
-import { VER_PEDIDOS, VER_REPORTES, VER_REQUISICIONES } from '@/components/menu'
+import { VER_ESTABILIZACION, VER_PEDIDOS, VER_REPORTES, VER_REQUISICIONES } from '@/components/menu'
 import { PantallaInicio } from '@/features/inicio/PantallaInicio'
 import { PantallaLogin } from '@/features/sesion/PantallaLogin'
 import { consultaSesion, PERMISOS, puede, puedeAlguno, type Permiso } from '@/sesion/sesion'
@@ -140,6 +140,14 @@ const PantallaReportes = lazyRouteComponent(
 const PantallaCostoContrato = lazyRouteComponent(
   () => import('@/features/reportes/PantallaCostoContrato'),
   'PantallaCostoContrato',
+)
+const PantallaEstabilizacion = lazyRouteComponent(
+  () => import('@/features/reportes/PantallaEstabilizacion'),
+  'PantallaEstabilizacion',
+)
+const PantallaIncidentes = lazyRouteComponent(
+  () => import('@/features/soporte/PantallaIncidentes'),
+  'PantallaIncidentes',
 )
 
 interface Contexto {
@@ -525,6 +533,22 @@ const costoContrato = createRoute({
   component: RutaCostoContrato,
 })
 
+// ------------------------------------------------------------------------------ Estabilización (H9)
+
+const estabilizacion = createRoute({
+  getParentRoute: () => privado,
+  path: '/estabilizacion',
+  beforeLoad: conAlguno(...VER_ESTABILIZACION),
+  component: PantallaEstabilizacion,
+})
+
+/** Cualquiera ve los incidentes que reportó; quien atiende, todos. */
+const incidentes = createRoute({
+  getParentRoute: () => privado,
+  path: '/incidentes',
+  component: PantallaIncidentes,
+})
+
 const arbol = raiz.addChildren([
   login,
   privado.addChildren([
@@ -562,6 +586,8 @@ const arbol = raiz.addChildren([
     pedido,
     reportes,
     costoContrato,
+    estabilizacion,
+    incidentes,
   ]),
 ])
 

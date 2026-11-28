@@ -52,7 +52,15 @@ const MENSAJES: Record<string, string> = {
     'Quien abrió el conteo no lo cierra. Pide que lo cierre otra persona de administración.',
   ARCHIVO_TIPO: 'Solo se aceptan fotos (JPEG, PNG, WebP) y PDF.',
   ARCHIVO_GRANDE_10: 'La foto pasa de 10 MB.',
-  ERROR_INTERNO: 'Ocurrió un error inesperado. Si se repite, avisa a sistemas.',
+  // Cierre de mes e incidentes (H9). Los de la revisión del cierre muestran el detalle del
+  // servidor, que ya dice cuántos documentos y de qué mes.
+  MES_ABIERTO: 'Ese mes todavía no se cierra: no tiene acta.',
+  INCIDENTE_NO_ENCONTRADO: 'No existe el incidente o no lo puedes ver.',
+  INCIDENTE_CERRADO: 'El incidente ya está cerrado. Si sigue pasando, reábrelo.',
+  INCIDENTE_ABIERTO: 'El incidente ya está abierto.',
+  FALTA_TEXTO: 'Escribe el texto.',
+  ERROR_INTERNO:
+    'Ocurrió un error inesperado. Si se repite, usa «Reportar un problema»: lleva el identificador de la petición.',
 }
 
 export class ErrorApi extends Error {

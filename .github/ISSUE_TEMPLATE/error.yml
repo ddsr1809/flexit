@@ -16,3 +16,8 @@ body:
   - type: dropdown
     id: entorno
     attributes: { label: Entorno, options: [Producción, Preproducción, Local] }
+  - type: input
+    id: incidente
+    attributes:
+      label: Incidente del piloto
+      description: "Folio del incidente en el sistema (INC-2027-000123), si lo hay"

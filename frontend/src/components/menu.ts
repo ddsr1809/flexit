@@ -9,8 +9,10 @@ import {
   DoorOpen,
   FileSpreadsheet,
   FileText,
+  Gauge,
   House,
   Layers,
+  LifeBuoy,
   Library,
   ListChecks,
   Package,
@@ -59,6 +61,9 @@ const VER_REPORTES = [
   PERMISOS.pedidoCrear,
 ]
 
+/** Quien ve el reporte de estabilización (ServicioEstabilizacion.VER). */
+const VER_ESTABILIZACION = [PERMISOS.costoVerTodo, PERMISOS.administrar, PERMISOS.incidenteAtender]
+
 const CONSULTA_INVENTARIO = [
   PERMISOS.existenciasVer,
   PERMISOS.movimientoCapturar,
@@ -94,6 +99,12 @@ export const MENU: Entrada[] = [
   },
   { ruta: '/pedidos', texto: 'Pedidos', icono: ShoppingCart, alguno: VER_PEDIDOS },
   { ruta: '/reportes', texto: 'Reportes', icono: ChartColumn, alguno: VER_REPORTES },
+  {
+    ruta: '/estabilizacion',
+    texto: 'Estabilización',
+    icono: Gauge,
+    alguno: VER_ESTABILIZACION,
+  },
   { ruta: '/paquetes', texto: 'Paquetes', icono: Layers, permiso: PERMISOS.estructuraVerTodo },
   { ruta: '/catalogos', texto: 'Catálogos', icono: Library, permiso: PERMISOS.estructuraVerTodo },
   { ruta: '/proveedores', texto: 'Proveedores', icono: Truck, permiso: PERMISOS.catalogoEditar },
@@ -111,9 +122,10 @@ export const MENU: Entrada[] = [
     permiso: PERMISOS.personasAdministrar,
   },
   { ruta: '/usuarios', texto: 'Usuarios', icono: Users, permiso: PERMISOS.usuariosAdministrar },
+  { ruta: '/incidentes', texto: 'Incidentes', icono: LifeBuoy },
 ]
 
-export { VER_PEDIDOS, VER_REPORTES, VER_REQUISICIONES }
+export { VER_ESTABILIZACION, VER_PEDIDOS, VER_REPORTES, VER_REQUISICIONES }
 
 export const menuPara = (sesion: Sesion) =>
   MENU.filter((entrada) =>

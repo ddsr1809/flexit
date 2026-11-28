@@ -62,6 +62,11 @@ Docker Compose, Caddy, Terraform (Vultr + Cloudflare), GitHub Actions + GHCR.
     `apertura_linea` y no cambia: para corregir se retiran las firmas.
 20. El conteo de una apertura se captura como cualquier conteo, pero no genera ajustes: se cierra
     con las firmas y se cancela con la apertura.
+21. Un mes no se cierra con documentos sin aplicar ni con conteos o aperturas abiertos con fecha
+    hasta su fin (trigger en `inventario.periodo`, ADR-015). Lo que solo avisa se agrega por
+    `AvisosDeCierre`; el inventario no depende de quien avisa.
+22. Un incidente (`soporte.incidente`) no se borra y lo reportado no cambia: se agregan notas. Lo
+    atiende `incidente:atender`; cualquiera reporta y quien reportó lo reabre.
 
 ## Cómo funciona la seguridad por empresa
 `ContextoEmpresa` (sesión web o `ContextoEmpresa.como(...)`) → `DataSourceConEmpresa` fija
@@ -91,3 +96,9 @@ Pruebas nuevas en verde, `make test` y `make lint` en verde, `frontend/openapi.j
   (`ensayo.py congelar`), carga final (`ensayo.py corte`), apertura del almacén y dos firmas.
 - La existencia del Excel (`historico.v_existencia_excel`) es de todo el almacén del Excel: es
   referencia, nunca se carga al kardex.
+
+## Estabilización (H9)
+- La rutina diaria, los incidentes y el informe de cierre siguen `docs/runbooks/estabilizacion.md`;
+  el cierre de mes, `docs/runbooks/cierre-de-mes.md`.
+- El criterio de H9 vive en `reportes.dominio.CriterioEstabilizacion` (tardío: más de 1 día) y se
+  ve en la pantalla *Estabilización*. Que nadie tocó el Excel: `ensayo.py verificar`.

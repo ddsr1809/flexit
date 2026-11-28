@@ -34,7 +34,37 @@ const csrf: Middleware = {
   },
 }
 
+/** La última petición que falló: la pantalla para reportar un problema la propone. */
+export interface Falla {
+  /** X-Request-Id que devolvió el servidor: con él se encuentra el error en los logs. */
+  peticion: string
+  metodo: string
+  ruta: string
+  estado: number
+}
+
+let falla: Falla | undefined
+
+export const ultimaFalla = (): Falla | undefined => falla
+
+/** Guarda la última respuesta de error (salvo 401, que es solo sesión vencida). */
+export const registrarFallas: Middleware = {
+  onResponse({ request, response }) {
+    const peticion = response.headers.get('X-Request-Id')
+    if (response.status >= 400 && response.status !== 401 && peticion) {
+      falla = {
+        peticion,
+        metodo: request.method,
+        ruta: new URL(request.url, 'http://local').pathname,
+        estado: response.status,
+      }
+    }
+    return response
+  },
+}
+
 api.use(csrf)
+api.use(registrarFallas)
 
 /** Cierre de sesión. Lo atiende Spring Security directamente, por eso no está en el contrato. */
 export async function cerrarSesionEnServidor(): Promise<boolean> {

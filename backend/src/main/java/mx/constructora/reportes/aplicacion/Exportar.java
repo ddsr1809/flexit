@@ -6,6 +6,12 @@ import mx.constructora.abastecimiento.AbastecimientoApi.SurtidoRequisicion;
 import mx.constructora.compartido.LibroExcel;
 import mx.constructora.compartido.LibroExcel.Columna;
 import mx.constructora.compartido.LibroExcel.Formato;
+import mx.constructora.reportes.aplicacion.ServicioEstabilizacion.CriterioH9;
+import mx.constructora.reportes.aplicacion.ServicioEstabilizacion.CriticoEstabilizacion;
+import mx.constructora.reportes.aplicacion.ServicioEstabilizacion.DiaEstabilizacion;
+import mx.constructora.reportes.aplicacion.ServicioEstabilizacion.DocumentoEstabilizacion;
+import mx.constructora.reportes.aplicacion.ServicioEstabilizacion.Estabilizacion;
+import mx.constructora.reportes.aplicacion.ServicioEstabilizacion.IndicadoresEstabilizacion;
 import mx.constructora.reportes.aplicacion.ServicioReportes.ColumnaClasificacion;
 import mx.constructora.reportes.aplicacion.ServicioReportes.CostoContrato;
 import mx.constructora.reportes.aplicacion.ServicioReportes.ExistenciaValorizada;
@@ -259,6 +265,117 @@ public final class Exportar {
           r.porRecibir(),
           r.faltante(),
           r.porcentaje());
+    }
+    return libro.bytes();
+  }
+
+  /** El reporte de estabilización (H9): el criterio, los indicadores y el detalle por día. */
+  public static byte[] estabilizacion(Estabilizacion e) {
+    LibroExcel libro = new LibroExcel();
+    CriterioH9 c = e.criterio();
+    IndicadoresEstabilizacion i = e.indicadores();
+    libro
+        .hoja("Criterio H9", List.of(Columna.texto("Punto", 46), Columna.texto("Resultado", 40)))
+        .fila("Almacén", e.almacen())
+        .fila("Apertura", e.apertura() == null ? "Sin abrir" : e.apertura().toString())
+        .fila("Periodo", e.desde() + " a " + e.hasta())
+        .fila(
+            "Dos semanas seguidas capturando a tiempo",
+            (c.dosSemanasATiempo() ? "Sí" : "No")
+                + " · racha de "
+                + c.racha()
+                + " de "
+                + c.diasRequeridos()
+                + " días, "
+                + c.valesEnRacha()
+                + " vales")
+        .fila(
+            "Cero incidentes críticos abiertos",
+            (c.sinCriticos() ? "Sí" : "No") + " · " + c.criticosAbiertos() + " abiertos")
+        .fila(
+            "Primer cierre de mes hecho",
+            (c.primerCierre() ? "Sí" : "No")
+                + (c.ultimoMesCerrado() == null ? "" : " · último: " + c.ultimoMesCerrado()))
+        .totales("Cumple el criterio de H9", c.cumple() ? "Sí" : "No")
+        .fila(
+            "Nota",
+            "Que el Excel no cambió se comprueba con ensayo.py verificar (sha256 congelado)");
+
+    libro
+        .hoja(
+            "Indicadores",
+            List.of(Columna.texto("Indicador", 46), new Columna("Valor", Formato.CANTIDAD, 14)))
+        .fila("Documentos", i.documentos())
+        .fila("Vales aplicados", i.salidas())
+        .fila("Recepciones aplicadas", i.entradas())
+        .fila("Capturas tardías (más de " + e.toleranciaDias() + " día)", i.tardios())
+        .fila("% de capturas tardías", i.porcentajeTardios())
+        .fila("Cancelados", i.cancelados())
+        .fila("% de cancelados", i.porcentajeCancelados())
+        .fila("Días sin ningún documento", i.diasSinCaptura())
+        .fila("Sin aplicar ni cancelar (hoy)", i.pendientes())
+        .fila("Sin aplicar de más de 2 días", i.pendientesViejos())
+        .fila("Mediana de horas de captura a aplicación del vale", i.medianaHorasVale())
+        .fila("Préstamos abiertos", i.prestamosAbiertos())
+        .fila("Préstamos vencidos", i.prestamosVencidos())
+        .fila("Conteos cerrados", i.conteosCerrados())
+        .fila("Renglones de ajuste de conteo", i.ajustesDeConteo())
+        .fila("Incidentes reportados", i.incidentesReportados())
+        .fila("Incidentes resueltos", i.incidentesResueltos())
+        .fila("Incidentes mayores abiertos", i.mayoresAbiertos())
+        .fila("Incidentes menores abiertos", i.menoresAbiertos())
+        .fila("Mediana de horas para resolver un incidente", i.medianaHorasResolucion());
+
+    var dias =
+        libro.hoja(
+            "Por día",
+            List.of(
+                new Columna("Fecha", Formato.FECHA, 12),
+                new Columna("Documentos", Formato.ENTERO, 12),
+                new Columna("Vales", Formato.ENTERO, 10),
+                new Columna("Recepciones", Formato.ENTERO, 12),
+                new Columna("Tardíos", Formato.ENTERO, 10),
+                new Columna("Cancelados", Formato.ENTERO, 12)));
+    for (DiaEstabilizacion d : e.dias()) {
+      dias.fila(d.fecha(), d.documentos(), d.salidas(), d.entradas(), d.tardios(), d.cancelados());
+    }
+
+    var tardios =
+        libro.hoja(
+            "Capturas tardías",
+            List.of(
+                Columna.texto("Folio", 18),
+                Columna.texto("Tipo", 20),
+                Columna.texto("Estado", 12),
+                new Columna("Fecha", Formato.FECHA, 12),
+                new Columna("Capturado", Formato.FECHA, 12),
+                new Columna("Días", Formato.ENTERO, 8)));
+    for (DocumentoEstabilizacion d : e.tardios()) {
+      tardios.fila(d.folio(), d.tipo(), d.estado(), d.fecha(), d.capturado(), d.dias());
+    }
+
+    var pendientes =
+        libro.hoja(
+            "Sin aplicar",
+            List.of(
+                Columna.texto("Folio", 18),
+                Columna.texto("Tipo", 20),
+                Columna.texto("Estado", 12),
+                new Columna("Fecha", Formato.FECHA, 12),
+                new Columna("Días", Formato.ENTERO, 8)));
+    for (DocumentoEstabilizacion d : e.pendientes()) {
+      pendientes.fila(d.folio(), d.tipo(), d.estado(), d.fecha(), d.dias());
+    }
+
+    var criticos =
+        libro.hoja(
+            "Incidentes críticos",
+            List.of(
+                Columna.texto("Folio", 18),
+                Columna.texto("Título", 60),
+                new Columna("Reportado", Formato.FECHA, 12)));
+    for (CriticoEstabilizacion c2 : e.criticos()) {
+      criticos.fila(c2.folio(), c2.titulo(), c2.reportadoEn());
     }
     return libro.bytes();
   }
