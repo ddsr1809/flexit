@@ -25,6 +25,7 @@ public final class Importadores {
           new ImportadorSalidasHistoricas(),
           new ImportadorRequisicionesHistoricas(),
           new ImportadorPrestamosHistoricos(),
+          new ImportadorExistenciasHistoricas(),
           new ImportadorSuaHistorico(),
           new ImportadorDestajoHistorico()
         }) {

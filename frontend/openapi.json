@@ -5553,6 +5553,539 @@
           }
         }
       }
+    },
+    "/api/v1/aperturas": {
+      "get": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Aperturas de almacén, en curso primero",
+        "operationId": "listarAperturas",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Apertura"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Abrir la apertura de un almacén sin movimientos: conteo a ciegas y préstamos abiertos del Excel",
+        "operationId": "abrirApertura",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosApertura"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetalleApertura"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/aperturas/{id}": {
+      "get": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Una apertura: materiales, préstamos, lo que falta y la huella para firmar",
+        "operationId": "obtenerApertura",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetalleApertura"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/aperturas/{id}/sin-contar-en-cero": {
+      "post": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Marcar en 0 lo que no se encontró al contar (almacén)",
+        "operationId": "aperturaSinContarEnCero",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetalleApertura"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/aperturas/{id}/prestamos/traer": {
+      "post": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Volver a traer los préstamos abiertos del Excel (después de la carga final)",
+        "operationId": "traerPrestamosApertura",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetalleApertura"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/aperturas/{id}/prestamos": {
+      "post": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Agregar un préstamo abierto que no estaba en el Excel",
+        "operationId": "agregarPrestamoApertura",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NuevoPrestamoApertura"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetalleApertura"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/aperturas/{id}/prestamos/{prestamoId}": {
+      "patch": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Resolver un préstamo: listo (material y responsable), pendiente o descartado",
+        "operationId": "cambiarPrestamoApertura",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "prestamoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatosPrestamoApertura"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetalleApertura"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/aperturas/{id}/prestamos/{prestamoId}/herramienta": {
+      "post": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Dar de alta la herramienta del préstamo como material (categoría Herramienta)",
+        "operationId": "altaHerramientaApertura",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "prestamoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Herramienta"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetalleApertura"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/aperturas/{id}/costos": {
+      "put": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Capturar o quitar costos sin IVA (administración)",
+        "operationId": "capturarCostosApertura",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CapturaCostos"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetalleApertura"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/aperturas/{id}/firmar": {
+      "post": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Firmar como coordinación o administración; la segunda firma aplica el saldo de apertura",
+        "operationId": "firmarApertura",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Firma"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetalleApertura"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/aperturas/{id}/retirar-firmas": {
+      "post": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Retirar las firmas para corregir (antes de la segunda firma)",
+        "operationId": "retirarFirmasApertura",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetalleApertura"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/aperturas/{id}/cancelar": {
+      "post": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Cancelar la apertura y su conteo",
+        "operationId": "cancelarApertura",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Cancelacion"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetalleApertura"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/aperturas/{id}/acta.xlsx": {
+      "get": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Acta de apertura en Excel: firmas, materiales valuados y préstamos",
+        "operationId": "actaApertura",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/almacenes/{id}/salidas.xlsx": {
+      "get": {
+        "tags": [
+          "Inventario"
+        ],
+        "summary": "Plan de reversa: vales, devoluciones y reasignaciones con las columnas de la hoja Salidas del Excel",
+        "operationId": "salidasDeAlmacenComoExcel",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "desde",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "hasta",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -8490,6 +9023,14 @@
           "version": {
             "type": "integer",
             "format": "int32"
+          },
+          "aperturaId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "La apertura del almacén a la que pertenece el conteo (H8)"
+          },
+          "aperturaFolio": {
+            "type": "string"
           }
         },
         "required": [
@@ -11000,6 +11541,495 @@
         "required": [
           "materiales",
           "valor"
+        ]
+      },
+      "Apertura": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "folio": {
+            "type": "string"
+          },
+          "almacenId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "almacen": {
+            "type": "string"
+          },
+          "fecha": {
+            "type": "string",
+            "format": "date"
+          },
+          "estado": {
+            "type": "string",
+            "enum": [
+              "abierta",
+              "en_firma",
+              "aplicada",
+              "cancelada"
+            ]
+          },
+          "conteoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "conteoFolio": {
+            "type": "string"
+          },
+          "abrio": {
+            "type": "string"
+          },
+          "firmaCoordinacion": {
+            "type": "string"
+          },
+          "firmaCoordinacionEn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "firmaAdministracion": {
+            "type": "string"
+          },
+          "firmaAdministracionEn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "movimientoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "importe": {
+            "type": "number",
+            "description": "Valor firmado, sin IVA (con permiso de ver costos)"
+          },
+          "motivoCancelacion": {
+            "type": "string"
+          },
+          "observaciones": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "abrio",
+          "almacen",
+          "almacenId",
+          "conteoFolio",
+          "conteoId",
+          "estado",
+          "fecha",
+          "folio",
+          "id",
+          "version"
+        ]
+      },
+      "LineaApertura": {
+        "type": "object",
+        "properties": {
+          "materialId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "clave": {
+            "type": "string"
+          },
+          "material": {
+            "type": "string"
+          },
+          "unidad": {
+            "type": "string"
+          },
+          "contado": {
+            "type": "number"
+          },
+          "prestado": {
+            "type": "number"
+          },
+          "cantidad": {
+            "type": "number"
+          },
+          "costoUnitario": {
+            "type": "number"
+          },
+          "origenCosto": {
+            "type": "string",
+            "enum": [
+              "capturado",
+              "historico",
+              "referencia"
+            ]
+          },
+          "detalleCosto": {
+            "type": "string"
+          },
+          "importe": {
+            "type": "number"
+          },
+          "faltaCosto": {
+            "type": "boolean"
+          },
+          "existenciaExcel": {
+            "type": "number"
+          },
+          "diferenciaExcel": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "cantidad",
+          "clave",
+          "faltaCosto",
+          "material",
+          "materialId",
+          "prestado",
+          "unidad"
+        ]
+      },
+      "PrestamoApertura": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "origenId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Renglón del histórico de préstamos; nulo si se agregó a mano"
+          },
+          "filaExcel": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "articulo": {
+            "type": "string"
+          },
+          "fecha": {
+            "type": "string",
+            "format": "date"
+          },
+          "cantidad": {
+            "type": "number"
+          },
+          "responsableTexto": {
+            "type": "string"
+          },
+          "materialId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "materialClave": {
+            "type": "string"
+          },
+          "material": {
+            "type": "string"
+          },
+          "unidad": {
+            "type": "string"
+          },
+          "responsableId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "responsable": {
+            "type": "string"
+          },
+          "estado": {
+            "type": "string",
+            "enum": [
+              "pendiente",
+              "listo",
+              "descartado"
+            ]
+          },
+          "motivo": {
+            "type": "string"
+          },
+          "prestamoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "articulo",
+          "cantidad",
+          "estado",
+          "id",
+          "version"
+        ]
+      },
+      "Resumen": {
+        "type": "object",
+        "properties": {
+          "materiales": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "contados": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sinContar": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "conExistencia": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sinCosto": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "prestamosPendientes": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "prestamosListos": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "prestamosDescartados": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "importe": {
+            "type": "number"
+          },
+          "conFotoExcel": {
+            "type": "boolean"
+          },
+          "conDiferenciaExcel": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "conExistencia",
+          "conFotoExcel",
+          "contados",
+          "materiales",
+          "prestamosDescartados",
+          "prestamosListos",
+          "prestamosPendientes",
+          "sinContar",
+          "sinCosto"
+        ]
+      },
+      "DetalleApertura": {
+        "type": "object",
+        "properties": {
+          "apertura": {
+            "$ref": "#/components/schemas/Apertura"
+          },
+          "resumen": {
+            "$ref": "#/components/schemas/Resumen"
+          },
+          "lineas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LineaApertura"
+            }
+          },
+          "prestamos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PrestamoApertura"
+            }
+          },
+          "huella": {
+            "type": "string"
+          },
+          "firmaComo": {
+            "type": "string",
+            "enum": [
+              "coordinacion",
+              "administracion"
+            ]
+          },
+          "faltaParaFirmar": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "apertura",
+          "faltaParaFirmar",
+          "huella",
+          "lineas",
+          "prestamos",
+          "resumen"
+        ]
+      },
+      "DatosApertura": {
+        "type": "object",
+        "properties": {
+          "almacenId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "fecha": {
+            "type": "string",
+            "format": "date"
+          },
+          "observaciones": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 0
+          }
+        },
+        "required": [
+          "almacenId",
+          "fecha"
+        ]
+      },
+      "DatosPrestamoApertura": {
+        "type": "object",
+        "properties": {
+          "materialId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "responsableId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "cantidad": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "estado": {
+            "type": "string",
+            "pattern": "pendiente|listo|descartado"
+          },
+          "motivo": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 0
+          }
+        },
+        "required": [
+          "cantidad",
+          "estado"
+        ]
+      },
+      "NuevoPrestamoApertura": {
+        "type": "object",
+        "properties": {
+          "articulo": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 0
+          },
+          "cantidad": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "fecha": {
+            "type": "string",
+            "format": "date"
+          },
+          "responsableTexto": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 0
+          }
+        },
+        "required": [
+          "articulo",
+          "cantidad"
+        ]
+      },
+      "Herramienta": {
+        "type": "object",
+        "properties": {
+          "unidadId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "nombre": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 0
+          }
+        },
+        "required": [
+          "unidadId"
+        ]
+      },
+      "CostoApertura": {
+        "type": "object",
+        "properties": {
+          "materialId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "costoUnitario": {
+            "type": "number",
+            "minimum": 0
+          },
+          "nota": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 0
+          }
+        },
+        "required": [
+          "materialId"
+        ]
+      },
+      "CapturaCostos": {
+        "type": "object",
+        "properties": {
+          "costos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CostoApertura"
+            },
+            "minItems": 1,
+            "maxItems": 2000
+          }
+        },
+        "required": [
+          "costos"
+        ]
+      },
+      "Firma": {
+        "type": "object",
+        "properties": {
+          "huella": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 0
+          }
+        },
+        "required": [
+          "huella"
+        ]
+      },
+      "Cancelacion": {
+        "type": "object",
+        "properties": {
+          "motivo": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 0
+          }
+        },
+        "required": [
+          "motivo"
         ]
       }
     }

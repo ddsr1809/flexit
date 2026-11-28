@@ -215,8 +215,9 @@ public class ServicioAplicacion {
   }
 
   /**
-   * Aplica un documento ya bloqueado. Lo usan {@link #aplicar}, la cancelación y el cierre del
-   * conteo físico (que pasa los costos de los sobrantes en {@code costosSobrante}).
+   * Aplica un documento ya bloqueado. Lo usan {@link #aplicar}, la cancelación, el cierre del
+   * conteo físico (que pasa los costos de los sobrantes en {@code costosSobrante}) y la apertura
+   * firmada (que pasa los costos firmados).
    */
   @Transactional(propagation = Propagation.MANDATORY)
   public void aplicarBloqueado(FilaMovimiento m, Map<Long, BigDecimal> costosSobrante) {
@@ -275,7 +276,7 @@ public class ServicioAplicacion {
           }
         }
       }
-      case AJUSTE_ENTRADA -> sobrante(c, costosSobrante);
+      case AJUSTE_ENTRADA, APERTURA -> sobrante(c, costosSobrante);
       case DEVOLUCION -> devolucion(c);
       case DEVOLUCION_PROVEEDOR -> devolucionProveedor(c);
       case TRASPASO -> traspaso(c);
@@ -456,7 +457,9 @@ public class ServicioAplicacion {
             importe));
   }
 
-  /** Sobrante de conteo: entra al costo indicado, o al promedio del almacén. */
+  /**
+   * Sobrante de conteo o saldo de apertura: entra al costo indicado, o al promedio del almacén.
+   */
   private void sobrante(Corrida c, Map<Long, BigDecimal> costos) {
     c.bloquear(c.m.almacenId());
     for (int i : ordenPorMaterial(c.lineas)) {

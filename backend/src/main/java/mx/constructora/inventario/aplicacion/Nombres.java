@@ -49,6 +49,11 @@ class Nombres {
     return porId(catalogo.materiales(sinNulos(ids)), MaterialInfo::id);
   }
 
+  /** Los materiales activos de la empresa (para abrir el conteo de una apertura). */
+  java.util.List<MaterialInfo> activos() {
+    return catalogo.activos();
+  }
+
   Map<Long, String> unidadesMedida() {
     return catalogo.unidades().stream()
         .collect(Collectors.toMap(CatalogoApi.UnidadInfo::id, CatalogoApi.UnidadInfo::clave));

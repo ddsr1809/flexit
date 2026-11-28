@@ -27,7 +27,12 @@ public enum TipoMovimiento {
   /** Faltante del conteo físico. */
   AJUSTE_SALIDA("ajuste_salida", "AJS", QuienAutoriza.NADIE, Efecto.SALE),
   /** Diferencia de factura: corrige el costo de una recepción ya aplicada. */
-  AJUSTE_COSTO("ajuste_costo", "ACO", QuienAutoriza.COORDINACION, Efecto.VALOR);
+  AJUSTE_COSTO("ajuste_costo", "ACO", QuienAutoriza.COORDINACION, Efecto.VALOR),
+  /**
+   * Saldo de apertura del almacén (H8): lo contado más lo prestado, al costo firmado. Lo genera la
+   * apertura con sus dos firmas; es el primer movimiento del almacén.
+   */
+  APERTURA("apertura", "SAP", QuienAutoriza.NADIE, Efecto.ENTRA);
 
   /** Quién puede autorizar el documento antes de aplicarlo. */
   public enum QuienAutoriza {
@@ -94,9 +99,12 @@ public enum TipoMovimiento {
         || this == AJUSTE_COSTO;
   }
 
-  /** Se captura a mano; los ajustes de conteo los genera el cierre del conteo. */
+  /**
+   * Se captura a mano. Los ajustes de conteo los genera el cierre del conteo y el saldo de
+   * apertura, la apertura firmada.
+   */
   public boolean seCaptura() {
-    return this != AJUSTE_ENTRADA && this != AJUSTE_SALIDA;
+    return this != AJUSTE_ENTRADA && this != AJUSTE_SALIDA && this != APERTURA;
   }
 
   public static Optional<TipoMovimiento> deClave(String clave) {

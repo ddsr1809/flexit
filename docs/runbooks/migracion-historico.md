@@ -19,8 +19,9 @@ las cargas de catálogos de H3 estén confirmadas (`migracion-catalogos.md`).
 | 11 | Histórico: salidas | Almacén | — | **Lote de cada "Mza / Lote" que no existe** (una decisión vale para todos los renglones que lo escriben igual): elegir el lote, escribir uno o `SIN ASIGNAR`; varias manzanas en una celda; valor de las fórmulas con referencias |
 | 12 | Histórico: Semanal y faltantes | Almacén | — | Materiales y frentes que no se reconocen |
 | 13 | Histórico: préstamos | Almacén | — | Nada (las herramientas que no son material quedan con su nombre) |
-| 14 | Histórico: SUA del mes | SUA del mes | Mes (`2026-10`) | Contratos que no existen; personas sin ligar |
-| 15 | Histórico: pagos de destajo | Destajo | Año de las semanas | Lote de la columna `M716` (una decisión vale para toda la columna); números escritos en la columna Trabajador; montos ilegibles |
+| 14 | Histórico: foto de Existencias (H8) | Almacén | — | Inventario inicial con fórmula que depende de otra celda (escribir el valor); materiales que no se reconocen |
+| 15 | Histórico: SUA del mes | SUA del mes | Mes (`2026-10`) | Contratos que no existen; personas sin ligar |
+| 16 | Histórico: pagos de destajo | Destajo | Año de las semanas | Lote de la columna `M716` (una decisión vale para toda la columna); números escritos en la columna Trabajador; montos ilegibles |
 
 En cada carga, además de la cuarentena:
 
@@ -46,6 +47,7 @@ Simulación con los tres Excel reales, por los servicios reales contra PostgreSQ
 | Semanal y faltantes | 1,293 | 10 | 10 | 1,283 renglones |
 | Préstamos | 25 | 0 | 0 | 25 (17 siguen abiertos) |
 | SUA de octubre | 332 | 0 | 0 | 172 altas, 1,368 marcas de asistencia (6 dobles), 73 asignaciones |
+| Foto de Existencias (H8) | 299 | 0 (9 inventarios iniciales con fórmula simple se evalúan; 2 fechas ilegibles no se guardan) | 0 | 299 materiales; inventario inicial 13,194.2 en total |
 | Destajo | 4,422 celdas | 42 (26 de la columna M716, 10 números en Trabajador, 4 montos ilegibles…) | ≈18 | 4,957 pagos, $8.9 millones; 777 con "sobre importe" |
 
 Advertencias de salidas: unas 30 paqueterías distintas sin paquete y 1,092 renglones sin costo

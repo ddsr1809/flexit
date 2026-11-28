@@ -1,8 +1,8 @@
 # Ensayo general de la migración (H7 · issue 53)
 
-Se corre la migración completa (las 15 cargas de H3 y H5) en **producción**, se revisa la
-conciliación y se borra. Así se mide cuánto tardará la carga del corte (H8) y se prueba el motor en
-el servidor real, sin que el resultado se quede.
+Se corre la migración completa (las 16 cargas de H3, H5 y la foto de Existencias de H8) en
+**producción**, se revisa la conciliación y se borra. Así se mide cuánto tardará la carga del corte
+(H8) y se prueba el motor en el servidor real, sin que el resultado se quede.
 
 **Criterio:** de punta a punta en menos de 1 hora, con la conciliación limpia (cada carga sin
 renglones en cuarentena, diferencia 0 por hoja y, en el histórico, todos los conceptos en 0).
@@ -77,4 +77,5 @@ API (de la más reciente a la más antigua); deja en *Migración* la bitácora d
 | Tiempo de la restauración | `restauraciones.log` (columna de segundos) |
 | Problemas del Excel que conviene corregir antes del corte | La cuarentena que no se repitió sola |
 
-El ensayo se puede repetir las veces que haga falta antes del corte; cada vez se borra igual.
+El ensayo se puede repetir las veces que haga falta antes del corte; cada vez se borra igual. El
+corte usa la misma herramienta con `congelar` y `corte`, y no se borra (`corte.md`).

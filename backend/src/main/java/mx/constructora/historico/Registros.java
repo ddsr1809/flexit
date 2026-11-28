@@ -193,6 +193,19 @@ public final class Registros {
     }
   }
 
+  /**
+   * Hoja Existencias: lo capturado de cada material (Inventario inicial, Material defectuoso y
+   * Apartados). La existencia del Excel no se lee (es fórmula): se recalcula con las entradas y
+   * salidas del histórico.
+   */
+  public record SaldoExcel(
+      long materialId,
+      BigDecimal inventarioInicial,
+      LocalDate fechaInicial,
+      BigDecimal defectuoso,
+      BigDecimal apartados,
+      Traza traza) {}
+
   /** Una entrada con importe, para valuar las salidas del histórico. */
   public record EntradaValorada(
       long materialId, LocalDate fecha, BigDecimal cantidad, BigDecimal importe) {}
@@ -207,6 +220,7 @@ public final class Registros {
     public final List<AsistenciaDia> asistencias = new ArrayList<>();
     public final List<Asignacion> asignaciones = new ArrayList<>();
     public final List<PagoDestajo> pagos = new ArrayList<>();
+    public final List<SaldoExcel> saldos = new ArrayList<>();
 
     public int total() {
       return entradas.size()
@@ -216,7 +230,8 @@ public final class Registros {
           + altas.size()
           + asistencias.size()
           + asignaciones.size()
-          + pagos.size();
+          + pagos.size()
+          + saldos.size();
     }
   }
 }

@@ -8,9 +8,9 @@ autoriza el residente o coordinación; lo cierra administración.
 1. En **Existencias**, dar de alta el almacén de cada frente (CORCELES, PALERMO, GRANADA).
 2. En **Contratos**, revisar que cada contrato tenga a su residente asignado: el residente solo
    autoriza vales de sus contratos.
-3. Saldo de apertura (H8): **Conteo físico** → abrir el conteo del almacén vacío, capturar lo
-   contado y el costo de cada material. Administración lo cierra (no quien lo abrió) y los
-   sobrantes entran como existencia valuada.
+3. Saldo de apertura (H8): **Apertura** → abrir el almacén vacío, contar en su conteo físico,
+   resolver los préstamos abiertos del Excel y los costos, y las dos firmas (coordinación y
+   administración). Paso a paso en `corte.md`.
 
 ## Día a día
 

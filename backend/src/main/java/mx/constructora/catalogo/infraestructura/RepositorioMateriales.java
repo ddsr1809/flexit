@@ -101,6 +101,38 @@ public class RepositorioMateriales {
         .list();
   }
 
+  /** Los materiales activos de la empresa, por nombre. */
+  public List<MaterialInfo> activos(long empresa) {
+    return jdbc.sql(
+            """
+            SELECT m.id, m.clave, m.nombre, m.unidad_control_id, u.clave AS unidad_control,
+                   m.precio_referencia, m.activo
+              FROM catalogo.material m
+              JOIN catalogo.unidad_medida u ON u.id = m.unidad_control_id
+             WHERE m.empresa_id = :empresa AND m.activo
+             ORDER BY m.nombre_normal
+            """)
+        .param("empresa", empresa)
+        .query(MaterialInfo.class)
+        .list();
+  }
+
+  /** El material con ese nombre (normalizado), activo o no. */
+  public Optional<MaterialInfo> porNombre(long empresa, String nombre) {
+    return jdbc.sql(
+            """
+            SELECT m.id, m.clave, m.nombre, m.unidad_control_id, u.clave AS unidad_control,
+                   m.precio_referencia, m.activo
+              FROM catalogo.material m
+              JOIN catalogo.unidad_medida u ON u.id = m.unidad_control_id
+             WHERE m.empresa_id = :empresa AND m.nombre_normal = compartido.normalizar(:nombre)
+            """)
+        .param("empresa", empresa)
+        .param("nombre", nombre)
+        .query(MaterialInfo.class)
+        .optional();
+  }
+
   /** Siguiente clave numérica con tres cifras: 001, 002… (300 → 301). */
   public String siguienteClave(long empresa) {
     return jdbc.sql(

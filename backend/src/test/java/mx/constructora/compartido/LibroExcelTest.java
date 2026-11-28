@@ -73,6 +73,20 @@ class LibroExcelTest {
   }
 
   @Test
+  void unValorLogicoEsVerdaderoDeExcelYNoTexto() throws Exception {
+    LibroExcel libro = new LibroExcel();
+    libro
+        .hoja("Salidas", List.of(Columna.texto("Entregado", 10), Columna.texto("Texto", 10)))
+        .fila(new LibroExcel.Logico(true), Boolean.TRUE)
+        .fila(new LibroExcel.Logico(false), Boolean.FALSE);
+    String hoja = descomprimir(libro.bytes()).get("xl/worksheets/sheet1.xml");
+    assertThat(hoja)
+        .contains("<c r=\"A2\" t=\"b\"><v>1</v></c>")
+        .contains("<c r=\"A3\" t=\"b\"><v>0</v></c>")
+        .contains(">Sí<");
+  }
+
+  @Test
   void hojasConElMismoNombreNoChocan() throws Exception {
     LibroExcel libro = new LibroExcel();
     libro.hoja("Lotes", List.of(Columna.texto("A", 5))).fila("uno");

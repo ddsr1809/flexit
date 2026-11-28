@@ -369,7 +369,7 @@ class PruebasEnsayo(unittest.TestCase):
 
     def test_exporta_decisiones_por_nombre_y_no_por_id(self):
         datos = self._exportado()
-        self.assertEqual(len(datos["cargas"]), 15)
+        self.assertEqual(len(datos["cargas"]), len(ensayo.ORDEN))
         destinos = {d["regla"]: d["destino"] for d in datos["decisiones"] if d["destino"]}
         self.assertEqual(
             destinos["LOTE_SIN_CONTRATO"], {"entidad": "contrato", "texto": "60-KZ7-MF6-C002-2026"}
@@ -449,8 +449,73 @@ class PruebasEnsayo(unittest.TestCase):
     def test_revertir_deja_todas_las_cargas_revertidas(self):
         entorno = Entorno(0, resueltas=True)
         api = self._api(entorno)
-        self.assertEqual(ensayo.revertir(api, lambda _: None), 15)
+        self.assertEqual(ensayo.revertir(api, lambda _: None), len(ensayo.ORDEN))
         self.assertTrue(all(c["estado"] == "revertida" for c in entorno.cargas.values()))
+
+    def test_la_foto_de_existencias_va_despues_de_los_prestamos(self):
+        tipos = [t for t, _ in ensayo.ORDEN]
+        self.assertEqual(len(tipos), 16)
+        self.assertEqual(tipos.index("HIST_EXISTENCIAS"), tipos.index("HIST_PRESTAMOS") + 1)
+
+    def test_congelar_y_verificar_los_excel_del_corte(self):
+        congelado = ensayo.congelar(self.archivos)
+        self.assertEqual(set(congelado["archivos"]), {"almacen", "sua", "destajo"})
+        self.assertRegex(congelado["archivos"]["almacen"]["sha256"], r"^[0-9a-f]{64}$")
+        self.assertEqual(ensayo.verificar_congelado(self.archivos, congelado), [])
+        # Alguien captura en el Excel después de congelarlo.
+        self.archivos["almacen"].write_bytes(b"PK\x03\x04 otra salida capturada")
+        problemas = ensayo.verificar_congelado(self.archivos, congelado)
+        self.assertEqual(len(problemas), 1)
+        self.assertIn("almacen", problemas[0])
+        self.assertIn("no es el archivo congelado", problemas[0])
+
+    def test_el_corte_no_carga_un_excel_que_cambio(self):
+        ruta = Path(self.tmp.name) / "congelado.json"
+        argumentos = [
+            "--almacen",
+            str(self.archivos["almacen"]),
+            "--sua",
+            str(self.archivos["sua"]),
+            "--destajo",
+            str(self.archivos["destajo"]),
+        ]
+        self.assertEqual(ensayo.principal(["congelar", *argumentos, "--salida", str(ruta)]), 0)
+        self.archivos["sua"].write_bytes(b"PK\x03\x04 cambiado")
+        decisiones = Path(self.tmp.name) / "decisiones.json"
+        decisiones.write_text(json.dumps({"formato": ensayo.VERSION_FORMATO}), "utf-8")
+        with self.assertRaises(SystemExit) as salida:
+            ensayo.principal(
+                [
+                    "corte",
+                    "--url",
+                    "http://127.0.0.1:9",
+                    "--usuario",
+                    "admin",
+                    "--congelado",
+                    str(ruta),
+                    "--decisiones",
+                    str(decisiones),
+                    *argumentos,
+                    "--mes",
+                    "2026-10",
+                    "--anio",
+                    "2026",
+                ]
+            )
+        self.assertIn("sua", str(salida.exception))
+
+    def test_el_informe_del_corte_trae_los_sha256(self):
+        datos = self._exportado()
+        prod = Entorno(9000, resueltas=False)
+        resultados, total = ensayo.correr(
+            self._api(prod), self.archivos, datos, "Ruba", "2026-10", 2026, False, False,
+            lambda _: None,
+        )
+        congelado = ensayo.congelar(self.archivos)
+        texto = ensayo.informe(resultados, total, "prod", 60, congelado)
+        self.assertIn("# Carga final del corte", texto)
+        self.assertIn(congelado["archivos"]["destajo"]["sha256"], texto)
+        self.assertIn("Resultado: completo", texto)
 
     def test_el_codigo_equivocado_no_inicia_sesion(self):
         http, url = servidor(Entorno(0, resueltas=False, segundo_factor=True))

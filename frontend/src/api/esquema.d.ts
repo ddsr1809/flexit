@@ -1937,6 +1937,228 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/aperturas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Aperturas de almacén, en curso primero */
+        get: operations["listarAperturas"];
+        put?: never;
+        /** Abrir la apertura de un almacén sin movimientos: conteo a ciegas y préstamos abiertos del Excel */
+        post: operations["abrirApertura"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/aperturas/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Una apertura: materiales, préstamos, lo que falta y la huella para firmar */
+        get: operations["obtenerApertura"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/aperturas/{id}/sin-contar-en-cero": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Marcar en 0 lo que no se encontró al contar (almacén) */
+        post: operations["aperturaSinContarEnCero"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/aperturas/{id}/prestamos/traer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Volver a traer los préstamos abiertos del Excel (después de la carga final) */
+        post: operations["traerPrestamosApertura"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/aperturas/{id}/prestamos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Agregar un préstamo abierto que no estaba en el Excel */
+        post: operations["agregarPrestamoApertura"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/aperturas/{id}/prestamos/{prestamoId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Resolver un préstamo: listo (material y responsable), pendiente o descartado */
+        patch: operations["cambiarPrestamoApertura"];
+        trace?: never;
+    };
+    "/api/v1/aperturas/{id}/prestamos/{prestamoId}/herramienta": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Dar de alta la herramienta del préstamo como material (categoría Herramienta) */
+        post: operations["altaHerramientaApertura"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/aperturas/{id}/costos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Capturar o quitar costos sin IVA (administración) */
+        put: operations["capturarCostosApertura"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/aperturas/{id}/firmar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Firmar como coordinación o administración; la segunda firma aplica el saldo de apertura */
+        post: operations["firmarApertura"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/aperturas/{id}/retirar-firmas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Retirar las firmas para corregir (antes de la segunda firma) */
+        post: operations["retirarFirmasApertura"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/aperturas/{id}/cancelar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancelar la apertura y su conteo */
+        post: operations["cancelarApertura"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/aperturas/{id}/acta.xlsx": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Acta de apertura en Excel: firmas, materiales valuados y préstamos */
+        get: operations["actaApertura"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/almacenes/{id}/salidas.xlsx": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Plan de reversa: vales, devoluciones y reasignaciones con las columnas de la hoja Salidas del Excel */
+        get: operations["salidasDeAlmacenComoExcel"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2891,6 +3113,12 @@ export interface components {
             contadas: number;
             /** Format: int32 */
             version: number;
+            /**
+             * Format: int64
+             * @description La apertura del almacén a la que pertenece el conteo (H8)
+             */
+            aperturaId?: number;
+            aperturaFolio?: string;
         };
         LineaConteo: {
             /** Format: int64 */
@@ -3677,6 +3905,160 @@ export interface components {
         ValorInventario: {
             materiales: components["schemas"]["ExistenciaValorizada"][];
             valor: number;
+        };
+        Apertura: {
+            /** Format: int64 */
+            id: number;
+            folio: string;
+            /** Format: int64 */
+            almacenId: number;
+            almacen: string;
+            /** Format: date */
+            fecha: string;
+            /** @enum {string} */
+            estado: "abierta" | "en_firma" | "aplicada" | "cancelada";
+            /** Format: int64 */
+            conteoId: number;
+            conteoFolio: string;
+            abrio: string;
+            firmaCoordinacion?: string;
+            /** Format: date-time */
+            firmaCoordinacionEn?: string;
+            firmaAdministracion?: string;
+            /** Format: date-time */
+            firmaAdministracionEn?: string;
+            /** Format: int64 */
+            movimientoId?: number;
+            /** @description Valor firmado, sin IVA (con permiso de ver costos) */
+            importe?: number;
+            motivoCancelacion?: string;
+            observaciones?: string;
+            /** Format: int32 */
+            version: number;
+        };
+        LineaApertura: {
+            /** Format: int64 */
+            materialId: number;
+            clave: string;
+            material: string;
+            unidad: string;
+            contado?: number;
+            prestado: number;
+            cantidad: number;
+            costoUnitario?: number;
+            /** @enum {string} */
+            origenCosto?: "capturado" | "historico" | "referencia";
+            detalleCosto?: string;
+            importe?: number;
+            faltaCosto: boolean;
+            existenciaExcel?: number;
+            diferenciaExcel?: number;
+        };
+        PrestamoApertura: {
+            /** Format: int64 */
+            id: number;
+            /**
+             * Format: int64
+             * @description Renglón del histórico de préstamos; nulo si se agregó a mano
+             */
+            origenId?: number;
+            /** Format: int32 */
+            filaExcel?: number;
+            articulo: string;
+            /** Format: date */
+            fecha?: string;
+            cantidad: number;
+            responsableTexto?: string;
+            /** Format: int64 */
+            materialId?: number;
+            materialClave?: string;
+            material?: string;
+            unidad?: string;
+            /** Format: int64 */
+            responsableId?: number;
+            responsable?: string;
+            /** @enum {string} */
+            estado: "pendiente" | "listo" | "descartado";
+            motivo?: string;
+            /** Format: int64 */
+            prestamoId?: number;
+            /** Format: int32 */
+            version: number;
+        };
+        Resumen: {
+            /** Format: int32 */
+            materiales: number;
+            /** Format: int32 */
+            contados: number;
+            /** Format: int32 */
+            sinContar: number;
+            /** Format: int32 */
+            conExistencia: number;
+            /** Format: int32 */
+            sinCosto: number;
+            /** Format: int32 */
+            prestamosPendientes: number;
+            /** Format: int32 */
+            prestamosListos: number;
+            /** Format: int32 */
+            prestamosDescartados: number;
+            importe?: number;
+            conFotoExcel: boolean;
+            /** Format: int32 */
+            conDiferenciaExcel?: number;
+        };
+        DetalleApertura: {
+            apertura: components["schemas"]["Apertura"];
+            resumen: components["schemas"]["Resumen"];
+            lineas: components["schemas"]["LineaApertura"][];
+            prestamos: components["schemas"]["PrestamoApertura"][];
+            huella: string;
+            /** @enum {string} */
+            firmaComo?: "coordinacion" | "administracion";
+            faltaParaFirmar: string[];
+        };
+        DatosApertura: {
+            /** Format: int64 */
+            almacenId: number;
+            /** Format: date */
+            fecha: string;
+            observaciones?: string;
+        };
+        DatosPrestamoApertura: {
+            /** Format: int64 */
+            materialId?: number;
+            /** Format: int64 */
+            responsableId?: number;
+            cantidad: number;
+            estado: string;
+            motivo?: string;
+        };
+        NuevoPrestamoApertura: {
+            articulo: string;
+            cantidad: number;
+            /** Format: date */
+            fecha?: string;
+            responsableTexto?: string;
+        };
+        Herramienta: {
+            /** Format: int64 */
+            unidadId: number;
+            nombre?: string;
+        };
+        CostoApertura: {
+            /** Format: int64 */
+            materialId: number;
+            costoUnitario?: number;
+            nota?: string;
+        };
+        CapturaCostos: {
+            costos: components["schemas"]["CostoApertura"][];
+        };
+        Firma: {
+            huella: string;
+        };
+        Cancelacion: {
+            motivo: string;
         };
     };
     responses: never;
@@ -7066,6 +7448,345 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["UnidadObra"][];
+                };
+            };
+        };
+    };
+    listarAperturas: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Apertura"][];
+                };
+            };
+        };
+    };
+    abrirApertura: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosApertura"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleApertura"];
+                };
+            };
+        };
+    };
+    obtenerApertura: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleApertura"];
+                };
+            };
+        };
+    };
+    aperturaSinContarEnCero: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleApertura"];
+                };
+            };
+        };
+    };
+    traerPrestamosApertura: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleApertura"];
+                };
+            };
+        };
+    };
+    agregarPrestamoApertura: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NuevoPrestamoApertura"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleApertura"];
+                };
+            };
+        };
+    };
+    cambiarPrestamoApertura: {
+        parameters: {
+            query?: never;
+            header?: {
+                "If-Match"?: string;
+            };
+            path: {
+                id: number;
+                prestamoId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatosPrestamoApertura"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleApertura"];
+                };
+            };
+        };
+    };
+    altaHerramientaApertura: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+                prestamoId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Herramienta"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleApertura"];
+                };
+            };
+        };
+    };
+    capturarCostosApertura: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CapturaCostos"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleApertura"];
+                };
+            };
+        };
+    };
+    firmarApertura: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Firma"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleApertura"];
+                };
+            };
+        };
+    };
+    retirarFirmasApertura: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleApertura"];
+                };
+            };
+        };
+    };
+    cancelarApertura: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Cancelacion"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetalleApertura"];
+                };
+            };
+        };
+    };
+    actaApertura: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
+                };
+            };
+        };
+    };
+    salidasDeAlmacenComoExcel: {
+        parameters: {
+            query: {
+                desde: string;
+                hasta: string;
+            };
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
                 };
             };
         };

@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-"""Ensayo general de la migración (H7 · issue 53). Solo biblioteca estándar de Python 3.10+.
+"""Ensayo general (H7 · issue 53) y carga final del corte (H8 · issue 54). Solo biblioteca
+estándar de Python 3.10+.
 
-Corre el orden de carga completo (las 15 cargas de H3 y H5) contra la API de un entorno, repite las
-decisiones de la cuarentena que administración ya tomó en preproducción, revisa la conciliación de
-cada carga y la confirma, midiendo cuánto tarda cada paso. Ver docs/runbooks/ensayo-general.md.
+Corre el orden de carga completo (las 16 cargas de H3, H5 y la foto de Existencias de H8) contra la
+API de un entorno, repite las decisiones de la cuarentena que administración ya tomó en
+preproducción, revisa la conciliación de cada carga y la confirma, midiendo cuánto tarda cada paso.
+Ver docs/runbooks/ensayo-general.md y docs/runbooks/corte.md.
 
     # 1. En preproducción, con la migración ya validada por administración:
     python3 tools/ensayo/ensayo.py exportar --url https://preprod.constructora.mx \\
@@ -18,6 +20,12 @@ cada carga y la confirma, midiendo cuánto tarda cada paso. Ver docs/runbooks/en
     # 3. Borrado: restaurar en producción el respaldo "ensayo" (restaurar.sh en-sitio). O, si no
     #    se puede, revertir las cargas por la API:
     python3 tools/ensayo/ensayo.py revertir --url https://sistema.constructora.mx --usuario admin
+
+    # Corte (H8): el viernes se congelan los Excel y se cargan; la carga final no se borra.
+    python3 tools/ensayo/ensayo.py congelar --almacen "Control de almacén.xlsx" \\
+        --sua "SUA RM ALEMAN OCTUBRE 2026.xlsx" --destajo "Destajo Nomina RM Aleman.xlsx" \\
+        --salida corte/congelado.json
+    python3 tools/ensayo/ensayo.py corte --congelado corte/congelado.json ...  # mismos datos que correr
 
 La contraseña se pide en la terminal (o ENSAYO_CONTRASENA); el código del segundo factor también
 (o --codigo). Los Excel y decisiones.json traen datos reales: nunca se suben al repositorio.
@@ -62,6 +70,7 @@ ORDEN: list[tuple[str, str]] = [
     ("HIST_SALIDAS", "almacen"),
     ("HIST_REQUISICIONES", "almacen"),
     ("HIST_PRESTAMOS", "almacen"),
+    ("HIST_EXISTENCIAS", "almacen"),
     ("HIST_SUA", "sua"),
     ("HIST_DESTAJO", "destajo"),
 ]
@@ -560,14 +569,29 @@ def correr(
     return resultados, segundos(inicio_total)
 
 
-def informe(resultados: list[ResultadoCarga], total: float, url: str, limite_min: int) -> str:
+def informe(
+    resultados: list[ResultadoCarga],
+    total: float,
+    url: str,
+    limite_min: int,
+    congelado: dict[str, Any] | None = None,
+) -> str:
     completas = all(r.estado in ("confirmada", "ya-confirmada") for r in resultados)
     dentro = total <= limite_min * 60
     lineas = [
-        "# Ensayo general de la migración",
+        "# Carga final del corte" if congelado else "# Ensayo general de la migración",
         "",
         f"{ahora()} · {url}",
         "",
+    ]
+    if congelado:
+        lineas += ["Excel congelados el " + congelado["congelado"] + ":", ""]
+        lineas += [
+            f"- {origen}: {a['nombre']} · sha256 `{a['sha256']}`"
+            for origen, a in congelado["archivos"].items()
+        ]
+        lineas += [""]
+    lineas += [
         (
             f"**Resultado: {'completo' if completas else 'detenido'}"
             f" en {total / 60:.1f} min** (criterio: menos de {limite_min} min,"
@@ -606,6 +630,46 @@ def informe(resultados: list[ResultadoCarga], total: float, url: str, limite_min
     return "\n".join(lineas) + "\n"
 
 
+# ------------------------------------------------------------------------------ corte (H8)
+
+
+def sha256_de(ruta: Path) -> str:
+    h = hashlib.sha256()
+    with ruta.open("rb") as archivo:
+        for bloque in iter(lambda: archivo.read(1 << 20), b""):
+            h.update(bloque)
+    return h.hexdigest()
+
+
+def congelar(archivos: dict[str, Path]) -> dict[str, Any]:
+    """La huella de los Excel congelados: lo que se carga en el corte tiene que ser esto."""
+    return {
+        "formato": VERSION_FORMATO,
+        "congelado": ahora(),
+        "archivos": {
+            origen: {"nombre": ruta.name, "sha256": sha256_de(ruta), "bytes": ruta.stat().st_size}
+            for origen, ruta in archivos.items()
+        },
+    }
+
+
+def verificar_congelado(archivos: dict[str, Path], congelado: dict[str, Any]) -> list[str]:
+    """Lo que no coincide con lo congelado (vacío si todo coincide)."""
+    if congelado.get("formato") != VERSION_FORMATO:
+        return ["congelado.json es de otro formato: vuelve a congelar"]
+    problemas = []
+    for origen, ruta in archivos.items():
+        esperado = congelado.get("archivos", {}).get(origen)
+        if esperado is None:
+            problemas.append(f"{origen}: no está en congelado.json")
+        elif sha256_de(ruta) != esperado["sha256"]:
+            problemas.append(
+                f"{origen}: {ruta.name} no es el archivo congelado ({esperado['nombre']},"
+                f" sha256 {esperado['sha256'][:12]}…): alguien lo cambió después de congelarlo"
+            )
+    return problemas
+
+
 # -------------------------------------------------------------------------------- revertir
 
 
@@ -637,14 +701,20 @@ def sesion(argumentos: argparse.Namespace) -> Api:
 def principal(argv: list[str] | None = None) -> int:
     analizador = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     sub = analizador.add_subparsers(dest="comando", required=True)
-    for nombre in ("exportar", "correr", "revertir"):
+    congelar_p = sub.add_parser("congelar")
+    for origen in ("almacen", "sua", "destajo"):
+        congelar_p.add_argument("--" + origen, type=Path, required=True)
+    congelar_p.add_argument("--salida", type=Path, default=Path("congelado.json"))
+    for nombre in ("exportar", "correr", "revertir", "corte"):
         p = sub.add_parser(nombre)
         p.add_argument("--url", required=True)
         p.add_argument("--usuario", required=True)
         p.add_argument("--codigo", help="código del segundo factor (si no, se pide)")
         if nombre == "exportar":
             p.add_argument("--salida", type=Path, default=Path("decisiones.json"))
-        if nombre == "correr":
+        if nombre == "corte":
+            p.add_argument("--congelado", type=Path, required=True)
+        if nombre in ("correr", "corte"):
             p.add_argument("--decisiones", type=Path, required=True)
             p.add_argument("--almacen", type=Path, required=True)
             p.add_argument("--sua", type=Path, required=True)
@@ -655,8 +725,23 @@ def principal(argv: list[str] | None = None) -> int:
             p.add_argument("--crear-cliente", action="store_true")
             p.add_argument("--continuar", action="store_true")
             p.add_argument("--limite-minutos", type=int, default=60)
-            p.add_argument("--salida", type=Path, default=Path("ensayo"))
+            p.add_argument(
+                "--salida", type=Path, default=Path("corte" if nombre == "corte" else "ensayo")
+            )
     argumentos = analizador.parse_args(argv)
+
+    if argumentos.comando == "congelar":
+        archivos = {o: getattr(argumentos, o) for o in ("almacen", "sua", "destajo")}
+        for origen, ruta in archivos.items():
+            if not ruta.is_file():
+                raise SystemExit(f"No existe el archivo de {origen}: {ruta}")
+        datos = congelar(archivos)
+        argumentos.salida.parent.mkdir(parents=True, exist_ok=True)
+        argumentos.salida.write_text(json.dumps(datos, ensure_ascii=False, indent=1), "utf-8")
+        for origen, a in datos["archivos"].items():
+            print(f"{origen:8} {a['sha256']}  {a['nombre']}")
+        print(f"Congelados en {argumentos.salida}. Anota los sha256 en el acta del corte.")
+        return 0
 
     if argumentos.comando == "exportar":
         datos = exportar(sesion(argumentos), argumentos.url)
@@ -676,6 +761,12 @@ def principal(argv: list[str] | None = None) -> int:
     for origen, ruta in archivos.items():
         if not ruta.is_file():
             raise SystemExit(f"No existe el archivo de {origen}: {ruta}")
+    congelado = None
+    if argumentos.comando == "corte":
+        congelado = json.loads(argumentos.congelado.read_text("utf-8"))
+        problemas = verificar_congelado(archivos, congelado)
+        if problemas:
+            raise SystemExit("No se carga: " + "; ".join(problemas))
     decisiones = json.loads(argumentos.decisiones.read_text("utf-8"))
     if decisiones.get("formato") != VERSION_FORMATO:
         raise SystemExit("decisiones.json es de otro formato: vuelve a exportarlo")
@@ -690,11 +781,17 @@ def principal(argv: list[str] | None = None) -> int:
         argumentos.crear_cliente,
     )
     argumentos.salida.mkdir(parents=True, exist_ok=True)
-    texto = informe(resultados, total, argumentos.url, argumentos.limite_minutos)
-    (argumentos.salida / "ensayo.md").write_text(texto, "utf-8")
-    (argumentos.salida / "ensayo.json").write_text(
+    texto = informe(resultados, total, argumentos.url, argumentos.limite_minutos, congelado)
+    nombre = argumentos.comando if argumentos.comando == "corte" else "ensayo"
+    (argumentos.salida / f"{nombre}.md").write_text(texto, "utf-8")
+    (argumentos.salida / f"{nombre}.json").write_text(
         json.dumps(
-            {"url": argumentos.url, "total_s": total, "cargas": [r.__dict__ for r in resultados]},
+            {
+                "url": argumentos.url,
+                "total_s": total,
+                "congelado": congelado,
+                "cargas": [r.__dict__ for r in resultados],
+            },
             ensure_ascii=False,
             indent=1,
         ),

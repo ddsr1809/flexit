@@ -584,6 +584,47 @@ def conciliacion():
     guardar(libro, "muestra-conciliacion.xlsx")
 
 
+def existencias():
+    """Hoja Existencias para la foto del corte (H8): inventario inicial capturado, con fórmula
+    simple, vacío, con fórmula que depende de otra celda, un material repetido, un defectuoso que no
+    es número y un material que no está en el catálogo."""
+    libro = Workbook()
+    ex = libro.active
+    ex.title = "Existencias"
+    ex["F1"] = "Seguimiento de pedido: "
+    encabezados = {"A": "Precio Unitario Promedio", "E": "Clave", "F": "Artículo/Material",
+                   "I": "Unidad de medida", "J": "Existencia", "K": "Material defectuoso",
+                   "L": "Apartados", "M": "Entradas", "N": "Salidas", "O": "Inventario inicial",
+                   "P": "Fecha"}
+    for col, texto in encabezados.items():
+        ex[f"{col}3"] = texto
+    renglones = [
+        # clave, nombre, inventario inicial, defectuoso, apartados
+        ("003", "Aerosol negro", 10, 2, None),
+        ("002", "Cemento gris 50 kg", "=4+6", None, None),
+        ("007", "Lija 220", None, None, None),
+        ("008", "Pintura vinílica blanca 19 L", "=Hoja1!B2", None, None),
+        ("008", "Pintura vinilica blanca 19 L ", 2, "rota", 1),
+        ("099", "Material que no existe", 1, None, None),
+    ]
+    for i, (clave, nombre, inicial, defectuoso, apartados) in enumerate(renglones, start=5):
+        ex[f"A{i}"] = f'=IFERROR(AVERAGEIFS(Entradas!K:K,Entradas!F:F,F{i}),"")'
+        ex[f"E{i}"] = clave
+        ex[f"F{i}"] = nombre
+        ex[f"I{i}"] = "Pieza"
+        ex[f"J{i}"] = f"=O{i}+M{i}-N{i}"
+        ex[f"M{i}"] = f"=SUMIF(Entradas!F:F,F{i},Entradas!D:D)"
+        ex[f"N{i}"] = f"=SUMIFS(Salidas!H:H,Salidas!J:J,F{i},Salidas!N:N,TRUE)"
+        if inicial is not None:
+            ex[f"O{i}"] = inicial
+        if defectuoso is not None:
+            ex[f"K{i}"] = defectuoso
+        if apartados is not None:
+            ex[f"L{i}"] = apartados
+        ex[f"P{i}"] = dt.date(2026, 6, 22)
+    guardar(libro, "muestra-existencias.xlsx")
+
+
 if __name__ == "__main__":
     conciliacion()
     almacen()
@@ -593,3 +634,4 @@ if __name__ == "__main__":
     historico_almacen()
     historico_sua()
     historico_destajo()
+    existencias()

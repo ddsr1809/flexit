@@ -262,4 +262,42 @@ public class RepositorioSaldos {
         .query(BigDecimal.class)
         .single();
   }
+
+  /** Un cargo a obra con los datos de su documento, para escribirlo como renglón de Salidas. */
+  public record CargoDeDocumento(
+      long id,
+      LocalDate fecha,
+      String folio,
+      String tipo,
+      Long solicitanteId,
+      long materialId,
+      BigDecimal cantidad,
+      long contratoId,
+      long unidadObraId,
+      long paqueteId,
+      int clasificacionId) {}
+
+  /**
+   * Los cargos a obra (vales, devoluciones y reasignaciones; los ajustes de costo no mueven
+   * cantidad) de los documentos del almacén entre dos fechas, en el orden en que se aplicaron.
+   */
+  public List<CargoDeDocumento> cargosDeAlmacen(
+      long empresa, long almacen, LocalDate desde, LocalDate hasta) {
+    return jdbc.sql(
+            """
+            SELECT c.id, c.fecha, m.folio, m.tipo, m.solicitante_id, c.material_id, c.cantidad,
+                   c.contrato_id, c.unidad_obra_id, c.paquete_id, c.clasificacion_id
+              FROM inventario.cargo c
+              JOIN inventario.movimiento m ON m.empresa_id = c.empresa_id AND m.id = c.movimiento_id
+             WHERE c.empresa_id = :empresa AND m.almacen_id = :almacen AND c.cantidad <> 0
+               AND c.fecha BETWEEN :desde AND :hasta
+             ORDER BY c.fecha, c.id
+            """)
+        .param("empresa", empresa)
+        .param("almacen", almacen)
+        .param("desde", desde)
+        .param("hasta", hasta)
+        .query(CargoDeDocumento.class)
+        .list();
+  }
 }

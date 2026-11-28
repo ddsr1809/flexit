@@ -22,7 +22,8 @@ import {
 
 /**
  * Captura de un conteo. Mientras está abierto, quien cuenta no ve la existencia del sistema (conteo
- * a ciegas); administración sí, y al cerrar ve la diferencia de cada material.
+ * a ciegas); administración sí, y al cerrar ve la diferencia de cada material. El conteo de una
+ * apertura (H8) se captura aquí, pero se cierra con las firmas de la apertura.
  */
 export function PantallaConteo({ id }: { id: number }) {
   const sesion = useSesion()
@@ -71,6 +72,7 @@ export function PantallaConteo({ id }: { id: number }) {
   if (!detalle) return <p className="text-tenue">Cargando…</p>
   const c = detalle.conteo
   const abierto = c.estado === 'abierto'
+  const deApertura = c.aperturaId != null
   const cambios = Object.entries(contados)
     .filter(([, valor]) => valor.trim() !== '')
     .map(([material, valor]) => ({
@@ -106,7 +108,7 @@ export function PantallaConteo({ id }: { id: number }) {
                 Guardar {cambios.length > 0 ? cambios.length : ''}
               </Boton>
             )}
-            {administra && (
+            {administra && !deApertura && (
               <Boton
                 variante="secundario"
                 disabled={cambios.length > 0 || cerrar.isPending}
@@ -116,7 +118,7 @@ export function PantallaConteo({ id }: { id: number }) {
                 Cerrar y aplicar ajustes
               </Boton>
             )}
-            {captura && (
+            {captura && !deApertura && (
               <Boton
                 variante="fantasma"
                 disabled={cancelar.isPending}
@@ -130,7 +132,22 @@ export function PantallaConteo({ id }: { id: number }) {
       </header>
 
       {error && <Aviso>{mensajeDe(error)}</Aviso>}
-      {c.estado === 'cerrado' && (
+      {deApertura && (
+        <Tarjeta className="text-sm">
+          Es el conteo de la apertura{' '}
+          <Link
+            to="/aperturas/$id"
+            params={{ id: String(c.aperturaId) }}
+            className="font-medium text-marca underline"
+          >
+            {c.aperturaFolio}
+          </Link>
+          : lo que se cuenta aquí entra como saldo de apertura cuando la firman coordinación y
+          administración.
+          {administra && ' Quien captura lo contado ya no puede firmar la apertura.'}
+        </Tarjeta>
+      )}
+      {c.estado === 'cerrado' && !deApertura && (
         <Aviso tipo="exito">
           Cerrado por {c.cerro}. Los ajustes ya se aplicaron;{' '}
           <Link to="/movimientos" className="font-medium underline">
@@ -207,7 +224,7 @@ export function PantallaConteo({ id }: { id: number }) {
                   },
                 ]
               : []),
-            ...(abierto && captura
+            ...(abierto && captura && !deApertura
               ? [
                   {
                     titulo: 'Costo si sobra',

@@ -174,6 +174,17 @@ public class RepositorioCatalogo {
         .optional();
   }
 
+  /** La categoría con ese nombre (normalizado). */
+  public Optional<Long> categoriaPorNombre(long empresa, String nombre) {
+    return jdbc.sql(
+            "SELECT id FROM catalogo.categoria WHERE empresa_id = :empresa"
+                + " AND nombre_normal = compartido.normalizar(:nombre)")
+        .param("empresa", empresa)
+        .param("nombre", nombre)
+        .query(Long.class)
+        .optional();
+  }
+
   public long insertarCategoria(long empresa, String nombre) {
     return jdbc.sql(
             "INSERT INTO catalogo.categoria (empresa_id, nombre) VALUES (:empresa, :nombre)"

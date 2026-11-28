@@ -63,6 +63,13 @@ public final class LibroExcel {
     }
   }
 
+  /**
+   * Un valor lógico de Excel (VERDADERO/FALSO), no el texto "Sí"/"No" que se escribe con un
+   * {@code Boolean}: lo usa la exportación con el formato de la hoja Salidas, cuya columna
+   * Entregado suman las fórmulas del Excel.
+   */
+  public record Logico(boolean valor) {}
+
   /** Una hoja del libro. */
   public final class Hoja {
     private final String nombre;
@@ -112,6 +119,7 @@ public final class LibroExcel {
           case OffsetDateTime d ->
               celdaNumero(xml, i, Long.toString(serial(d.toLocalDate())), estilo);
           case Boolean b -> celdaTexto(xml, i, b ? "Sí" : "No", negritas ? 7 : 0);
+          case Logico l -> celdaLogica(xml, i, l.valor());
           default -> celdaTexto(xml, i, v.toString(), negritas ? 7 : 0);
         }
       }
@@ -131,6 +139,14 @@ public final class LibroExcel {
           .append("><is><t xml:space=\"preserve\">")
           .append(escapar(texto))
           .append("</t></is></c>");
+    }
+
+    private void celdaLogica(StringBuilder xml, int columna, boolean valor) {
+      xml.append("<c r=\"")
+          .append(referencia(columna, this.numero))
+          .append("\" t=\"b\"><v>")
+          .append(valor ? 1 : 0)
+          .append("</v></c>");
     }
 
     private void celdaNumero(StringBuilder xml, int columna, String numero, int estilo) {

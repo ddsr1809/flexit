@@ -6,6 +6,7 @@ import {
   ClipboardCheck,
   ClipboardList,
   Contact,
+  DoorOpen,
   FileSpreadsheet,
   FileText,
   House,
@@ -84,6 +85,7 @@ export const MENU: Entrada[] = [
   },
   { ruta: '/prestamos', texto: 'Préstamos', icono: Wrench, alguno: CONSULTA_INVENTARIO },
   { ruta: '/conteos', texto: 'Conteo físico', icono: ListChecks, alguno: CONSULTA_INVENTARIO },
+  { ruta: '/aperturas', texto: 'Apertura', icono: DoorOpen, alguno: CONSULTA_INVENTARIO },
   {
     ruta: '/requisiciones',
     texto: 'Requisiciones',

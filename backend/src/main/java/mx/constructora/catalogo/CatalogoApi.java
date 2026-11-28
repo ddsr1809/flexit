@@ -62,6 +62,47 @@ public class CatalogoApi {
     return materiales.infos(empresa(), ids);
   }
 
+  /** Los materiales activos de la empresa en curso, por nombre. */
+  @Transactional(readOnly = true)
+  public List<MaterialInfo> activos() {
+    return materiales.activos(empresa());
+  }
+
+  /** Categoría de las herramientas que se dan de alta en el corte (H8). */
+  public static final String CATEGORIA_HERRAMIENTA = "Herramienta";
+
+  /**
+   * Da de alta una herramienta como material (categoría {@value #CATEGORIA_HERRAMIENTA}, clave
+   * numérica siguiente, sin precio de referencia). La usa el corte para los préstamos abiertos del
+   * Excel cuya herramienta no estaba en el catálogo. Quien llama ya exigió el permiso.
+   *
+   * @throws ErrorNegocio {@code MATERIAL_DUPLICADO} si ya existe un material con ese nombre
+   */
+  @Transactional
+  public MaterialInfo altaHerramienta(String nombre, long unidadId) {
+    if (catalogo.unidad(empresa(), unidadId).isEmpty()) {
+      throw ErrorNegocio.invalido("UNIDAD_MEDIDA_NO_ENCONTRADA", "No existe la unidad de medida");
+    }
+    var existente = materiales.porNombre(empresa(), nombre);
+    if (existente.isPresent()) {
+      throw ErrorNegocio.conflicto(
+          "MATERIAL_DUPLICADO",
+          "Ya existe el material "
+              + existente.get().clave()
+              + " "
+              + existente.get().nombre()
+              + ": lígalo en lugar de darlo de alta");
+    }
+    long categoria =
+        catalogo
+            .categoriaPorNombre(empresa(), CATEGORIA_HERRAMIENTA)
+            .orElseGet(() -> catalogo.insertarCategoria(empresa(), CATEGORIA_HERRAMIENTA));
+    long id =
+        materiales.insertar(
+            empresa(), materiales.siguienteClave(empresa()), nombre, categoria, unidadId, null);
+    return material(id).orElseThrow();
+  }
+
   /** Unidades de medida visibles (del sistema y de la empresa). */
   @Transactional(readOnly = true)
   public List<UnidadInfo> unidades() {

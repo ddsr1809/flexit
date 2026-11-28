@@ -73,6 +73,13 @@ public enum TipoCarga {
       "Prestamo Herramientas-Material (almacén)",
       List.of(MATERIALES, FRENTES, PERSONAS_ALMACEN),
       List.of()),
+  HIST_EXISTENCIAS(
+      5,
+      "Histórico: foto de Existencias",
+      "Existencias (almacén): Inventario inicial, Material defectuoso y Apartados capturados, para"
+          + " comparar el conteo del corte con lo que decía el Excel",
+      List.of(MATERIALES),
+      List.of()),
   HIST_SUA(
       6,
       "Histórico: SUA del mes",

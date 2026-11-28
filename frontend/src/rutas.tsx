@@ -100,6 +100,14 @@ const PantallaConteo = lazyRouteComponent(
   () => import('@/features/inventario/PantallaConteo'),
   'PantallaConteo',
 )
+const PantallaAperturas = lazyRouteComponent(
+  () => import('@/features/inventario/PantallaAperturas'),
+  'PantallaAperturas',
+)
+const PantallaApertura = lazyRouteComponent(
+  () => import('@/features/inventario/PantallaApertura'),
+  'PantallaApertura',
+)
 const PantallaCierre = lazyRouteComponent(
   () => import('@/features/inventario/PantallaCierre'),
   'PantallaCierre',
@@ -415,6 +423,25 @@ const conteo = createRoute({
   component: RutaConteo,
 })
 
+const aperturas = createRoute({
+  getParentRoute: () => privado,
+  path: '/aperturas',
+  beforeLoad: consultaInventario,
+  component: PantallaAperturas,
+})
+
+function RutaApertura() {
+  const { id } = apertura.useParams()
+  return <PantallaApertura key={id} id={Number(id)} />
+}
+
+const apertura = createRoute({
+  getParentRoute: () => privado,
+  path: '/aperturas/$id',
+  beforeLoad: consultaInventario,
+  component: RutaApertura,
+})
+
 const cierre = createRoute({
   getParentRoute: () => privado,
   path: '/cierre',
@@ -524,6 +551,8 @@ const arbol = raiz.addChildren([
     prestamos,
     conteos,
     conteo,
+    aperturas,
+    apertura,
     cierre,
     requisiciones,
     nuevaRequisicion,

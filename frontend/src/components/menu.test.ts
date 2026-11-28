@@ -83,4 +83,15 @@ describe('menú por permisos', () => {
     const todas = menuPara(sesion(['requisicion:crear', 'pedido:crear']))
     expect(todas.filter((e) => e.hito === 'H6')).toHaveLength(0)
   })
+
+  it('la apertura del corte la ven almacén, coordinación y administración, no compras', () => {
+    expect(menuPara(sesion(['movimiento:capturar'])).map((e) => e.texto)).toContain('Apertura')
+    expect(menuPara(sesion(['documento:autorizar'])).map((e) => e.texto)).toContain('Apertura')
+    expect(
+      menuPara(sesion(['existencias:ver', 'sistema:administrar'])).map((e) => e.texto),
+    ).toContain('Apertura')
+    expect(menuPara(sesion(['pedido:crear', 'catalogo:editar'])).map((e) => e.texto)).not.toContain(
+      'Apertura',
+    )
+  })
 })

@@ -356,6 +356,48 @@ class ImportadoresHistoricoTest {
     assertThat(sistema.historico.prestamos.get(1).entregarAId()).isNull();
   }
 
+  // ----------------------------------------------------------------------- Existencias (H8)
+
+  @Test
+  void fotoDeExistenciasSoloConLoCapturado() {
+    String muestra = "muestra-existencias.xlsx";
+    List<FilaValidada> filas = validar(TipoCarga.HIST_EXISTENCIAS, muestra);
+    FilaValidada aerosol = filaExcel(filas, "Existencias", 5);
+    assertThat(aerosol.estado()).isEqualTo(EstadoFila.VALIDA);
+    assertThat(aerosol.dato("inicial")).isEqualTo("10");
+    assertThat(aerosol.dato("defectuoso")).isEqualTo("2");
+    FilaValidada cemento = filaExcel(filas, "Existencias", 6);
+    assertThat(cemento.estado()).as("=4+6").isEqualTo(EstadoFila.CORREGIDA);
+    assertThat(incidencia(cemento, "FORMULA_EVALUADA")).isNotNull();
+    assertThat(filaExcel(filas, "Existencias", 7).dato("inicial")).as("vacío es 0").isEqualTo("0");
+    FilaValidada conReferencia = filaExcel(filas, "Existencias", 8);
+    assertThat(conReferencia.estado()).isEqualTo(EstadoFila.CUARENTENA);
+    assertThat(incidencia(conReferencia, "FORMULA_CON_REFERENCIAS")).isNotNull();
+    assertThat(incidencia(conReferencia, "MATERIAL_REPETIDO").severidad())
+        .isEqualTo(Severidad.ADVERTENCIA);
+    FilaValidada repetida = filaExcel(filas, "Existencias", 9);
+    assertThat(incidencia(repetida, "NUMERO_NO_GUARDADO_K").severidad())
+        .isEqualTo(Severidad.ADVERTENCIA);
+    assertThat(repetida.dato("defectuoso")).isNull();
+    assertThat(repetida.dato("apartados")).isEqualTo("1");
+    FilaValidada desconocido = filaExcel(filas, "Existencias", 10);
+    assertThat(incidencia(desconocido, "MATERIAL_DESCONOCIDO")).isNotNull();
+
+    decidir(conReferencia, "FORMULA_CON_REFERENCIAS", Opcion.VALOR, null, "3");
+    decidir(desconocido, "MATERIAL_DESCONOCIDO", Opcion.DESCARTAR, null, null);
+    confirmar(TipoCarga.HIST_EXISTENCIAS, muestra);
+    var saldos = sistema.historico.saldos;
+    assertThat(saldos).hasSize(5);
+    assertThat(
+            saldos.stream()
+                .filter(x -> x.materialId() == pintura)
+                .map(x -> x.inventarioInicial())
+                .reduce(BigDecimal.ZERO, BigDecimal::add))
+        .as("los dos renglones de pintura se suman")
+        .isEqualByComparingTo("5");
+    assertThat(saldos.getFirst().fechaInicial()).isEqualTo(LocalDate.of(2026, 6, 22));
+  }
+
   // ------------------------------------------------------------------------------------- SUA
 
   @Test

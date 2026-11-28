@@ -54,6 +54,12 @@ Docker Compose, Caddy, Terraform (Vultr + Cloudflare), GitHub Actions + GHCR.
 18. Lo surtido y lo recibido se calculan de los documentos aplicados ligados por renglón
     (`movimiento_linea.requisicion_linea_id` y `pedido_linea_id`), nunca se guardan aparte. Un
     documento ligado no se corrige: se cancela y se vuelve a surtir o recibir.
+19. Un almacén arranca con su apertura (`inventario.apertura`, ADR-014): el movimiento `apertura`
+    es el primero del almacén, sale solo de la apertura con dos firmas (coordinación y
+    administración, personas distintas que no contaron) y no se repite. Lo firmado vive en
+    `apertura_linea` y no cambia: para corregir se retiran las firmas.
+20. El conteo de una apertura se captura como cualquier conteo, pero no genera ajustes: se cierra
+    con las firmas y se cancela con la apertura.
 
 ## Cómo funciona la seguridad por empresa
 `ContextoEmpresa` (sesión web o `ContextoEmpresa.como(...)`) → `DataSourceConEmpresa` fija
@@ -77,3 +83,9 @@ cambió la API, `docs/estado.md` actualizado, PR que cierra el issue.
 - Un cambio en `infra/scripts/` o `infra/systemd/` llega a los servidores con el siguiente
   despliegue (`copiar-entorno.sh`); se prueba primero en preproducción.
 - Datos reales (Excel, `decisiones.json`, volcados) nunca en el repositorio ni en preproducción.
+
+## Corte (H8)
+- El corte de un frente sigue `docs/runbooks/corte.md`: Excel congelado por sha256
+  (`ensayo.py congelar`), carga final (`ensayo.py corte`), apertura del almacén y dos firmas.
+- La existencia del Excel (`historico.v_existencia_excel`) es de todo el almacén del Excel: es
+  referencia, nunca se carga al kardex.

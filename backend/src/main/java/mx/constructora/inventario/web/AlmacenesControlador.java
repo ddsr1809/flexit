@@ -1,15 +1,21 @@
 package mx.constructora.inventario.web;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
+import mx.constructora.compartido.LibroExcel;
 import mx.constructora.compartido.Versiones;
 import mx.constructora.inventario.aplicacion.ServicioAlmacenes;
 import mx.constructora.inventario.aplicacion.ServicioAlmacenes.Almacen;
 import mx.constructora.inventario.aplicacion.ServicioAlmacenes.DatosAlmacen;
 import mx.constructora.inventario.aplicacion.ServicioExistencias;
 import mx.constructora.inventario.aplicacion.ServicioExistencias.Existencia;
+import mx.constructora.inventario.aplicacion.ServicioReversa;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,10 +38,13 @@ class AlmacenesControlador {
 
   private final ServicioAlmacenes almacenes;
   private final ServicioExistencias existencias;
+  private final ServicioReversa reversa;
 
-  AlmacenesControlador(ServicioAlmacenes almacenes, ServicioExistencias existencias) {
+  AlmacenesControlador(
+      ServicioAlmacenes almacenes, ServicioExistencias existencias, ServicioReversa reversa) {
     this.almacenes = almacenes;
     this.existencias = existencias;
+    this.reversa = reversa;
   }
 
   @GetMapping
@@ -65,6 +74,22 @@ class AlmacenesControlador {
       @RequestHeader(name = HttpHeaders.IF_MATCH, required = false) String siCoincide,
       @Valid @RequestBody DatosAlmacen datos) {
     return almacenes.cambiar(id, Versiones.deEncabezado(siCoincide), datos);
+  }
+
+  @GetMapping("/{id}/salidas.xlsx")
+  @Operation(
+      operationId = "salidasDeAlmacenComoExcel",
+      summary =
+          "Plan de reversa: vales, devoluciones y reasignaciones con las columnas de la hoja"
+              + " Salidas del Excel")
+  @ApiResponse(responseCode = "200", content = @Content(mediaType = LibroExcel.TIPO))
+  ResponseEntity<byte[]> salidasComoExcel(
+      @PathVariable long id,
+      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
+      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta) {
+    return Descargas.xlsx(
+        reversa.salidasComoExcel(id, desde, hasta),
+        "salidas-" + almacenes.almacen(id).clave() + "-" + desde + "-" + hasta);
   }
 
   @GetMapping("/{id}/existencias")

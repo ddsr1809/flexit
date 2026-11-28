@@ -325,5 +325,6 @@ public final class SistemaEnMemoria implements Contexto, Destino {
     historico.asistencias.addAll(lote.asistencias);
     historico.asignaciones.addAll(lote.asignaciones);
     historico.pagos.addAll(lote.pagos);
+    historico.saldos.addAll(lote.saldos);
   }
 }

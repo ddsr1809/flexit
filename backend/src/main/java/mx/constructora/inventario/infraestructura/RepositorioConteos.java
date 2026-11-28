@@ -27,7 +27,10 @@ public class RepositorioConteos {
       int lineas,
       int contadas,
       int version,
-      OffsetDateTime creado) {}
+      OffsetDateTime creado,
+      Long aperturaId,
+      String aperturaFolio,
+      String aperturaEstado) {}
 
   /** Línea de conteo. */
   public record FilaLineaConteo(
@@ -47,8 +50,10 @@ public class RepositorioConteos {
              (SELECT count(*) FROM inventario.conteo_linea l
                WHERE l.empresa_id = c.empresa_id AND l.conteo_id = c.id
                  AND l.contado IS NOT NULL)::int AS contadas,
-             c.version, c.creado
+             c.version, c.creado, a.id AS apertura_id, a.folio AS apertura_folio,
+             a.estado AS apertura_estado
         FROM inventario.conteo c
+        LEFT JOIN inventario.apertura a ON a.empresa_id = c.empresa_id AND a.conteo_id = c.id
        WHERE c.empresa_id = :empresa
       """;
 

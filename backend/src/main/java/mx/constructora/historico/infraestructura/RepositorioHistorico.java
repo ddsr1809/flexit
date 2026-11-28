@@ -20,6 +20,7 @@ import mx.constructora.historico.Registros.PagoDestajo;
 import mx.constructora.historico.Registros.Prestamo;
 import mx.constructora.historico.Registros.RequisicionLinea;
 import mx.constructora.historico.Registros.Salida;
+import mx.constructora.historico.Registros.SaldoExcel;
 import mx.constructora.historico.Registros.Traza;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -293,6 +294,24 @@ public class RepositorioHistorico {
                 .addValue("trabajadorTexto", g.trabajadorTexto())
                 .addValue("celda", g.celda()));
     trabajadores(empresa, carga, lote.pagos, escritos);
+    insertar(
+        escritos,
+        "saldo_excel",
+        """
+        INSERT INTO historico.saldo_excel (empresa_id, material_id, inventario_inicial,
+          fecha_inicial, defectuoso, apartados, %s)
+        VALUES (:empresa, :materialId, :inicial, :fechaInicial, :defectuoso, :apartados, %s)
+        """,
+        empresa,
+        carga,
+        lote.saldos,
+        SaldoExcel::traza,
+        (r, p) ->
+            p.addValue("materialId", r.materialId())
+                .addValue("inicial", r.inventarioInicial())
+                .addValue("fechaInicial", r.fechaInicial())
+                .addValue("defectuoso", r.defectuoso())
+                .addValue("apartados", r.apartados()));
     return escritos;
   }
 
@@ -548,5 +567,101 @@ public class RepositorioHistorico {
         .param("frente", frente)
         .query(FilaSalidaCarga.class)
         .list();
+  }
+
+  // ------------------------------------------------------------------------------ Consultas de H8
+
+  /** Préstamo del Excel que no se devolvió. */
+  public record FilaPrestamoAbierto(
+      long id,
+      Integer filaExcel,
+      java.time.LocalDate fecha,
+      Long materialId,
+      String articulo,
+      java.math.BigDecimal cantidad,
+      Long solicitanteId,
+      String solicitanteTexto,
+      Long entregarAId,
+      String entregarATexto) {}
+
+  /** Los préstamos del Excel de un frente que siguen abiertos, en el orden de la hoja. */
+  public List<FilaPrestamoAbierto> prestamosAbiertos(long empresa, long frente) {
+    return jdbc.sql(
+            """
+            SELECT id, fila_excel, fecha, material_id, articulo, cantidad, solicitante_id,
+                   solicitante_texto, entregar_a_id, entregar_a_texto
+              FROM historico.prestamo
+             WHERE empresa_id = :empresa AND frente_id = :frente AND NOT devuelto
+             ORDER BY fila_excel NULLS LAST, id
+            """)
+        .param("empresa", empresa)
+        .param("frente", frente)
+        .query(FilaPrestamoAbierto.class)
+        .list();
+  }
+
+  /** Ponderado sin IVA de las entradas con importe de cada material hasta una fecha. */
+  public record FilaCostoAlCorte(
+      long materialId,
+      java.math.BigDecimal cantidad,
+      java.math.BigDecimal importe,
+      int entradas,
+      int estimadas,
+      java.time.LocalDate ultima) {}
+
+  public List<FilaCostoAlCorte> costosAlCorte(
+      long empresa, java.util.Collection<Long> materiales, java.time.LocalDate fecha) {
+    if (materiales.isEmpty()) {
+      return List.of();
+    }
+    return jdbc.sql(
+            """
+            SELECT material_id, sum(cantidad) AS cantidad, sum(importe) AS importe,
+                   count(*)::int AS entradas, count(*) FILTER (WHERE precio_estimado)::int AS estimadas,
+                   max(fecha) AS ultima
+              FROM historico.entrada
+             WHERE empresa_id = :empresa AND importe IS NOT NULL AND cantidad > 0
+               AND fecha <= :fecha AND material_id IN (:materiales)
+             GROUP BY material_id
+            """)
+        .param("empresa", empresa)
+        .param("fecha", fecha)
+        .param("materiales", List.copyOf(materiales))
+        .query(FilaCostoAlCorte.class)
+        .list();
+  }
+
+  /** Existencia del Excel de un material: inventario inicial + entradas − salidas entregadas. */
+  public record FilaExistenciaExcel(
+      long materialId,
+      java.math.BigDecimal inicial,
+      java.math.BigDecimal entradas,
+      java.math.BigDecimal salidas,
+      java.math.BigDecimal existencia) {}
+
+  public List<FilaExistenciaExcel> existenciasExcel(
+      long empresa, java.util.Collection<Long> materiales) {
+    if (materiales.isEmpty()) {
+      return List.of();
+    }
+    return jdbc.sql(
+            """
+            SELECT material_id, inicial, entradas, salidas, existencia
+              FROM historico.v_existencia_excel
+             WHERE empresa_id = :empresa AND material_id IN (:materiales)
+            """)
+        .param("empresa", empresa)
+        .param("materiales", List.copyOf(materiales))
+        .query(FilaExistenciaExcel.class)
+        .list();
+  }
+
+  /** {@code true} si ya se cargó la foto de Existencias. */
+  public boolean hayFotoDeExistencias(long empresa) {
+    return jdbc.sql(
+            "SELECT EXISTS (SELECT 1 FROM historico.saldo_excel WHERE empresa_id = :empresa)")
+        .param("empresa", empresa)
+        .query(Boolean.class)
+        .single();
   }
 }

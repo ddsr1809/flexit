@@ -18,6 +18,10 @@ export type DetalleConteo = components['schemas']['DetalleConteo']
 export type LineaConteo = components['schemas']['LineaConteo']
 export type Periodos = components['schemas']['Periodos']
 export type PersonaNombre = components['schemas']['PersonaNombre']
+export type Apertura = components['schemas']['Apertura']
+export type DetalleApertura = components['schemas']['DetalleApertura']
+export type LineaApertura = components['schemas']['LineaApertura']
+export type PrestamoApertura = components['schemas']['PrestamoApertura']
 
 /** Tipos de documento que se capturan a mano (los ajustes de existencia salen del conteo). */
 export type TipoCaptura = DatosMovimiento['tipo']
@@ -91,6 +95,12 @@ export const TIPOS: Record<string, InfoTipo> = {
     nombre: 'Faltante de conteo',
     nuevo: '',
     descripcion: '',
+    capturable: false,
+  },
+  apertura: {
+    nombre: 'Saldo de apertura',
+    nuevo: '',
+    descripcion: 'Lo contado y lo prestado al arrancar el almacén, al costo firmado.',
     capturable: false,
   },
 }
@@ -207,6 +217,16 @@ export const consultasInventario = {
       queryKey: ['conteos', id],
       queryFn: async () =>
         exigir(await api.GET('/api/v1/conteos/{id}', { params: { path: { id } } })),
+    }),
+  aperturas: queryOptions({
+    queryKey: ['aperturas'],
+    queryFn: async () => exigir(await api.GET('/api/v1/aperturas')),
+  }),
+  apertura: (id: number) =>
+    queryOptions({
+      queryKey: ['aperturas', id],
+      queryFn: async () =>
+        exigir(await api.GET('/api/v1/aperturas/{id}', { params: { path: { id } } })),
     }),
   periodos: queryOptions({
     queryKey: ['periodos'],

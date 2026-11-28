@@ -81,7 +81,10 @@ public class ServicioConteos {
       String observaciones,
       @Schema(requiredMode = REQUIRED) int lineas,
       @Schema(requiredMode = REQUIRED) int contadas,
-      @Schema(requiredMode = REQUIRED) int version) {}
+      @Schema(requiredMode = REQUIRED) int version,
+      @Schema(description = "La apertura del almacén a la que pertenece el conteo (H8)")
+          Long aperturaId,
+      String aperturaFolio) {}
 
   /** Línea de conteo. La existencia del sistema solo se ve cerrado o con permiso de administrar. */
   public record LineaConteo(
@@ -231,6 +234,13 @@ public class ServicioConteos {
   @Transactional
   public DetalleConteo capturar(long id, CapturaConteo captura) {
     FilaConteo c = abierto(id);
+    if (c.aperturaId() != null && !"abierta".equals(c.aperturaEstado())) {
+      throw ErrorNegocio.conflicto(
+          "APERTURA_EN_FIRMA",
+          "El conteo es de la apertura "
+              + c.aperturaFolio()
+              + ", que ya se firmó: para corregirlo hay que retirar las firmas");
+    }
     validarMateriales(captura.lineas().stream().map(Contado::materialId).toList());
     for (Contado l : captura.lineas()) {
       repositorio.capturar(
@@ -247,7 +257,7 @@ public class ServicioConteos {
   @PreAuthorize(CAPTURAR_O_ADMINISTRAR)
   @Transactional
   public DetalleConteo cancelar(long id) {
-    abierto(id);
+    deApertura(abierto(id));
     repositorio.cancelar(empresa(), id);
     return conteo(id);
   }
@@ -257,6 +267,7 @@ public class ServicioConteos {
   @Transactional
   public DetalleConteo cerrar(long id) {
     FilaConteo c = abierto(id);
+    deApertura(c);
     if (c.usuarioCrea() == usuario()) {
       throw new ErrorNegocio(
           HttpStatus.FORBIDDEN, "CIERRA_QUIEN_ABRIO", "Quien abrió el conteo no lo cierra");
@@ -381,6 +392,17 @@ public class ServicioConteos {
     return List.copyOf(unicos);
   }
 
+  /** El conteo de una apertura se cierra con sus firmas y se cancela con ella. */
+  private static void deApertura(FilaConteo c) {
+    if (c.aperturaId() != null) {
+      throw ErrorNegocio.conflicto(
+          "CONTEO_DE_APERTURA",
+          "El conteo es de la apertura "
+              + c.aperturaFolio()
+              + ": se cierra con sus dos firmas o se cancela con ella, desde Apertura");
+    }
+  }
+
   private FilaConteo abierto(long id) {
     FilaConteo c = existente(id, true);
     if (!c.estado().equals("abierto")) {
@@ -424,7 +446,9 @@ public class ServicioConteos {
                     c.observaciones(),
                     c.lineas(),
                     c.contadas(),
-                    c.version()))
+                    c.version(),
+                    c.aperturaId(),
+                    c.aperturaFolio()))
         .toList();
   }
 }
